@@ -1,0 +1,25 @@
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.1) rgba(255, 255, 255);
+}
+
+*::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+*::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255);
+}
+
+b {
+    font-variation-settings:
+        'wght' 400,
+        'wdth' 90;
+}
