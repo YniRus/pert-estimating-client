@@ -8,7 +8,7 @@ const router = createRouter({
         {
             path: Route.Home,
             name: RouteName.Home,
-            component: () => import('@/views/HomeView.vue'),
+            component: () => import('@/views/home/HomeView.vue'),
         },
         {
             path: Route.Room,

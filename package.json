@@ -13,11 +13,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "ofetch": "^1.3.4",
+    "socket.io-client": "^4.7.5",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
+    "vue3-toastify": "^0.2.2",
     "vuetify": "^3.6.8"
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@rushstack/eslint-patch": "^1.8.0",
     "@tsconfig/node20": "^20.1.4",
     "@types/node": "^20.12.5",
