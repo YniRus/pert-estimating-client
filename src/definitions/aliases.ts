@@ -1,1 +1,1 @@
-export type UUID = string
+export type UID = string

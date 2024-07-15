@@ -12,7 +12,7 @@
             <v-container>
                 <p class="text-h5 mb-5">Войти в комнату</p>
 
-                <v-row>
+                <v-row v-if="!hideRoomId">
                     <v-col class="pb-0">
                         <v-text-field
                             v-model="roomId"
@@ -76,7 +76,8 @@ export type EnterRoomFormData = {
 }
 
 const props = defineProps<{
-    loading: boolean
+    loading: boolean,
+    hideRoomId?: boolean,
 }>()
 
 const { loading } = toRefs(props)

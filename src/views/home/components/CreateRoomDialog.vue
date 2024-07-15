@@ -56,7 +56,7 @@ import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 
 interface CreateRoomResponse {
-    roomId: string
+    accessUrl: string
 }
 
 const dialog = defineModel<boolean>()
@@ -79,6 +79,6 @@ async function create() {
         return
     }
 
-    emit('created', response.roomId)
+    emit('created', response.accessUrl)
 }
 </script>

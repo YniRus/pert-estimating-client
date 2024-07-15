@@ -31,7 +31,7 @@
 
     <CreatedRoomDialog
         v-model="createdRoomDialog"
-        :roomId="createdRoomId"
+        :access-url="createdRoomAccessUrl"
     />
 </template>
 
@@ -49,10 +49,10 @@ const loading = ref(false)
 const createRoomDialog = ref(false)
 
 const createdRoomDialog = ref(false)
-const createdRoomId = ref("")
+const createdRoomAccessUrl = ref("")
 
-function onRoomCreated(roomId: string) {
-    createdRoomId.value = roomId
+function onRoomCreated(accessUrl: string) {
+    createdRoomAccessUrl.value = accessUrl
     createRoomDialog.value = false
     createdRoomDialog.value = true
 }

@@ -11,6 +11,15 @@ const router = createRouter({
             component: () => import('@/views/home/HomeView.vue'),
         },
         {
+            path: Route.JoinRoom,
+            name: RouteName.JoinRoom,
+            component: () => import('@/views/join-room/JoinRoomView.vue'),
+            props: route => ({
+                roomId: route.params.roomId,
+                pin: route.query.pin,
+            }),
+        },
+        {
             path: Route.Room,
             name: RouteName.Room,
             component: () => import('@/views/RoomView.vue'),
