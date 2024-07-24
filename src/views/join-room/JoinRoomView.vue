@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, toValue } from 'vue'
 import EnterRoomForm, { type EnterRoomFormData } from '@/views/home/components/EnterRoomForm.vue'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
@@ -39,7 +39,7 @@ const props = defineProps<{
     pin?: string,
 }>()
 
-console.log(props)
+const { roomId, pin } = toValue(props)
 
 function toHome() {
     router.push({ name: RouteName.Home })
@@ -49,10 +49,10 @@ const loading = ref(false)
 
 async function login({ role, name }: EnterRoomFormData) {
     let response = await request.post<{a: string}>("/login", {
-        roomId: props.roomId,
+        roomId,
         name,
         role: role || "",
-        pin: props.pin,
+        pin,
     }, { loading })
 
     if (response instanceof FetchError) {
@@ -74,7 +74,7 @@ async function login({ role, name }: EnterRoomFormData) {
             }
         }
     } else {
-        // TODO: Переход в комнату
+        await router.push({ name: RouteName.Room, params: { roomId } })
     }
 }
 </script>

@@ -43,6 +43,10 @@ import { FetchError, request } from '@/plugins/ofetch'
 import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
 import EnterRoomPinDialog from '@/views/home/components/EnterRoomPinDialog.vue'
 import { toast } from 'vue3-toastify'
+import { useRouter } from 'vue-router'
+import RouteName from '@/router/route-name'
+
+const router = useRouter()
 
 const loading = ref(false)
 
@@ -96,7 +100,7 @@ async function login({ roomId, role, name, pin }: EnterRoomFormData) {
             }
         }
     } else {
-        // TODO: Переход в комнату
+        await router.push({ name: RouteName.Room, params: { roomId } })
     }
 }
 </script>

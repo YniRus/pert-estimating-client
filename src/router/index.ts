@@ -23,6 +23,9 @@ const router = createRouter({
             path: Route.Room,
             name: RouteName.Room,
             component: () => import('@/views/RoomView.vue'),
+            props: route => ({
+                roomId: route.params.roomId,
+            }),
         },
         {
             path: '/:pathMatch(.*)',
