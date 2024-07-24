@@ -1,23 +1,21 @@
 <template>
-    <v-toolbar>
-        <v-toolbar-title>PERT Estimating</v-toolbar-title>
+    <BaseLayout>
+        <template #header-actions>
+            <v-btn
+                class="mr-5"
+                text="Создать комнату"
+                variant="outlined"
+                @click="createRoomDialog = true"
+            />
+        </template>
 
-        <v-spacer></v-spacer>
-
-        <v-btn
-            class="mr-5"
-            text="Создать комнату"
-            variant="outlined"
-            @click="createRoomDialog = true"
-        />
-    </v-toolbar>
-
-    <v-container class="d-flex justify-center mt-5">
-        <EnterRoomForm
-            :loading
-            @login="login"
-        />
-    </v-container>
+        <v-container class="d-flex justify-center mt-5">
+            <EnterRoomForm
+                :loading
+                @login="login"
+            />
+        </v-container>
+    </BaseLayout>
 
     <EnterRoomPinDialog
         v-model="enterRoomPinDialog"
@@ -45,6 +43,7 @@ import EnterRoomPinDialog from '@/views/home/components/EnterRoomPinDialog.vue'
 import { toast } from 'vue3-toastify'
 import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
+import BaseLayout from '@/layouts/BaseLayout.vue'
 
 const router = useRouter()
 

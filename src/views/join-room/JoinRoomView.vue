@@ -1,26 +1,23 @@
 <template>
-    <v-toolbar>
-        <v-toolbar-title>PERT Estimating</v-toolbar-title>
+    <BaseLayout>
+        <template #header-actions>
+            <v-btn
+                class="mr-5"
+                text="На главную"
+                :ripple="false"
+                variant="text"
+                @click="toHome"
+            />
+        </template>
 
-        <v-spacer></v-spacer>
-
-        <v-btn
-            class="mr-5"
-            text="На главную"
-            :ripple="false"
-            variant="text"
-            @click="toHome"
-        />
-    </v-toolbar>
-
-    <v-container class="d-flex justify-center mt-5">
-        <EnterRoomForm
-            :loading
-            :hide-room-id="true"
-            @login="login"
-        />
-    </v-container>
-
+        <v-container class="d-flex justify-center mt-5">
+            <EnterRoomForm
+                :loading
+                :hide-room-id="true"
+                @login="login"
+            />
+        </v-container>
+    </BaseLayout>
 </template>
 
 <script setup lang="ts">
@@ -31,6 +28,7 @@ import { toast } from 'vue3-toastify'
 import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
+import BaseLayout from '@/layouts/BaseLayout.vue'
 
 const router = useRouter()
 

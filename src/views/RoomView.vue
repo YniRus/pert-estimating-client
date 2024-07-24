@@ -1,7 +1,9 @@
 <template>
-    <div class="room-view">
-        <h1>This is an room page</h1>
-    </div>
+    <BaseLayout :loading>
+        <div class="room-view">
+            <h1>This is an room page</h1>
+        </div>
+    </BaseLayout>
 </template>
 
 <script setup lang="ts">
@@ -12,6 +14,7 @@ import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
+import BaseLayout from '@/layouts/BaseLayout.vue'
 
 const router = useRouter()
 
