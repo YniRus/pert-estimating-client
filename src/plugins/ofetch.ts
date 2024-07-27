@@ -47,17 +47,18 @@ function handleOptions<R extends ResponseType = 'json'>(options: RequestOptions<
     options = {
         ...options,
         onRequest(context: FetchContext) {
-            onRequestHandlers.forEach(handler => handler?.(context))
+            onRequestHandlers.forEach((handler) => handler?.(context))
         },
         onResponse(context: FetchContext & { response: FetchResponse<R> }) {
-            onResponseHandlers.forEach(handler => handler?.(context))
+            onResponseHandlers.forEach((handler) => handler?.(context))
         },
     }
 
     return options
 }
 
-async function _get<T = never, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+async function _get<T = any, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.GET,
         query,
@@ -65,7 +66,8 @@ async function _get<T = never, R extends ResponseType = 'json'>(path: string, qu
     }).catch((error: FetchError<T>) => error)
 }
 
-async function _post<T = never, R extends ResponseType = 'json'>(path: string, data?: RequestOptions['body'], options?: RequestOptions<R>) {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+async function _post<T = any, R extends ResponseType = 'json'>(path: string, data?: RequestOptions['body'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.POST,
         body: data,
@@ -73,7 +75,8 @@ async function _post<T = never, R extends ResponseType = 'json'>(path: string, d
     }).catch((error: FetchError<T>) => error)
 }
 
-async function _delete<T = never, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+async function _delete<T = any, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.DELETE,
         query,
