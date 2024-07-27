@@ -10,7 +10,9 @@
             @submit.prevent="submit"
         >
             <v-container>
-                <p class="text-h5 mb-5">Войти в комнату</p>
+                <p class="text-h5 mb-5">
+                    Войти в комнату
+                </p>
 
                 <v-row v-if="!hideRoomId">
                     <v-col class="pb-0">
@@ -31,7 +33,7 @@
                             label="Введите имя"
                             variant="outlined"
                         >
-                            <template v-slot:prepend>
+                            <template #prepend>
                                 <v-select
                                     v-model="role"
                                     width="100"
@@ -40,7 +42,7 @@
                                     label="Роль"
                                     hide-details
                                 >
-                                    <template v-slot:selection="{ item }">
+                                    <template #selection="{ item }">
                                         {{ getSelectionText(item) }}
                                     </template>
                                 </v-select>
@@ -57,7 +59,7 @@
                     height="40"
                     variant="outlined"
                     block
-                ></v-btn>
+                />
             </v-container>
         </v-form>
     </v-sheet>
@@ -71,41 +73,41 @@ import type { UserRole } from '@/definitions/user'
 export type EnterRoomFormData = {
     name: string
     roomId: string
-    role?: UserRole | "",
+    role?: UserRole | ''
     pin?: string
 }
 
 const props = defineProps<{
-    loading: boolean,
-    hideRoomId?: boolean,
+    loading: boolean
+    hideRoomId?: boolean
 }>()
 
 const { loading } = toRefs(props)
 
 const form = ref<VForm | null>(null)
 
-const roomId = ref("")
+const roomId = ref('')
 
 const roomIdValidationRules = ref([
-    (value: string) => value ? true : "Введите ID комнаты",
+    (value: string) => value ? true : 'Введите ID комнаты',
 ])
 
-const role = ref<UserRole | "">("")
+const role = ref<UserRole | ''>('')
 
 const roleItems: { title: string, value: string }[] = [
-    { title: "Нет роли", value: "" },
-    { title: "DEV", value: "DEV" },
-    { title: "QA", value: "QA" },
+    { title: 'Нет роли', value: '' },
+    { title: 'DEV', value: 'DEV' },
+    { title: 'QA', value: 'QA' },
 ]
 
-function getSelectionText({ title, value } : { title: string; value: string }) {
-    return value ? title : ""
+function getSelectionText({ title, value }: { title: string, value: string }) {
+    return value ? title : ''
 }
 
-const name = ref("")
+const name = ref('')
 
 const nameValidationRules = ref([
-    (value: string) => !!value || "Введите имя",
+    (value: string) => !!value || 'Введите имя',
 ])
 
 const emit = defineEmits<{

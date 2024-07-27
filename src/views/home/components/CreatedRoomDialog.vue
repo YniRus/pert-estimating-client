@@ -16,7 +16,7 @@
                 />
             </v-card-title>
 
-            <v-divider></v-divider>
+            <v-divider />
 
             <v-card-text>
                 <p class="text-subtitle-1 mb-1">
@@ -31,7 +31,7 @@
                     single-line
                     readonly
                     @click:append="copyAccessUrlToClipboard"
-                ></v-text-field>
+                />
 
                 <p class="text-subtitle-2 mt-2">
                     Обратите внимание! По этой ссылке пользователи смогут подключиться в вашу комнату без необходимости вводить ID комнаты и PIN-код

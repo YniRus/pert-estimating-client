@@ -19,18 +19,18 @@
                     />
                 </v-card-title>
 
-                <v-divider></v-divider>
+                <v-divider />
 
                 <v-card-text class="pb-1">
-                        <v-text-field
-                            v-model="pin"
-                            :rules="pinValidationRules"
-                            label="PIN"
-                            variant="outlined"
-                        />
+                    <v-text-field
+                        v-model="pin"
+                        :rules="pinValidationRules"
+                        label="PIN"
+                        variant="outlined"
+                    />
                 </v-card-text>
 
-                <v-divider class="mt-2"></v-divider>
+                <v-divider class="mt-2" />
 
                 <v-card-actions>
                     <v-btn
@@ -52,10 +52,10 @@ import type { VForm } from 'vuetify/components'
 
 const dialog = defineModel<boolean>()
 
-const pin = ref("")
+const pin = ref('')
 
 const pinValidationRules = ref([
-    (value: string) => value ? true : "Введите PIN-код",
+    (value: string) => value ? true : 'Введите PIN-код',
 ])
 
 const emit = defineEmits<{

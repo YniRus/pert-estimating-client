@@ -4,7 +4,7 @@
             <v-app-bar-title>PERT Estimating</v-app-bar-title>
 
             <template #append>
-                <slot name="header-actions"></slot>
+                <slot name="header-actions" />
             </template>
         </v-app-bar>
 
@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-    loading?: boolean,
+defineProps<{
+    loading?: boolean
 }>()
 </script>

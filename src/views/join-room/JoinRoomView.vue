@@ -33,8 +33,8 @@ import BaseLayout from '@/layouts/BaseLayout.vue'
 const router = useRouter()
 
 const props = defineProps<{
-    roomId: UID,
-    pin?: string,
+    roomId: UID
+    pin?: string
 }>()
 
 const { roomId, pin } = toValue(props)
@@ -46,10 +46,10 @@ function toHome() {
 const loading = ref(false)
 
 async function login({ role, name }: EnterRoomFormData) {
-    let response = await request.post<{a: string}>("/login", {
+    let response = await request.post<{ a: string }>('/login', {
         roomId,
         name,
-        role: role || "",
+        role: role || '',
         pin,
     }, { loading })
 

@@ -20,24 +20,28 @@ const baseFetch = ofetch.create({
         'Content-Type': 'application/json',
     },
     baseURL: import.meta.env.VITE_SERVER_HOST,
-    credentials: "include",
-});
+    credentials: 'include',
+})
 
-export interface RequestOptions<R extends ResponseType = "json"> extends FetchOptions<R> {
+export interface RequestOptions<R extends ResponseType = 'json'> extends FetchOptions<R> {
     loading?: Ref<boolean>
 }
 
-function handleOptions<R extends ResponseType = "json">(options: RequestOptions<R> = {}) {
+function handleOptions<R extends ResponseType = 'json'>(options: RequestOptions<R> = {}) {
     const onRequestHandlers = [
-        options.onRequest
+        options.onRequest,
     ]
     const onResponseHandlers = [
-        options.onResponse
+        options.onResponse,
     ]
 
     if (options?.loading) {
-        onRequestHandlers.push(() => { options.loading!.value = true })
-        onResponseHandlers.push(() => { options.loading!.value = false })
+        onRequestHandlers.push(() => {
+            options.loading!.value = true
+        })
+        onResponseHandlers.push(() => {
+            options.loading!.value = false
+        })
     }
 
     options = {
@@ -47,13 +51,13 @@ function handleOptions<R extends ResponseType = "json">(options: RequestOptions<
         },
         onResponse(context: FetchContext & { response: FetchResponse<R> }) {
             onResponseHandlers.forEach(handler => handler?.(context))
-        }
+        },
     }
 
     return options
 }
 
-async function _get<T = any, R extends ResponseType = "json">(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
+async function _get<T = never, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.GET,
         query,
@@ -61,7 +65,7 @@ async function _get<T = any, R extends ResponseType = "json">(path: string, quer
     }).catch((error: FetchError<T>) => error)
 }
 
-async function _post<T = any, R extends ResponseType = "json">(path: string, data?: RequestOptions['body'], options?: RequestOptions<R>) {
+async function _post<T = never, R extends ResponseType = 'json'>(path: string, data?: RequestOptions['body'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.POST,
         body: data,
@@ -69,7 +73,7 @@ async function _post<T = any, R extends ResponseType = "json">(path: string, dat
     }).catch((error: FetchError<T>) => error)
 }
 
-async function _delete<T = any, R extends ResponseType = "json">(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
+async function _delete<T = never, R extends ResponseType = 'json'>(path: string, query?: RequestOptions['query'], options?: RequestOptions<R>) {
     return await baseFetch<T, R>(path, {
         method: HttpRequestMethod.DELETE,
         query,
@@ -77,10 +81,10 @@ async function _delete<T = any, R extends ResponseType = "json">(path: string, q
     }).catch((error: FetchError<T>) => error)
 }
 
-export const request =  {
+export const request = {
     get: _get,
     post: _post,
     delete: _delete,
 }
 
-export { FetchError } from "ofetch"
+export { FetchError } from 'ofetch'

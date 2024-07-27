@@ -4,8 +4,8 @@ body {
 }
 
 * {
+    scrollbar-color: rgb(128 128 128 / 10%) rgb(255 255 255);
     scrollbar-width: thin;
-    scrollbar-color: rgba(128, 128, 128, 0.1) rgba(255, 255, 255);
 }
 
 *::-webkit-scrollbar {
@@ -14,17 +14,15 @@ body {
 }
 
 *::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255);
+    background: rgb(255 255 255);
 }
 
 *::-webkit-scrollbar-thumb {
-    background-color: rgba(128, 128, 128, 0.3);
+    background-color: rgb(128 128 128 / 30%);
+    border: 1px solid rgb(255 255 255);
     border-radius: 3px;
-    border: 1px solid rgba(255, 255, 255);
 }
 
 b {
-    font-variation-settings:
-        'wght' 400,
-        'wdth' 90;
+    font-variation-settings: 'wght' 400, 'wdth' 90;
 }

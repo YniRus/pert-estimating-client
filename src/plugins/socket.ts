@@ -1,4 +1,4 @@
-import { io } from "socket.io-client";
+import { io } from 'socket.io-client'
 
 const socket = io(import.meta.env.VITE_SERVER_HOST, {
     path: '/io',
@@ -10,18 +10,18 @@ const socket = io(import.meta.env.VITE_SERVER_HOST, {
     reconnection: true,
     reconnectionAttempts: 5,
     autoConnect: false,
-});
+})
 
-socket.on("connect", () => {
-    console.log("connected")
-});
+socket.on('connect', () => {
+    console.log('connected')
+})
 
-socket.on("disconnect", () => {
-    console.log("disconnected")
-});
+socket.on('disconnect', () => {
+    console.log('disconnected')
+})
 
-socket.on("test", (...args) => {
+socket.on('test', (...args) => {
     console.log([args])
-});
+})
 
-export default socket;
+export default socket

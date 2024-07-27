@@ -19,7 +19,7 @@ import BaseLayout from '@/layouts/BaseLayout.vue'
 const router = useRouter()
 
 const props = defineProps<{
-    roomId: UID,
+    roomId: UID
 }>()
 
 const loading = ref(false)

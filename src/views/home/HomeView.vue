@@ -52,7 +52,7 @@ const loading = ref(false)
 const createRoomDialog = ref(false)
 
 const createdRoomDialog = ref(false)
-const createdRoomAccessUrl = ref("")
+const createdRoomAccessUrl = ref('')
 
 function onRoomCreated(accessUrl: string) {
     createdRoomAccessUrl.value = accessUrl
@@ -72,10 +72,10 @@ async function onLoginWithPin(pin: string) {
 async function login({ roomId, role, name, pin }: EnterRoomFormData) {
     enterRoomFormData.value = { roomId, role, name, pin }
 
-    let response = await request.post<{a: string}>("/login", {
+    let response = await request.post<{ a: string }>('/login', {
         roomId,
         name,
-        role: role || "",
+        role: role || '',
         pin,
     }, { loading })
 

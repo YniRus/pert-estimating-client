@@ -15,7 +15,7 @@
                 />
             </v-card-title>
 
-            <v-divider></v-divider>
+            <v-divider />
 
             <v-form @submit.prevent="create">
                 <v-container class="pb-1">
@@ -33,7 +33,7 @@
                 </v-container>
             </v-form>
 
-            <v-divider class="mt-2"></v-divider>
+            <v-divider class="mt-2" />
 
             <v-card-actions>
                 <v-btn
@@ -43,7 +43,7 @@
                     @click="create"
                 >
                     Создать комнату
-                    <v-icon icon="mdi-chevron-right" end></v-icon>
+                    <v-icon icon="mdi-chevron-right" end />
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -65,12 +65,12 @@ const emit = defineEmits<{
     created: [string]
 }>()
 
-const pin = ref("")
+const pin = ref('')
 
 const loading = ref(false)
 
 async function create() {
-    const response = await request.post<CreateRoomResponse>("/room", {
+    const response = await request.post<CreateRoomResponse>('/room', {
         pin: pin.value.trim(),
     }, { loading })
 
