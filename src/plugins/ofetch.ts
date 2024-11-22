@@ -31,8 +31,14 @@ function handleOptions<R extends ResponseType = 'json'>(options: RequestOptions<
     const onRequestHandlers = [
         options.onRequest,
     ]
+    const onRequestErrorHandlers = [
+        options.onRequestError,
+    ]
     const onResponseHandlers = [
         options.onResponse,
+    ]
+    const onResponseErrorHandlers = [
+        options.onRequestError,
     ]
 
     if (options?.loading) {
@@ -42,6 +48,12 @@ function handleOptions<R extends ResponseType = 'json'>(options: RequestOptions<
         onResponseHandlers.push(() => {
             options.loading!.value = false
         })
+        onRequestErrorHandlers.push(() => {
+            options.loading!.value = false
+        })
+        onResponseErrorHandlers.push(() => {
+            options.loading!.value = false
+        })
     }
 
     options = {
@@ -49,8 +61,14 @@ function handleOptions<R extends ResponseType = 'json'>(options: RequestOptions<
         onRequest(context: FetchContext) {
             onRequestHandlers.forEach((handler) => handler?.(context))
         },
+        onRequestError(context: FetchContext & { error: Error }) {
+            onRequestErrorHandlers.forEach((handler) => handler?.(context))
+        },
         onResponse(context: FetchContext & { response: FetchResponse<R> }) {
             onResponseHandlers.forEach((handler) => handler?.(context))
+        },
+        onResponseError(context: FetchContext & { response: FetchResponse<R>, error: Error }) {
+            onResponseErrorHandlers.forEach((handler) => handler?.(context))
         },
     }
 
