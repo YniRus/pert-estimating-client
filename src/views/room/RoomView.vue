@@ -29,6 +29,7 @@ import BaseLayout from '@/layouts/BaseLayout.vue'
 import EstimateVariantCards from '@/views/room/components/EstimateVariantCards.vue'
 import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
+import { wrap } from '@/utils/loading'
 
 const router = useRouter()
 
@@ -40,36 +41,36 @@ const loading = ref(false)
 
 const room = ref<Room>()
 
-onMounted(async () => {
-    loading.value = true
-    const response = await ws.emitWithAck('room:query', props.roomId)
+onMounted(() => {
+    wrap(loading, async () => {
+        const response = await ws.emitWithAck('room:query', props.roomId)
 
-    if (response instanceof WSError) {
-        await router.push({ name: RouteName.Home })
+        if (response instanceof WSError) {
+            await router.push({ name: RouteName.Home })
 
-        switch (response.code) {
-            case 400: {
-                toast.error('Ошибка запроса')
-                return
-            }
-            case 401:
-            case 403: {
-                toast.error('Ошибка авторизации')
-                return
-            }
-            case 404: {
-                toast.error('Комната не найдена')
-                return
-            }
-            default: {
-                toast.error('Неизвестная ошибка')
-                return
+            switch (response.code) {
+                case 400: {
+                    toast.error('Ошибка запроса')
+                    return
+                }
+                case 401:
+                case 403: {
+                    toast.error('Ошибка авторизации')
+                    return
+                }
+                case 404: {
+                    toast.error('Комната не найдена')
+                    return
+                }
+                default: {
+                    toast.error('Неизвестная ошибка')
+                    return
+                }
             }
         }
-    }
 
-    room.value = response
-    loading.value = false
+        room.value = response
+    })
 })
 
 function leaveRoom() {

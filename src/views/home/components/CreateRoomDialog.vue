@@ -54,6 +54,7 @@
 import { ref } from 'vue'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
+import { wrap } from '@/utils/loading'
 
 interface CreateRoomResponse {
     accessUrl: string
@@ -69,16 +70,18 @@ const pin = ref('')
 
 const loading = ref(false)
 
-async function create() {
-    const response = await request.post<CreateRoomResponse>('/room', {
-        pin: pin.value.trim(),
-    }, { loading })
+function create() {
+    wrap(loading, async () => {
+        const response = await request.post<CreateRoomResponse>('/room', {
+            pin: pin.value.trim(),
+        })
 
-    if (response instanceof FetchError) {
-        toast.error('Неизвестная ошибка')
-        return
-    }
+        if (response instanceof FetchError) {
+            toast.error('Неизвестная ошибка')
+            return
+        }
 
-    emit('created', response.accessUrl)
+        emit('created', response.accessUrl)
+    })
 }
 </script>

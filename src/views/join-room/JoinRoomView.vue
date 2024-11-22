@@ -29,6 +29,7 @@ import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
 import BaseLayout from '@/layouts/BaseLayout.vue'
+import { wrap } from '@/utils/loading'
 
 const router = useRouter()
 
@@ -45,34 +46,36 @@ function toHome() {
 
 const loading = ref(false)
 
-async function login({ role, name }: EnterRoomFormData) {
-    let response = await request.post<{ a: string }>('/login', {
-        roomId,
-        name,
-        role: role || '',
-        pin,
-    }, { loading })
+function login({ role, name }: EnterRoomFormData) {
+    wrap(loading, async () => {
+        let response = await request.post<{ a: string }>('/login', {
+            roomId,
+            name,
+            role: role || '',
+            pin,
+        })
 
-    if (response instanceof FetchError) {
-        switch (response.statusCode) {
-            case 404: {
-                toast.error('Комната не найдена')
-                break
+        if (response instanceof FetchError) {
+            switch (response.statusCode) {
+                case 404: {
+                    toast.error('Комната не найдена')
+                    break
+                }
+                case 403: {
+                    toast.error('Комната защищена PIN-кодом')
+                    break
+                }
+                case 400: {
+                    toast.error('Неверный PIN-код')
+                    break
+                }
+                default: {
+                    toast.error('Неизвестная ошибка')
+                }
             }
-            case 403: {
-                toast.error('Комната защищена PIN-кодом')
-                break
-            }
-            case 400: {
-                toast.error('Неверный PIN-код')
-                break
-            }
-            default: {
-                toast.error('Неизвестная ошибка')
-            }
+        } else {
+            await router.push({ name: RouteName.Room, params: { roomId } })
         }
-    } else {
-        await router.push({ name: RouteName.Room, params: { roomId } })
-    }
+    })
 }
 </script>
