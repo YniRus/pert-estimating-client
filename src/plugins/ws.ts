@@ -86,6 +86,22 @@ class WS {
         })
     }
 
+    on<Event extends EventNames<ServerToClientEvents>>(
+        event: Event,
+        listener: ServerToClientEvents[Event],
+    ) {
+        if (!this.#client) {
+            const error = new WSConnectionError(
+                'Unable to connect: must be initialized first',
+                WSErrorCode.ClientNotInitialized,
+            )
+            console.error(error)
+            return
+        }
+
+        this.#client.on(event, listener)
+    }
+
     async emitWithAck<Event extends EventNames<ClientToServerEvents>>(
         event: Event,
         ...args: AllButLast<EventParams<ClientToServerEvents, Event>>

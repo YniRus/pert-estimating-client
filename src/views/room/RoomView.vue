@@ -15,6 +15,22 @@
             <EstimateVariantCards />
 
             <h1>This is an room page</h1>
+
+            <div
+                v-if="room"
+                class="users"
+            >
+                <div
+                    v-for="user in room.users"
+                    :key="user.id"
+                    class="user"
+                >
+                    <template v-if="user.role">
+                        [{{ user.role }}]
+                    </template>
+                    {{ user.name }}
+                </div>
+            </div>
         </div>
     </BaseLayout>
 </template>
@@ -32,6 +48,7 @@ import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
+import type { User } from '@/definitions/user'
 
 const router = useRouter()
 
@@ -75,6 +92,18 @@ onMounted(() => {
         }
 
         room.value = response
+    })
+
+    ws.on('on:user-connected', (user: User) => {
+        if (!room.value) return
+
+        room.value.users.push(user)
+    })
+
+    ws.on('on:user-disconnected', (userId: UID) => {
+        if (!room.value) return
+
+        room.value.users = room.value.users.filter((user) => user.id !== userId)
     })
 })
 
