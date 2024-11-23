@@ -74,7 +74,7 @@ function login({ roomId, role, name, pin }: EnterRoomFormData) {
     enterRoomFormData.value = { roomId, role, name, pin }
 
     wrap(loading, async () => {
-        let response = await request.post<{ a: string }>('/login', {
+        let response = await request.post<null>('/login', {
             roomId,
             name,
             role: role || '',

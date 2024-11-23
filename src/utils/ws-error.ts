@@ -1,3 +1,5 @@
+import type { PartialPick } from '@/definitions/utility'
+
 export interface ErrorResponse {
     error: ErrorData
 }
@@ -8,18 +10,24 @@ interface ErrorData {
     code: number
 }
 
+export enum WSErrorCode {
+    Unknown = 4000,
+    ClientNotInitialized = 4001,
+    EmitWithAckTimeout = 4013,
+}
+
 export class WSError extends Error {
     code: number
 
-    constructor(error: ErrorData) {
+    constructor(error: PartialPick<ErrorData, 'type' | 'code'>) {
         super(error.message)
-        this.name = error.type
-        this.code = error.code
+        this.name = error.type ?? 'WSError'
+        this.code = error.code ?? WSErrorCode.Unknown
     }
 }
 
 export class WSConnectionError extends WSError {
-    constructor(error: Error | string, code = 4000) {
+    constructor(error: Error | string, code = WSErrorCode.Unknown) {
         if (isErrorWithData(error)) {
             super(error.data)
         } else {

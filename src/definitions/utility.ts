@@ -1,4 +1,5 @@
 export type Promised<T> = T | Promise<T>
+export type PartialPick<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 // --- Взято из socket.io-client/build/esm/socket.d.ts
 /* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */

@@ -1,8 +1,8 @@
 import { io, type Socket } from 'socket.io-client'
 import { type ClientToServerEvents, type ServerToClientEvents } from '@/definitions/ws'
 import type { AllButLast, Promised } from '@/definitions/utility'
-import type { EventParams, EventNames } from '@socket.io/component-emitter'
-import { isErrorResponse, WSConnectionError, WSError } from '@/utils/ws-error'
+import type { EventNames, EventParams } from '@socket.io/component-emitter'
+import { isErrorResponse, WSConnectionError, WSError, WSErrorCode } from '@/utils/ws-error'
 
 class WS {
     #options: Parameters<typeof io>[1] = {
@@ -12,6 +12,8 @@ class WS {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         },
+        timeout: 10000,
+        ackTimeout: 2000,
         reconnection: true,
         reconnectionAttempts: 5,
         autoConnect: false,
@@ -34,7 +36,10 @@ class WS {
 
         return new Promise((resolve) => {
             if (!this.#client) {
-                const error = new WSConnectionError('Unable to connect: must be initialized first')
+                const error = new WSConnectionError(
+                    'Unable to connect: must be initialized first',
+                    WSErrorCode.ClientNotInitialized,
+                )
                 console.error(error)
                 return resolve(error)
             }
@@ -64,16 +69,21 @@ class WS {
 
     #disconnecting = false
 
-    disconnect() {
-        if (!this.#client || !this.#connected) return
+    disconnect(): Promise<true> {
+        return new Promise((resolve) => {
+            if (!this.#client || !this.#connected) return resolve(true)
 
-        if (!this.#disconnecting && this.#client.connected) {
-            this.#client.once('disconnect', () => {
-                this.#disconnecting = false
-            })
+            if (this.#disconnecting) {
+                this.#client.once('disconnect', () => resolve(true))
+            } else if (!this.#disconnecting) {
+                this.#client.once('disconnect', () => {
+                    this.#disconnecting = false
+                    return resolve(true)
+                })
 
-            this.#client.disconnect()
-        }
+                this.#client.disconnect()
+            }
+        })
     }
 
     async emitWithAck<Event extends EventNames<ClientToServerEvents>>(
@@ -85,9 +95,21 @@ class WS {
             if (connection instanceof WSConnectionError) return connection
         }
 
-        const response = await this.#client!.emitWithAck(event, ...args)
-        if (isErrorResponse(response)) return new WSError(response.error)
-        return response
+        try {
+            const response = await this.#client!.emitWithAck(event, ...args)
+            if (isErrorResponse(response)) return new WSError(response.error)
+            return response
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                // Ожидаемая ошибка - timeout ack
+                return new WSError({
+                    message: error.message,
+                    code: WSErrorCode.EmitWithAckTimeout,
+                })
+            } else {
+                return new WSError({ message: error?.toString() || 'Unexpected error' })
+            }
+        }
     }
 }
 

@@ -3,9 +3,10 @@
         <template #header-actions>
             <v-btn
                 class="mr-5"
-                text="Выйти из комнаты"
+                text="Покинуть комнату"
                 :ripple="false"
                 variant="text"
+                :loading="leaveLoading"
                 @click="leaveRoom"
             />
         </template>
@@ -30,6 +31,7 @@ import EstimateVariantCards from '@/views/room/components/EstimateVariantCards.v
 import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
 import { wrap } from '@/utils/loading'
+import { FetchError, request } from '@/plugins/ofetch'
 
 const router = useRouter()
 
@@ -37,13 +39,13 @@ const props = defineProps<{
     roomId: UID
 }>()
 
-const loading = ref(false)
-
 const room = ref<Room>()
+
+const loading = ref(false)
 
 onMounted(() => {
     wrap(loading, async () => {
-        const response = await ws.emitWithAck('room:query', props.roomId)
+        const response = await ws.emitWithAck('query:room', props.roomId)
 
         if (response instanceof WSError) {
             await router.push({ name: RouteName.Home })
@@ -53,9 +55,12 @@ onMounted(() => {
                     toast.error('Ошибка запроса')
                     return
                 }
-                case 401:
+                case 401: {
+                    toast.error('Вы не авторизованы')
+                    return
+                }
                 case 403: {
-                    toast.error('Ошибка авторизации')
+                    toast.error('Доступ запрещён')
                     return
                 }
                 case 404: {
@@ -73,7 +78,20 @@ onMounted(() => {
     })
 })
 
+const leaveLoading = ref(false)
+
 function leaveRoom() {
-    console.log('leave room')
+    wrap(leaveLoading, async () => {
+        const response = await request.post<null>('/logout')
+
+        if (response instanceof FetchError) {
+            toast.error('Неизвестная ошибка')
+            return
+        } else {
+            await ws.disconnect()
+            await router.push({ name: RouteName.Home })
+            toast.success('Вы покинули комнату')
+        }
+    })
 }
 </script>
