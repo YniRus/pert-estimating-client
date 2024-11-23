@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { ref, toRefs } from 'vue'
 import type { VForm } from 'vuetify/components'
-import type { UserRole } from '@/definitions/user'
+import { UserRole } from '@/definitions/user'
 
 export type EnterRoomFormData = {
     name: string
@@ -96,8 +96,8 @@ const role = ref<UserRole | ''>('')
 
 const roleItems: { title: string, value: string }[] = [
     { title: 'Нет роли', value: '' },
-    { title: 'DEV', value: 'DEV' },
-    { title: 'QA', value: 'QA' },
+    { title: 'DEV', value: UserRole.Dev },
+    { title: 'QA', value: UserRole.QA },
 ]
 
 function getSelectionText({ title, value }: { title: string, value: string }) {

@@ -16,6 +16,8 @@
                 :hide-room-id="true"
                 @login="login"
             />
+
+            <GoToAuthRoom :room-id="roomId" />
         </v-container>
     </BaseLayout>
 </template>
@@ -30,6 +32,7 @@ import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import { wrap } from '@/utils/loading'
+import GoToAuthRoom from '@/views/join-room/components/GoToAuthRoom.vue'
 
 const router = useRouter()
 

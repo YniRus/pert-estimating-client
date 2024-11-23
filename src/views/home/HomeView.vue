@@ -14,6 +14,8 @@
                 :loading
                 @login="login"
             />
+
+            <GoToAuthRoom />
         </v-container>
     </BaseLayout>
 
@@ -45,6 +47,7 @@ import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import { wrap } from '@/utils/loading'
+import GoToAuthRoom from '@/views/join-room/components/GoToAuthRoom.vue'
 
 const router = useRouter()
 
