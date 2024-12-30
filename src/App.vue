@@ -7,3 +7,9 @@
 </template>
 
 <script setup lang="ts" />
+
+<style lang="scss">
+.app-content {
+    max-width: 800px;
+}
+</style>

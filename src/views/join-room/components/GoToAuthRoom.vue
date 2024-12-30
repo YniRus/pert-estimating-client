@@ -1,6 +1,6 @@
 <template>
     <v-snackbar
-        v-if="auth"
+        v-if="authData"
         v-model="visible"
         timeout="-1"
         variant="elevated"
@@ -21,12 +21,12 @@
                     <v-avatar
                         color="primary"
                         class="text-uppercase"
-                        :icon="!auth.user.role && 'mdi-account'"
-                        :text="auth.user.role"
+                        :icon="!authData.user.role && 'mdi-account'"
+                        :text="authData.user.role"
                         size="40"
                     />
 
-                    <span class="text-body-1 ml-2">{{ auth.user.name }}</span>
+                    <span class="text-body-1 ml-2">{{ authData.user.name }}</span>
                 </div>
             </v-card-text>
 
@@ -51,11 +51,10 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
-import ws from '@/plugins/ws'
-import { WSError } from '@/utils/ws-error'
-import type { MyAuth } from '@/definitions/auth'
+import { useAuthStore } from '@/store/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const props = defineProps<{
     roomId?: UID
@@ -63,28 +62,27 @@ const props = defineProps<{
 
 const visible = ref(false)
 
-const auth = ref<MyAuth | null>(null)
+const authData = computed(() => authStore.data)
 
 const subtitle = computed(() => {
     if (!props.roomId) {
         return 'Вы можете войти в последнюю авторизованную комнату как:'
     }
 
-    const isEqualRoom = auth.value?.roomId === props.roomId
+    const isEqualRoom = authData.value?.roomId === props.roomId
     return isEqualRoom
         ? 'Вы уже авторизованы в <b>этой</b> комнате как:'
         : 'Вы уже авторизованы в <b>другой</b> комнате как:'
 })
 
 function goToRoom() {
-    router.push({ name: RouteName.Room, params: { roomId: auth.value!.roomId } })
+    router.push({ name: RouteName.Room, params: { roomId: authData.value!.roomId } })
 }
 
 onMounted(async () => {
-    const response = await ws.emitWithAck('query:my-auth')
+    await authStore.auth()
 
-    if (!(response instanceof WSError)) {
-        auth.value = response
+    if (authStore.data) {
         visible.value = true
     }
 })

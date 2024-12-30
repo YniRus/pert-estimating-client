@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { EstimateType } from '@/definitions/estimate'
+import { EstimateType } from '@/definitions/estimates'
 import { computed, ref } from 'vue'
 
 const baseVariants = [0, 1, 2, 3, 5, 8, 13, 20]
@@ -75,12 +75,14 @@ function getEstimateTypeButtonColor(type: EstimateType) {
 @use 'vuetify/settings' as v-settings;
 @use '@/styles/mixins';
 
+@import '@/styles/variables';
+
 .estimate-variant-cards {
     @include mixins.flex-center;
 
     flex-wrap: wrap;
     gap: map.get(v-settings.$spacers, 5);
-    max-width: 800px;
+    max-width: var(--content-max-width);
     padding: 0 map.get(v-settings.$spacers, 5);
 
     .estimate-variant-card {

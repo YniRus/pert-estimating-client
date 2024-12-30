@@ -1,7 +1,7 @@
 import type { UID } from '@/definitions/aliases'
 import type { User } from '@/definitions/user'
 
-export interface MyAuth {
+export interface AuthData {
     roomId: UID
     user: User
 }

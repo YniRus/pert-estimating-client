@@ -11,26 +11,13 @@
             />
         </template>
 
-        <div class="room-view d-flex align-center flex-column">
+        <div
+            v-if="room"
+            class="room-view d-flex align-center flex-column"
+        >
             <EstimateVariantCards />
 
-            <h1>This is an room page</h1>
-
-            <div
-                v-if="room"
-                class="users"
-            >
-                <div
-                    v-for="user in room.users"
-                    :key="user.id"
-                    class="user"
-                >
-                    <template v-if="user.role">
-                        [{{ user.role }}]
-                    </template>
-                    {{ user.name }}
-                </div>
-            </div>
+            <UsersEstimates :room />
         </div>
     </BaseLayout>
 </template>
@@ -49,8 +36,11 @@ import { WSError } from '@/utils/ws-error'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
 import type { User } from '@/definitions/user'
+import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
+import { useAuthStore } from '@/store/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const props = defineProps<{
     roomId: UID
@@ -92,6 +82,13 @@ onMounted(() => {
         }
 
         room.value = response
+
+        await authStore.auth()
+
+        if (!authStore.data) {
+            await router.push({ name: RouteName.Home })
+            toast.error('Ошибка авторизации')
+        }
     })
 
     ws.on('on:user-connected', (user: User) => {
@@ -119,6 +116,7 @@ function leaveRoom() {
         } else {
             await ws.disconnect()
             await router.push({ name: RouteName.Home })
+            authStore.$reset()
             toast.success('Вы покинули комнату')
         }
     })
