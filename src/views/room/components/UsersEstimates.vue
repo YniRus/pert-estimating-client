@@ -1,26 +1,28 @@
 <template>
-    <v-container class="user-estimates px-4">
+    <v-container class="users-estimates px-4 mt-4 d-flex flex-column">
         <template v-for="(users, role) in groupedUsers" :key="role">
-            <div v-if="users.length" class="estimate-section mb-12">
-                <v-card
-                    class="estimates-card"
-                    elevation="2"
-                    rounded="lg"
-                >
-                    <v-card-text class="pa-4">
-                        <h2 class="role-title text-uppercase">
+            <v-card
+                v-if="users.length"
+                class="users-group-estimates"
+                elevation="2"
+                rounded="lg"
+            >
+                <v-card-text class="pa-4">
+                    <div class="d-flex flex-row justify-space-between">
+                        <p class="text-h4 text-uppercase">
                             {{ role === 'unassigned' ? 'Unassigned' : role }}
-                        </h2>
+                        </p>
 
-                        <UsersEstimatesRoleTable
-                            :room="room"
-                            :users="users"
-                            @estimate-change="handleEstimateChange"
-                            @save="saveEstimates"
-                        />
-                    </v-card-text>
-                </v-card>
-            </div>
+                        <UsersTotalEstimate :users />
+                    </div>
+
+                    <UsersEstimatesRoleTable
+                        :users="users"
+                        @estimate-change="handleEstimateChange"
+                        @save="saveEstimates"
+                    />
+                </v-card-text>
+            </v-card>
         </template>
     </v-container>
 </template>
@@ -28,14 +30,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { type User, UserRole } from '@/definitions/user'
-import type { Room } from '@/definitions/room'
 import UsersEstimatesRoleTable from '@/views/room/components/UsersEstimatesRoleTable.vue'
+import UsersTotalEstimate from '@/views/room/components/UsersTotalEstimate.vue'
+import { useRoomStore } from '@/store/room'
 
-interface Props {
-    room: Room
-}
+const roomStore = useRoomStore()
 
-const props = defineProps<Props>()
 const showSaveButton = ref(false)
 
 const groupedUsers = computed(() => {
@@ -45,7 +45,7 @@ const groupedUsers = computed(() => {
         unassigned: [],
     }
 
-    props.room.users.forEach((user) => groups[!user.role ? 'unassigned' : user.role].push(user))
+    roomStore.data!.users.forEach((user) => groups[!user.role ? 'unassigned' : user.role].push(user))
 
     return groups
 })
@@ -61,29 +61,12 @@ const saveEstimates = () => {
 </script>
 
 <style lang="scss" scoped>
-.user-estimates {
+@use '@/styles/mixins';
+
+.users-estimates {
+    @include mixins.flex(column);
+
     max-width: var(--content-max-width);
-}
-
-.estimate-section {
-    position: relative;
-}
-
-.role-title {
-    position: absolute;
-    z-index: 1;
-    top: -1.5rem;
-    left: -1rem;
-
-    font-size: 2rem;
-    font-weight: 700;
-    color: rgb(var(--v-theme-on-surface) 0.87);
-    letter-spacing: 0.05em;
-}
-
-.estimates-card {
-    margin-top: 2rem;
-    border: 1px solid rgb(var(--v-border-color) 0.1);
 }
 
 kbd {

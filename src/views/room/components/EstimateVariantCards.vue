@@ -1,6 +1,6 @@
 <template>
     <v-btn-toggle
-        v-model="type"
+        :model-value="estimatesStore.unit"
         divided
         rounded="xl"
         density="compact"
@@ -8,15 +8,16 @@
         class="estimate-type-selector ma-5"
         base-color="default"
         mandatory
+        @update:model-value="estimatesStore.setUnit"
     >
         <v-btn
-            v-for="estimateType of EstimateType"
-            :key="`type-${estimateType}`"
+            v-for="estimateUnit of EstimateUnit"
+            :key="`type-${estimateUnit}`"
             class="font-weight-bold"
-            :color="getEstimateTypeButtonColor(estimateType)"
-            :value="estimateType"
+            :color="getEstimateUnitColor(estimateUnit)"
+            :value="estimateUnit"
         >
-            {{ estimateType }}
+            {{ estimateUnit }}
         </v-btn>
 
         <v-tooltip
@@ -33,6 +34,7 @@
             :key="`variant-${variant}`"
             hover
             class="estimate-variant-card px-1 py-12"
+            @click="onSelectEstimate(variant)"
         >
             <v-card-text class="text-center pa-0 text-h4">
                 {{ variant }}
@@ -42,31 +44,28 @@
 </template>
 
 <script setup lang="ts">
-import { EstimateType } from '@/definitions/estimates'
-import { computed, ref } from 'vue'
+import { EstimateUnit } from '@/definitions/estimates'
+import { computed } from 'vue'
+import { getEstimateUnitColor } from '@/utils/estimate'
+import { useEstimatesStore } from '@/store/estimates'
+
+const estimatesStore = useEstimatesStore()
 
 const baseVariants = [0, 1, 2, 3, 5, 8, 13, 20]
 
-const type = ref(EstimateType.Hours)
-
 const tooltipText = computed(() => {
     let tooltipText = 'Выбрана оценка в '
-    switch (type.value) {
-        case EstimateType.Hours: return tooltipText += 'часах'
-        case EstimateType.Days: return tooltipText += 'днях'
-        case EstimateType.Weeks: return tooltipText += 'неделях'
-        case EstimateType.Months: return tooltipText += 'месяцах'
+    switch (estimatesStore.unit) {
+        case EstimateUnit.Hours: return tooltipText += 'часах'
+        case EstimateUnit.Days: return tooltipText += 'днях'
+        case EstimateUnit.Weeks: return tooltipText += 'неделях'
+        case EstimateUnit.Months: return tooltipText += 'месяцах'
         default: return ''
     }
 })
 
-function getEstimateTypeButtonColor(type: EstimateType) {
-    switch (type) {
-        case EstimateType.Hours: return 'primary'
-        case EstimateType.Days: return 'success'
-        case EstimateType.Weeks: return 'purple'
-        case EstimateType.Months: return 'red'
-    }
+function onSelectEstimate(value: number) {
+    estimatesStore.setEstimate(value)
 }
 </script>
 

@@ -12,52 +12,52 @@
         </template>
 
         <div
-            v-if="room"
+            v-if="roomStore.data"
             class="room-view d-flex align-center flex-column"
         >
             <EstimateVariantCards />
 
-            <UsersEstimates :room />
+            <UsersEstimates />
         </div>
     </BaseLayout>
 </template>
 
 <script setup lang="ts">
 import type { UID } from '@/definitions/aliases'
-import type { Room } from '@/definitions/room'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import EstimateVariantCards from '@/views/room/components/EstimateVariantCards.vue'
 import ws from '@/plugins/ws'
-import { WSError } from '@/utils/ws-error'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
-import type { User } from '@/definitions/user'
 import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
 import { useAuthStore } from '@/store/auth'
+import { useRoomStore } from '@/store/room'
+import { authUserRoomEstimates } from '@/store/composables/auth-user-room-estimates'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const roomStore = useRoomStore()
+
+const { watchEstimatesOn, watchEstimatesOff } = authUserRoomEstimates()
 
 const props = defineProps<{
     roomId: UID
 }>()
 
-const room = ref<Room>()
-
 const loading = ref(false)
 
 onMounted(() => {
     wrap(loading, async () => {
-        const response = await ws.emitWithAck('query:room', props.roomId)
+        const roomError = await roomStore.init(props.roomId)
 
-        if (response instanceof WSError) {
+        if (roomError) {
             await router.push({ name: RouteName.Home })
 
-            switch (response.code) {
+            switch (roomError.code) {
                 case 400: {
                     toast.error('Ошибка запроса')
                     return
@@ -81,27 +81,21 @@ onMounted(() => {
             }
         }
 
-        room.value = response
+        const authError = await authStore.auth()
 
-        await authStore.auth()
-
-        if (!authStore.data) {
+        if (authError) {
             await router.push({ name: RouteName.Home })
             toast.error('Ошибка авторизации')
         }
     })
 
-    ws.on('on:user-connected', (user: User) => {
-        if (!room.value) return
+    roomStore.wsOn()
+    watchEstimatesOn()
+})
 
-        room.value.users.push(user)
-    })
-
-    ws.on('on:user-disconnected', (userId: UID) => {
-        if (!room.value) return
-
-        room.value.users = room.value.users.filter((user) => user.id !== userId)
-    })
+onUnmounted(() => {
+    // TODO: roomStore.wsOff()
+    watchEstimatesOff()
 })
 
 const leaveLoading = ref(false)

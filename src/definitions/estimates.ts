@@ -1,19 +1,21 @@
-import type { UID } from '@/definitions/aliases'
-
-export enum EstimateType {
+export enum EstimateUnit {
     Hours = 'h',
     Days = 'd',
     Weeks = 'w',
     Months = 'm',
 }
 
-export interface Estimates {
-    roomId: UID
-    userId: UID
-    estimate: {
-        min?: number
-        probable?: number
-        max?: number
-    }
-    visible: boolean
+export enum EstimateType {
+    Min = 'min',
+    Probable = 'probable',
+    Max = 'max',
 }
+
+export interface Estimate {
+    value: EstimateValue
+    unit: EstimateUnit
+}
+
+export type EstimateValue = number | '*'
+
+export type Estimates = Partial<Record<EstimateType, Estimate>>

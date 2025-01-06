@@ -39,23 +39,26 @@
                     </div>
                 </td>
                 <td>
-                    <div>
-                        {{ getUserEstimate(user.id)?.min || '-' }}
-                    </div>
+                    <EstimateItem
+                        :estimate="user.estimates?.[EstimateType.Min]"
+                        :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Min)"
+                    />
                 </td>
                 <td>
-                    <div>
-                        {{ getUserEstimate(user.id)?.probable || '-' }}
-                    </div>
+                    <EstimateItem
+                        :estimate="user.estimates?.[EstimateType.Probable]"
+                        :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Probable)"
+                    />
                 </td>
                 <td>
-                    <div>
-                        {{ getUserEstimate(user.id)?.max || '-' }}
-                    </div>
+                    <EstimateItem
+                        :estimate="user.estimates?.[EstimateType.Max]"
+                        :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Max)"
+                    />
                 </td>
                 <td>
                     <div class="font-weight-medium">
-                        {{ calculatePERT(getUserEstimate(user.id)) }}
+                        <EstimateItem :estimate="calculatePERT(user.estimates)" />
                     </div>
                 </td>
             </tr>
@@ -66,27 +69,24 @@
 <script setup lang="ts">
 import { type User } from '@/definitions/user'
 import { calculatePERT } from '@/utils/pert'
-import type { Room } from '@/definitions/room'
 import { useAuthStore } from '@/store/auth'
+import EstimateItem from '@/components/common/EstimateItem.vue'
+import { EstimateType } from '@/definitions/estimates'
+import { useEstimatesStore } from '@/store/estimates'
 
 const authStore = useAuthStore()
+const estimatesStore = useEstimatesStore()
 
-const props = defineProps<{
-    room: Room
+defineProps<{
     users: User[]
-}>()
-
-const emit = defineEmits<{
-    'estimate-change': []
-    'save': []
 }>()
 
 function isAuthUser(user: User) {
     return user.id === authStore.data?.user.id
 }
 
-function getUserEstimate(userId: string) {
-    return props.room.estimates?.[userId]
+function isTargetEstimateItem(type: EstimateType) {
+    return estimatesStore.type === type
 }
 </script>
 

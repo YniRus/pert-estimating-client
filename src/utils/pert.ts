@@ -1,5 +1,15 @@
-import type { Estimates } from '@/definitions/estimates'
+import { type Estimate, type Estimates, EstimateUnit } from '@/definitions/estimates'
+import { getEstimateValue } from '@/utils/estimate'
 
-export function calculatePERT(estimate?: Estimates, digits = 2) {
-    return Number((((estimate?.min || 0) + (estimate?.probable || 0) * 4 + (estimate?.max || 0)) / 6).toFixed(digits))
+export function calculatePERT(estimates?: Estimates, digits = 2): Estimate {
+    // TODO: Приводить к общему знаменателю
+
+    const min = getEstimateValue(estimates?.min)
+    const probable = getEstimateValue(estimates?.probable)
+    const max = getEstimateValue(estimates?.max)
+
+    const value = Number(((min + probable * 4 + max) / 6).toFixed(digits))
+    const unit = EstimateUnit.Hours // TODO: Вычислять общий тип
+
+    return { value, unit }
 }

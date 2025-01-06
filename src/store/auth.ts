@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
     async function auth() {
         const response = await ws.emitWithAck('query:auth')
 
-        if (response instanceof WSError) return
+        if (response instanceof WSError) return response
 
         data.value = response
     }
