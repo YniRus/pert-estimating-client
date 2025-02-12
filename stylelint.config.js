@@ -8,5 +8,6 @@ export default {
     rules: {
         '@stylistic/indentation': 4,
         '@stylistic/string-quotes': 'single',
+        'color-function-notation': ['modern', { ignore: ['with-var-inside'] }],
     },
 }

@@ -48,8 +48,10 @@ import { EstimateUnit } from '@/definitions/estimates'
 import { computed } from 'vue'
 import { getEstimateUnitColor } from '@/utils/estimate'
 import { useEstimatesStore } from '@/store/estimates'
+import { useEstimatesOrderStore } from '@/store/estimates-order'
 
 const estimatesStore = useEstimatesStore()
+const estimatesOrderStore = useEstimatesOrderStore()
 
 const baseVariants = [0, 1, 2, 3, 5, 8, 13, 20]
 
@@ -66,6 +68,7 @@ const tooltipText = computed(() => {
 
 function onSelectEstimate(value: number) {
     estimatesStore.setEstimate(value)
+    estimatesStore.setNextType(estimatesOrderStore.order)
 }
 </script>
 

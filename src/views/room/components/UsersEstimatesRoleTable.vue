@@ -41,19 +41,25 @@
                 <td>
                     <EstimateItem
                         :estimate="user.estimates?.[EstimateType.Min]"
+                        :is-selectable="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Min)"
+                        @select="setCurrentEstimateType(EstimateType.Min)"
                     />
                 </td>
                 <td>
                     <EstimateItem
                         :estimate="user.estimates?.[EstimateType.Probable]"
+                        :is-selectable="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Probable)"
+                        @select="setCurrentEstimateType(EstimateType.Probable)"
                     />
                 </td>
                 <td>
                     <EstimateItem
                         :estimate="user.estimates?.[EstimateType.Max]"
+                        :is-selectable="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(EstimateType.Max)"
+                        @select="setCurrentEstimateType(EstimateType.Max)"
                     />
                 </td>
                 <td>
@@ -87,6 +93,10 @@ function isAuthUser(user: User) {
 
 function isTargetEstimateItem(type: EstimateType) {
     return estimatesStore.type === type
+}
+
+function setCurrentEstimateType(type: EstimateType) {
+    estimatesStore.setCurrentType(type)
 }
 </script>
 

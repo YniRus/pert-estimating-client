@@ -11,6 +11,8 @@ export enum EstimateType {
     Max = 'max',
 }
 
+export type EstimatesOrder = [EstimateType, EstimateType, EstimateType]
+
 export interface Estimate {
     value: EstimateValue
     unit: EstimateUnit
