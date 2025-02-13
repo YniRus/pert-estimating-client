@@ -1,5 +1,5 @@
 <template>
-    <v-container class="users-estimates px-4 py-0 my-5 d-flex flex-column ga-5">
+    <v-container class="users-estimates px-4 d-flex flex-column ga-5">
         <template v-for="(users, role) in groupedUsers" :key="role">
             <v-card
                 v-if="users.length"

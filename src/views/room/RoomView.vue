@@ -17,7 +17,9 @@
         >
             <EstimateVariantCards />
 
-            <UsersEstimates />
+            <RoomActions class="mb-5" />
+
+            <UsersEstimates class="py-0 mb-5" />
         </div>
     </BaseLayout>
 </template>
@@ -37,6 +39,7 @@ import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
 import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
 import { authUserRoomEstimates } from '@/store/composables/auth-user-room-estimates'
+import RoomActions from '@/views/room/components/RoomActions.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()

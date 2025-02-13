@@ -18,6 +18,18 @@ export const useRoomStore = defineStore('room', () => {
         data.value = response
     }
 
+    async function updateEstimatesVisible(estimatesVisible: boolean) {
+        const response = await ws.emitWithAck('mutation:room-estimates-visible', estimatesVisible)
+
+        if (response instanceof WSError) return response
+
+        data.value = {
+            ...data.value!,
+            users: response.users,
+            estimatesVisible: response.estimatesVisible,
+        }
+    }
+
     async function wsOn() {
         ws.on('on:user-connected', (user: User) => {
             if (!data.value) return
@@ -29,6 +41,16 @@ export const useRoomStore = defineStore('room', () => {
             if (!data.value) return
 
             data.value.users = data.value.users.filter((user) => user.id !== userId)
+        })
+
+        ws.on('on:room', (room: Room) => {
+            if (room.id !== data.value?.id) return
+
+            data.value = {
+                ...data.value!,
+                users: room.users,
+                estimatesVisible: room.estimatesVisible,
+            }
         })
 
         ws.on('on:estimates', (userId: UID, estimates: Estimates) => {
@@ -50,6 +72,7 @@ export const useRoomStore = defineStore('room', () => {
         $reset,
         data,
         init,
+        updateEstimatesVisible,
         wsOn,
     }
 })

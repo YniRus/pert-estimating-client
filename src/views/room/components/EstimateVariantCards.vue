@@ -28,7 +28,7 @@
         </v-tooltip>
     </v-btn-toggle>
 
-    <div class="estimate-variant-cards w-100">
+    <div class="estimate-variant-cards w-100 mb-5">
         <v-card
             v-for="variant of baseVariants"
             :key="`variant-${variant}`"

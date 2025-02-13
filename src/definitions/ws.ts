@@ -12,10 +12,12 @@ export interface ClientToServerEvents extends EventsMap {
     'query:room': (room: UID, callback: WSCallback<Room>) => void
     'query:auth': (callback: WSCallback<AuthData>) => void
     'mutation:estimate': (type: EstimateType, estimate: Estimate) => void
+    'mutation:room-estimates-visible': (estimatesVisible: boolean, callback: WSCallback<Room>) => void
 }
 
 export interface ServerToClientEvents extends EventsMap {
     'on:user-connected': (user: User) => void
     'on:user-disconnected': (userId: UID) => void
     'on:estimates': (userId: UID, estimates: Estimates) => void
+    'on:room': (room: Room) => void
 }
