@@ -2,6 +2,7 @@ import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
 import { useEstimatesStore } from '@/store/estimates'
 import { computed, ref, watch, type WatchHandle } from 'vue'
+import type { Estimates } from '@/definitions/estimates'
 
 export function authUserRoomEstimates() {
     const authStore = useAuthStore()
@@ -13,18 +14,29 @@ export function authUserRoomEstimates() {
         return roomStore.data.users.findIndex((user) => user.id === authStore.data!.user.id)
     })
 
-    const watchHandle = ref<WatchHandle>()
+    const roomAuthUserEstimates = computed<Estimates>(() => {
+        if (!roomStore.data || !authStore.data || roomAuthUserIndex.value === -1) return {}
+        return roomStore.data.users[roomAuthUserIndex.value].estimates || {}
+    })
+
+    const watchEstimatesHandle = ref<WatchHandle>()
+    const watchAuthUserRoomEstimatesHandle = ref<WatchHandle>()
 
     function watchEstimatesOn() {
-        watchHandle.value = watch(estimatesStore.estimates, () => {
+        watchEstimatesHandle.value = watch(estimatesStore.estimates, () => {
             if (roomAuthUserIndex.value > -1) {
                 roomStore.data!.users[roomAuthUserIndex.value].estimates = { ...estimatesStore.estimates }
             }
         })
+
+        watchEstimatesHandle.value = watch(roomAuthUserEstimates, () => {
+            estimatesStore.estimates = roomAuthUserEstimates.value
+        })
     }
 
     function watchEstimatesOff() {
-        watchHandle.value?.stop()
+        watchEstimatesHandle.value?.stop()
+        watchAuthUserRoomEstimatesHandle.value?.stop()
     }
 
     return {

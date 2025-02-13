@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
+    type Estimate,
     type Estimates,
     type EstimatesOrder,
     EstimateType,
     EstimateUnit,
-    type EstimateValue,
 } from '@/definitions/estimates'
+import ws from '@/plugins/ws'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const type = ref(EstimateType.Probable)
@@ -23,7 +24,7 @@ export const useEstimatesStore = defineStore('estimates', () => {
 
     function setNextType(order: EstimatesOrder) {
         const currentTypeIndex = order.indexOf(type.value)
-        if (currentTypeIndex === -1) return // TODO: Ошибка стратегии. такого не должно быть
+        if (currentTypeIndex === -1) return // TODO: Ошибка в order. такого не должно быть
 
         let nextTypeIndex = currentTypeIndex + 1
         if (nextTypeIndex > order.length - 1) nextTypeIndex = 0
@@ -31,11 +32,15 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setCurrentType(order[nextTypeIndex])
     }
 
-    function setEstimate(value: EstimateValue) {
-        estimates.value[type.value] = {
+    function setEstimate(value: number) {
+        const estimate: Estimate = {
             value,
             unit: unit.value,
         }
+
+        estimates.value[type.value] = estimate
+
+        ws.emit('mutation:estimate', type.value, estimate)
     }
 
     function setEstimates(_estimates: Estimates) {

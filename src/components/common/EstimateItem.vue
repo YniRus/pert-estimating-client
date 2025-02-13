@@ -8,15 +8,24 @@
         @click="emit('select')"
     >
         <template v-if="estimate">
-            <span class="estimate-item-value">
-                {{ estimate.value }}
-            </span>
+            <template v-if="isVisibleEstimate(estimate)">
+                <span class="estimate-item-value">
+                    {{ estimate.value }}
+                </span>
 
-            <v-badge
-                :content="estimate.unit.toUpperCase()"
-                :color="getEstimateUnitColor(estimate.unit)"
-                inline
-            />
+                <v-badge
+                    :content="estimate.unit.toUpperCase()"
+                    :color="getEstimateUnitColor(estimate.unit)"
+                    inline
+                />
+            </template>
+
+            <span
+                v-if="isHiddenEstimate(estimate)"
+                class="estimate-item-value"
+            >
+                {{ HIDDEN_ESTIMATE }}
+            </span>
         </template>
 
         <span
@@ -29,10 +38,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Estimate } from '@/definitions/estimates'
+import { type Estimate, HIDDEN_ESTIMATE, type VisibleEstimate } from '@/definitions/estimates'
 import { getEstimateUnitColor } from '@/utils/estimate'
 
-defineProps<{
+const props = defineProps<{
     estimate?: Estimate
     isSelectable?: boolean
     isTarget?: boolean
@@ -41,6 +50,16 @@ defineProps<{
 const emit = defineEmits<{
     select: []
 }>()
+
+function isVisibleEstimate(estimate: Estimate): estimate is VisibleEstimate {
+    if (typeof props.estimate !== 'object') return false
+
+    return 'value' in props.estimate && 'unit' in props.estimate
+}
+
+function isHiddenEstimate(estimate: Estimate) {
+    return estimate === HIDDEN_ESTIMATE
+}
 </script>
 
 <style scoped lang="scss">
