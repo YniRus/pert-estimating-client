@@ -13,6 +13,7 @@ export interface ClientToServerEvents extends EventsMap {
     'query:auth': (callback: WSCallback<AuthData>) => void
     'mutation:estimate': (type: EstimateType, estimate: Estimate) => void
     'mutation:room-estimates-visible': (estimatesVisible: boolean, callback: WSCallback<Room>) => void
+    'mutation:room-delete-estimates': (callback: WSCallback<Room>) => void
 }
 
 export interface ServerToClientEvents extends EventsMap {

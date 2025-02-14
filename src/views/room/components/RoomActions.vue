@@ -1,16 +1,18 @@
 <template>
     <div class="room-actions w-100 px-4 d-flex justify-space-between">
         <v-btn
-            :text="switchEstimatesVisibleBtnText"
-            variant="flat"
-            :color="isEstimatesVisible ? 'secondary' : 'primary'"
-            @click="switchEstimatesVisible"
+            text="Очистить"
+            variant="text"
+            @click="deleteEstimates"
         />
 
         <v-btn
-            text="Очистить"
-            variant="tonal"
-            @click="cleanEstimates"
+            :text="switchEstimatesVisibleBtnText"
+            variant="outlined"
+            :color="isEstimatesVisible ? 'primary' : 'default'"
+            :prepend-icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
+            :width="146"
+            @click="switchEstimatesVisible"
         />
     </div>
 </template>
@@ -19,8 +21,11 @@
 import { useRoomStore } from '@/store/room'
 import { toast } from 'vue3-toastify'
 import { computed } from 'vue'
+import { useConfirm } from 'vuetify-use-dialog'
 
 const roomStore = useRoomStore()
+
+const confirm = useConfirm()
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
 
@@ -33,13 +38,16 @@ const switchEstimatesVisibleBtnText = computed(() => {
 async function switchEstimatesVisible() {
     const roomError = await roomStore.updateEstimatesVisible(!isEstimatesVisible.value)
 
-    if (roomError) {
-        toast.error('Неизвестная ошибка')
-    }
+    roomError && toast.error('Неизвестная ошибка')
 }
 
-function cleanEstimates() {
-    console.log('cleanEstimates')
+async function deleteEstimates() {
+    const isConfirmed = await confirm({ content: 'Очистка оценок удалит все текущие оценки у всех пользователей.' })
+    if (!isConfirmed) return
+
+    const roomError = await roomStore.deleteEstimates()
+
+    roomError && toast.error('Неизвестная ошибка')
 }
 </script>
 

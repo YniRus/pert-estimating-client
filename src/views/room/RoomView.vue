@@ -40,12 +40,14 @@ import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
 import { authUserRoomEstimates } from '@/store/composables/auth-user-room-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
+import { useConfirm } from 'vuetify-use-dialog'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
 const { watchEstimatesOn, watchEstimatesOff } = authUserRoomEstimates()
+const confirm = useConfirm()
 
 const props = defineProps<{
     roomId: UID
@@ -97,14 +99,16 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    // TODO: roomStore.wsOff()
     watchEstimatesOff()
 })
 
 const leaveLoading = ref(false)
 
-function leaveRoom() {
-    wrap(leaveLoading, async () => {
+async function leaveRoom() {
+    const isConfirmed = await confirm({ content: 'Вы уверены что хотите покинуть комнату?' })
+    if (!isConfirmed) return
+
+    await wrap(leaveLoading, async () => {
         const response = await request.post<null>('/logout')
 
         if (response instanceof FetchError) {

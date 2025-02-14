@@ -23,45 +23,54 @@ export const useRoomStore = defineStore('room', () => {
 
         if (response instanceof WSError) return response
 
+        updateRoom(response)
+    }
+
+    async function deleteEstimates() {
+        const response = await ws.emitWithAck('mutation:room-delete-estimates')
+
+        if (response instanceof WSError) return response
+
+        updateRoom(response)
+    }
+
+    function updateRoom(room: Room) {
+        if (!data.value) return
+        if (room.id !== data.value?.id) return
+
         data.value = {
-            ...data.value!,
-            users: response.users,
-            estimatesVisible: response.estimatesVisible,
+            ...data.value,
+            users: room.users,
+            estimatesVisible: room.estimatesVisible,
         }
     }
 
+    function addUser(user: User) {
+        if (!data.value) return
+
+        data.value.users.push(user)
+    }
+
+    function removeUser(userId: UID) {
+        if (!data.value) return
+
+        data.value.users = data.value.users.filter((user) => user.id !== userId)
+    }
+
+    function setUserEstimates(userId: UID, estimates: Estimates) {
+        if (!data.value) return
+
+        const user = data.value.users.find((user) => user.id === userId)
+        if (!user) return
+
+        user.estimates = estimates
+    }
+
     async function wsOn() {
-        ws.on('on:user-connected', (user: User) => {
-            if (!data.value) return
-
-            data.value.users.push(user)
-        })
-
-        ws.on('on:user-disconnected', (userId: UID) => {
-            if (!data.value) return
-
-            data.value.users = data.value.users.filter((user) => user.id !== userId)
-        })
-
-        ws.on('on:room', (room: Room) => {
-            if (room.id !== data.value?.id) return
-
-            data.value = {
-                ...data.value!,
-                users: room.users,
-                estimatesVisible: room.estimatesVisible,
-            }
-        })
-
-        ws.on('on:estimates', (userId: UID, estimates: Estimates) => {
-            if (!data.value) return
-
-            const user = data.value.users.find((user) => user.id === userId)
-
-            if (!user) return
-
-            user.estimates = estimates
-        })
+        ws.on('on:user-connected', addUser)
+        ws.on('on:user-disconnected', removeUser)
+        ws.on('on:estimates', setUserEstimates)
+        ws.on('on:room', updateRoom)
     }
 
     function $reset() {
@@ -72,7 +81,8 @@ export const useRoomStore = defineStore('room', () => {
         $reset,
         data,
         init,
-        updateEstimatesVisible,
         wsOn,
+        updateEstimatesVisible,
+        deleteEstimates,
     }
 })
