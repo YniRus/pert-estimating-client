@@ -29,17 +29,13 @@
     </v-btn-toggle>
 
     <div class="estimate-variant-cards w-100 mb-5">
-        <v-card
+        <EstimateVariantCard
             v-for="variant of baseVariants"
             :key="`variant-${variant}`"
-            hover
-            class="estimate-variant-card px-1 py-12"
-            @click="onSelectEstimate(variant)"
-        >
-            <v-card-text class="text-center pa-0 text-h4">
-                {{ variant }}
-            </v-card-text>
-        </v-card>
+            :value="variant"
+            :unit="estimatesStore.unit"
+            @select="onSelectEstimate"
+        />
     </div>
 </template>
 
@@ -49,6 +45,7 @@ import { computed } from 'vue'
 import { getEstimateUnitColor } from '@/utils/estimate'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
+import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue'
 
 const estimatesStore = useEstimatesStore()
 const estimatesOrderStore = useEstimatesOrderStore()
@@ -66,8 +63,9 @@ const tooltipText = computed(() => {
     }
 })
 
-function onSelectEstimate(value: number) {
-    estimatesStore.setEstimate(value)
+function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
+    console.log('onSelectEstimate')
+    estimatesStore.setEstimate(value, customUnit)
     estimatesStore.setNextType(estimatesOrderStore.order)
 }
 </script>

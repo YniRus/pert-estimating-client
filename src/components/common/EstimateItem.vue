@@ -13,11 +13,7 @@
                     {{ estimate.value }}
                 </span>
 
-                <v-badge
-                    :content="estimate.unit.toUpperCase()"
-                    :color="getEstimateUnitColor(estimate.unit)"
-                    inline
-                />
+                <EstimateUnit :unit="estimate.unit" />
             </template>
 
             <span
@@ -39,7 +35,7 @@
 
 <script setup lang="ts">
 import { type Estimate, HIDDEN_ESTIMATE, type VisibleEstimate } from '@/definitions/estimates'
-import { getEstimateUnitColor } from '@/utils/estimate'
+import EstimateUnit from '@/components/common/EstimateUnit.vue'
 
 const props = defineProps<{
     estimate?: Estimate
@@ -70,10 +66,6 @@ function isHiddenEstimate(estimate: Estimate) {
     transition-timing-function: ease-in-out;
     transition-duration: 0.2s;
     transition-property: background-color, box-shadow;
-
-    .v-badge :deep(.v-badge__badge) { /* stylelint-disable-line selector-class-pattern */
-        opacity: calc(1 - var(--v-activated-opacity) * var(--v-theme-overlay-multiplier));
-    }
 
     &.target {
         background-color: rgb(var(--v-theme-primary), 0.2);

@@ -32,10 +32,10 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setCurrentType(order[nextTypeIndex])
     }
 
-    function setEstimate(value: number) {
+    function setEstimate(value: number, customUnit?: EstimateUnit) {
         const estimate: Estimate = {
             value,
-            unit: unit.value,
+            unit: customUnit || unit.value,
         }
 
         estimates.value[type.value] = estimate
