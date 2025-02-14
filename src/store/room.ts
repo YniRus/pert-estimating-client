@@ -48,13 +48,21 @@ export const useRoomStore = defineStore('room', () => {
     function addUser(user: User) {
         if (!data.value) return
 
-        data.value.users.push(user)
+        const existedUserIndex = getUserIndexById(user.id)
+        existedUserIndex > -1
+            ? data.value.users[existedUserIndex] = user
+            : data.value.users.push(user)
     }
 
     function removeUser(userId: UID) {
         if (!data.value) return
 
         data.value.users = data.value.users.filter((user) => user.id !== userId)
+    }
+
+    function getUserIndexById(userId: UID) {
+        if (!data.value) return -1
+        return data.value.users.findIndex((user) => user.id === userId)
     }
 
     function setUserEstimates(userId: UID, estimates: Estimates) {
@@ -73,6 +81,13 @@ export const useRoomStore = defineStore('room', () => {
         ws.on('on:room', updateRoom)
     }
 
+    async function wsOff() {
+        ws.off('on:user-connected', addUser)
+        ws.off('on:user-disconnected', removeUser)
+        ws.off('on:estimates', setUserEstimates)
+        ws.off('on:room', updateRoom)
+    }
+
     function $reset() {
         data.value = undefined
     }
@@ -82,6 +97,7 @@ export const useRoomStore = defineStore('room', () => {
         data,
         init,
         wsOn,
+        wsOff,
         updateEstimatesVisible,
         deleteEstimates,
     }

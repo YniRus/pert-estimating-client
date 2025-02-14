@@ -51,12 +51,14 @@ class WS {
                 this.#connecting = true
 
                 this.#client.once('connect', () => {
+                    if (!this.#connecting) return
                     this.#connecting = false
                     console.log('Socket connected')
                     resolve(true)
                 })
 
                 this.#client.once('connect_error', (error: Error) => {
+                    if (!this.#connecting) return
                     this.#connecting = false
                     console.error(error)
                     resolve(new WSConnectionError(error))
@@ -100,6 +102,22 @@ class WS {
         }
 
         this.#client.on(event, listener)
+    }
+
+    off<Event extends EventNames<ServerToClientEvents>>(
+        event: Event,
+        listener: ServerToClientEvents[Event],
+    ) {
+        if (!this.#client) {
+            const error = new WSConnectionError(
+                'Unable to connect: must be initialized first',
+                WSErrorCode.ClientNotInitialized,
+            )
+            console.error(error)
+            return
+        }
+
+        this.#client.off(event, listener)
     }
 
     emit<Event extends EventNames<ClientToServerEvents>>(

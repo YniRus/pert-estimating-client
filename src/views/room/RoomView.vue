@@ -99,6 +99,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    roomStore.wsOff()
     watchEstimatesOff()
 })
 
