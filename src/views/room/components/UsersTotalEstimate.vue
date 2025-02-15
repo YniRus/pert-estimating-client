@@ -1,8 +1,24 @@
 <template>
     <div class="users-total-estimate">
-        <EstimateItem :estimate="avgEstimate" />
-        <span class="text-h6">≈</span>
-        <EstimateItem class="pl-1" :estimate="nearestPredefinedEstimate" />
+        <v-icon
+            v-if="isHidden"
+            icon="mdi-eye-off-outline"
+            class="text-grey mr-4"
+        />
+
+        <template v-else>
+            <EstimateItem
+                :estimate="avgEstimate"
+            />
+
+            <span class="text-h6 mr-2">≈</span>
+
+            <EstimateItem
+                class="pl-1"
+                :estimate="nearestPredefinedEstimate"
+                :is-hidden="isHidden"
+            />
+        </template>
     </div>
 </template>
 
@@ -13,10 +29,15 @@ import { type Estimate, EstimateUnit } from '@/definitions/estimates'
 import { calculatePERT } from '@/utils/pert'
 import EstimateItem from '@/components/common/EstimateItem.vue'
 import { getEstimateValue } from '@/utils/estimate'
+import { useRoomStore } from '@/store/room'
 
 const { users } = defineProps<{
     users: User[]
 }>()
+
+const roomStore = useRoomStore()
+
+const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
 const avgEstimate = computed<Estimate>(() => {
     const usersWithEstimates = users.filter((user) =>

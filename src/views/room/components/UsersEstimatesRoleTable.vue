@@ -44,6 +44,7 @@
                         :estimate="user.estimates?.[key]"
                         :is-can-be-target="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(key)"
+                        :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                         @select="setCurrentEstimateType(key)"
                     />
 
@@ -51,6 +52,7 @@
                         v-else-if="key === 'pert'"
                         class="estimate-table-column"
                         :estimate="calculatePERT(user.estimates)"
+                        :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                     />
                 </td>
             </tr>
@@ -65,9 +67,12 @@ import { useAuthStore } from '@/store/auth'
 import EstimateItem from '@/components/common/EstimateItem.vue'
 import { EstimateType } from '@/definitions/estimates'
 import { useEstimatesStore } from '@/store/estimates'
+import { useRoomStore } from '@/store/room'
+import { computed } from 'vue'
 
 const authStore = useAuthStore()
 const estimatesStore = useEstimatesStore()
+const rooStore = useRoomStore()
 
 defineProps<{
     users: User[]
@@ -84,6 +89,8 @@ const columns = {
 function isAuthUser(user: User) {
     return user.id === authStore.data?.user.id
 }
+
+const isEstimatesVisible = computed(() => rooStore.data?.estimatesVisible)
 
 function isTargetEstimateItem(type: EstimateType) {
     return estimatesStore.type === type

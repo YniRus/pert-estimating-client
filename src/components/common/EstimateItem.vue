@@ -8,20 +8,23 @@
         @click="isCanBeTarget && emit('select')"
     >
         <template v-if="estimate">
-            <template v-if="isVisibleEstimate(estimate)">
+            <span
+                v-if="isHidden ?? isHiddenEstimate(estimate)"
+                class="estimate-item-value"
+            >
+                <v-icon
+                    icon="mdi-eye-off-outline"
+                    class="text-grey"
+                />
+            </span>
+
+            <template v-else-if="isValueUnitEstimate(estimate)">
                 <span class="estimate-item-value">
                     {{ estimate.value }}
                 </span>
 
                 <EstimateUnit :unit="estimate.unit" />
             </template>
-
-            <span
-                v-if="isHiddenEstimate(estimate)"
-                class="estimate-item-value"
-            >
-                {{ HIDDEN_ESTIMATE }}
-            </span>
         </template>
 
         <span
@@ -41,13 +44,14 @@ defineProps<{
     estimate?: Estimate
     isCanBeTarget?: boolean
     isTarget?: boolean
+    isHidden?: boolean
 }>()
 
 const emit = defineEmits<{
     select: []
 }>()
 
-function isVisibleEstimate(estimate: Estimate): estimate is VisibleEstimate {
+function isValueUnitEstimate(estimate: Estimate): estimate is VisibleEstimate {
     if (typeof estimate !== 'object') return false
 
     return 'value' in estimate && 'unit' in estimate
