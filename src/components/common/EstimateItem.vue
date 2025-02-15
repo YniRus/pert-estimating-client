@@ -3,9 +3,9 @@
         class="estimate-item d-flex align-center pa-2 rounded"
         :class="{
             'target': isTarget,
-            'cursor-pointer': isSelectable,
+            'can-be-target': isCanBeTarget,
         }"
-        @click="emit('select')"
+        @click="isCanBeTarget && emit('select')"
     >
         <template v-if="estimate">
             <template v-if="isVisibleEstimate(estimate)">
@@ -37,9 +37,9 @@
 import { type Estimate, HIDDEN_ESTIMATE, type VisibleEstimate } from '@/definitions/estimates'
 import EstimateUnit from '@/components/common/EstimateUnit.vue'
 
-const props = defineProps<{
+defineProps<{
     estimate?: Estimate
-    isSelectable?: boolean
+    isCanBeTarget?: boolean
     isTarget?: boolean
 }>()
 
@@ -48,9 +48,9 @@ const emit = defineEmits<{
 }>()
 
 function isVisibleEstimate(estimate: Estimate): estimate is VisibleEstimate {
-    if (typeof props.estimate !== 'object') return false
+    if (typeof estimate !== 'object') return false
 
-    return 'value' in props.estimate && 'unit' in props.estimate
+    return 'value' in estimate && 'unit' in estimate
 }
 
 function isHiddenEstimate(estimate: Estimate) {
@@ -60,6 +60,8 @@ function isHiddenEstimate(estimate: Estimate) {
 
 <style scoped lang="scss">
 .estimate-item {
+    $bg-color: rgb(15 15 15);
+
     background-color: white;
     box-shadow: none;
 
@@ -67,9 +69,25 @@ function isHiddenEstimate(estimate: Estimate) {
     transition-duration: 0.2s;
     transition-property: background-color, box-shadow;
 
-    &.target {
+    &.can-be-target {
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgb(var(--v-theme-primary), 0.1);
+            box-shadow: 0 0 2px 0 rgb($bg-color, 0.1) inset;
+        }
+    }
+
+    &.target,
+    &.target:hover {
         background-color: rgb(var(--v-theme-primary), 0.2);
-        box-shadow: 0 0 4px 0 rgb(15 15 15 / 30%) inset;
+        box-shadow: 0 0 4px 0 rgb($bg-color, 0.2) inset;
+    }
+
+    &.can-be-target:active,
+    &.target:active {
+        background-color: rgb(var(--v-theme-primary), 0.3);
+        box-shadow: 0 0 6px 0 rgb($bg-color, 0.3) inset;
     }
 }
 </style>

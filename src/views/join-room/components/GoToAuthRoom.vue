@@ -21,7 +21,7 @@
                     <v-avatar
                         color="primary"
                         class="text-uppercase"
-                        :icon="!authData.user.role && 'mdi-account'"
+                        :icon="authData.user.role ? '' : 'mdi-account'"
                         :text="authData.user.role"
                         size="40"
                     />

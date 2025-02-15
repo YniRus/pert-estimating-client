@@ -64,7 +64,6 @@ const tooltipText = computed(() => {
 })
 
 function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
-    console.log('onSelectEstimate')
     estimatesStore.setEstimate(value, customUnit)
     estimatesStore.setNextType(estimatesOrderStore.order)
 }

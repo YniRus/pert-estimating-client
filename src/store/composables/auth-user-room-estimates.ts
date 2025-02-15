@@ -29,9 +29,9 @@ export function authUserRoomEstimates() {
             }
         })
 
-        watchEstimatesHandle.value = watch(roomAuthUserEstimates, () => {
+        watchAuthUserRoomEstimatesHandle.value = watch(roomAuthUserEstimates, () => {
             estimatesStore.estimates = roomAuthUserEstimates.value
-        })
+        }, { immediate: true })
     }
 
     function watchEstimatesOff() {

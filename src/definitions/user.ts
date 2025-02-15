@@ -12,3 +12,5 @@ export interface User {
     name: string
     estimates?: Estimates
 }
+
+export interface AuthUser extends Omit<User, 'estimates'> {}

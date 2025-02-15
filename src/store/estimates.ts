@@ -38,6 +38,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
             unit: customUnit || unit.value,
         }
 
+        console.log(estimates.value)
+
         estimates.value[type.value] = estimate
 
         ws.emit('mutation:estimate', type.value, estimate)
