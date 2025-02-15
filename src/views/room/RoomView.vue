@@ -55,8 +55,16 @@ const props = defineProps<{
 
 const loading = ref(false)
 
-onMounted(() => {
-    wrap(loading, async () => {
+onMounted(async () => {
+    await wrap(loading, async () => {
+        const authError = await authStore.auth()
+
+        if (authError) {
+            await router.push({ name: RouteName.Home })
+            toast.error('Ошибка авторизации')
+            return
+        }
+
         const roomError = await roomStore.init(props.roomId)
 
         if (roomError) {
@@ -85,21 +93,14 @@ onMounted(() => {
                 }
             }
         }
-
-        const authError = await authStore.auth()
-
-        if (authError) {
-            await router.push({ name: RouteName.Home })
-            toast.error('Ошибка авторизации')
-        }
     })
 
-    roomStore.wsOn()
+    await roomStore.wsOn()
     watchEstimatesOn()
 })
 
-onUnmounted(() => {
-    roomStore.wsOff()
+onUnmounted(async () => {
+    await roomStore.wsOff()
     watchEstimatesOff()
 })
 

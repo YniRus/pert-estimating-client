@@ -23,6 +23,8 @@ class WS {
 
     init() {
         this.#client = io(import.meta.env.VITE_SERVER_HOST, this.#options)
+
+        this.#client!.io.on('reconnect', () => console.log('Socket reconnected'))
     }
 
     get #connected() {
@@ -45,24 +47,37 @@ class WS {
             }
 
             if (this.#connecting) {
-                this.#client.once('connect', () => resolve(true))
-                this.#client.once('connect_error', (error) => resolve(new WSConnectionError(error)))
+                const onConnect = () => {
+                    this.#client?.off('connect_error', onConnectError)
+                    resolve(true)
+                }
+
+                const onConnectError = (error: Error) => {
+                    this.#client?.off('connect', onConnect)
+                    resolve(new WSConnectionError(error))
+                }
+
+                this.#client.once('connect', onConnect)
+                this.#client.once('connect_error', onConnectError)
             } else {
                 this.#connecting = true
 
-                this.#client.once('connect', () => {
-                    if (!this.#connecting) return
+                const onConnect = () => {
+                    this.#client?.off('connect_error', onConnectError)
                     this.#connecting = false
                     console.log('Socket connected')
                     resolve(true)
-                })
+                }
 
-                this.#client.once('connect_error', (error: Error) => {
-                    if (!this.#connecting) return
+                const onConnectError = (error: Error) => {
+                    this.#client?.off('connect', onConnect)
                     this.#connecting = false
                     console.error(error)
                     resolve(new WSConnectionError(error))
-                })
+                }
+
+                this.#client.once('connect', onConnect)
+                this.#client.once('connect_error', onConnectError)
 
                 this.#client.connect()
             }

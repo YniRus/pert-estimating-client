@@ -41,6 +41,7 @@
                                     variant="outlined"
                                     label="Роль"
                                     hide-details
+                                    autocomplete="off"
                                 >
                                     <template #selection="{ item }">
                                         {{ getSelectionText(item) }}
@@ -95,7 +96,7 @@ const roomIdValidationRules = ref([
 const role = ref<UserRole | ''>('')
 
 const roleItems: { title: string, value: string }[] = [
-    { title: 'Нет роли', value: '' },
+    { title: 'Без роли', value: '' },
     { title: 'DEV', value: UserRole.Dev },
     { title: 'QA', value: UserRole.QA },
 ]
