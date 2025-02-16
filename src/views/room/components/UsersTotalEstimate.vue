@@ -1,5 +1,5 @@
 <template>
-    <div class="users-total-estimate">
+    <div class="d-flex flex-row align-center ga-1">
         <v-icon
             v-if="isHidden"
             icon="mdi-eye-off-outline"
@@ -8,15 +8,18 @@
 
         <template v-else>
             <EstimateItem
+                class="pr-0"
                 :estimate="avgEstimate"
+                is-can-copy
             />
 
-            <span class="text-h6 mr-2">≈</span>
+            <v-icon icon="mdi-approximately-equal" />
 
             <EstimateItem
                 class="pl-1"
                 :estimate="nearestPredefinedEstimate"
                 :is-hidden="isHidden"
+                is-can-copy
             />
         </template>
     </div>
@@ -25,10 +28,15 @@
 <script setup lang="ts">
 import type { User } from '@/definitions/user'
 import { computed } from 'vue'
-import { type Estimate, EstimateUnit } from '@/definitions/estimates'
+import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
 import { calculatePERT } from '@/utils/pert'
 import EstimateItem from '@/components/common/EstimateItem.vue'
-import { getEstimateValue } from '@/utils/estimate'
+import {
+    convertEstimateToBestUnit,
+    getNearestBaseEstimate,
+    isValueUnitEstimate,
+    minimalEstimateUnit,
+} from '@/utils/estimate'
 import { useRoomStore } from '@/store/room'
 
 const { users } = defineProps<{
@@ -39,37 +47,22 @@ const roomStore = useRoomStore()
 
 const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
-const avgEstimate = computed<Estimate>(() => {
-    const usersWithEstimates = users.filter((user) =>
-        Object.values(user.estimates || {}).some((estimate?: Estimate) => estimate?.value),
-    )
+const avgEstimate = computed<ValueUnitEstimate>(() => {
+    const usersWithEstimates = users
+        .filter((user) => Object.values(user.estimates || {}).some(isValueUnitEstimate))
 
-    const avgEstimateValue = usersWithEstimates.reduce((avgEstimateValue, user) => {
-        const value = getEstimateValue(calculatePERT(user.estimates)) // TODO: Переписать с Generic value
-        return avgEstimateValue + value
+    const sumEstimateValue = usersWithEstimates.reduce((sumEstimateValue, user) => {
+        const value = calculatePERT(user.estimates, minimalEstimateUnit).value
+        return sumEstimateValue + value
     }, 0)
 
-    return {
-        value: avgEstimateValue,
-        unit: EstimateUnit.Hours, // TODO: Вычислять с учетом общего типа
-    }
+    return convertEstimateToBestUnit({
+        value: (sumEstimateValue / usersWithEstimates.length) || 0,
+        unit: minimalEstimateUnit,
+    })
 })
 
-// TODO: Вычислять
-const nearestPredefinedEstimate = computed<Estimate>(() => ({
-    value: 0,
-    unit: EstimateUnit.Days,
-}))
+const nearestPredefinedEstimate = computed<Estimate>(() => {
+    return getNearestBaseEstimate(avgEstimate.value)
+})
 </script>
-
-<style scoped lang="scss">
-@use 'sass:map';
-@use 'vuetify/settings' as v-settings;
-@use '@/styles/mixins';
-
-.users-total-estimate {
-    @include mixins.flex-center(row);
-
-    gap: map.get(v-settings.$spacers, 1);
-}
-</style>

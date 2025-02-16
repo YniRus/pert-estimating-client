@@ -8,14 +8,21 @@ import {
     EstimateUnit,
 } from '@/definitions/estimates'
 import ws from '@/plugins/ws'
+import { useEstimatesOrderStore } from '@/store/estimates-order'
 
 export const useEstimatesStore = defineStore('estimates', () => {
-    const type = ref(EstimateType.Probable)
+    const { getDefaultOrder } = useEstimatesOrderStore()
+
+    const type = ref(getDefaultType())
     const unit = ref(EstimateUnit.Hours)
     const estimates = ref<Estimates>({})
 
     function setUnit(_unit: EstimateUnit) {
         unit.value = _unit
+    }
+
+    function getDefaultType() {
+        return getDefaultOrder()?.[0] || EstimateType.Min
     }
 
     function setCurrentType(_type: EstimateType) {
@@ -37,8 +44,6 @@ export const useEstimatesStore = defineStore('estimates', () => {
             value,
             unit: customUnit || unit.value,
         }
-
-        console.log(estimates.value)
 
         estimates.value[type.value] = estimate
 

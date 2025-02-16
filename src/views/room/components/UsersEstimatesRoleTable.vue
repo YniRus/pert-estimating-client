@@ -23,7 +23,10 @@
                         v-if="key === 'name'"
                         class="estimate-table-column name d-flex align-center justify-space-between"
                     >
-                        <span class="text-truncate font-weight-bold">
+                        <span
+                            class="text-truncate"
+                            :class="{ 'font-weight-bold': isAuthUser(user) }"
+                        >
                             {{ user.name }}
                         </span>
 
@@ -42,18 +45,21 @@
                         v-else-if="isEstimateTypeColumn(key)"
                         class="estimate-table-column"
                         :estimate="user.estimates?.[key]"
+                        :closest-estimate="getClosestEstimate(key, user.estimates)"
                         :is-can-be-target="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(key)"
                         :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                         @select="setCurrentEstimateType(key)"
                     />
 
-                    <EstimateItem
-                        v-else-if="key === 'pert'"
-                        class="estimate-table-column"
-                        :estimate="calculatePERT(user.estimates)"
-                        :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
-                    />
+                    <div v-else-if="key === 'pert'">
+                        <EstimateItem
+                            class="estimate-table-column"
+                            :estimate="calculatePERT(user.estimates)"
+                            :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
+                            is-can-copy
+                        />
+                    </div>
                 </td>
             </tr>
         </tbody>
@@ -65,10 +71,11 @@ import { type User } from '@/definitions/user'
 import { calculatePERT } from '@/utils/pert'
 import { useAuthStore } from '@/store/auth'
 import EstimateItem from '@/components/common/EstimateItem.vue'
-import { EstimateType } from '@/definitions/estimates'
+import { type Estimates, EstimateType } from '@/definitions/estimates'
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
+import { getBestValueUnitEstimateOfType } from '@/utils/estimate'
 
 const authStore = useAuthStore()
 const estimatesStore = useEstimatesStore()
@@ -91,6 +98,11 @@ function isAuthUser(user: User) {
 }
 
 const isEstimatesVisible = computed(() => rooStore.data?.estimatesVisible)
+
+function getClosestEstimate(type: EstimateType, estimates?: Estimates) {
+    if (estimates?.[type]) return
+    return getBestValueUnitEstimateOfType(type, estimates)
+}
 
 function isTargetEstimateItem(type: EstimateType) {
     return estimatesStore.type === type

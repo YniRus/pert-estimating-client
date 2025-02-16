@@ -13,13 +13,13 @@ export enum EstimateType {
 
 export type EstimatesOrder = [EstimateType, EstimateType, EstimateType]
 
-export interface VisibleEstimate {
+export interface ValueUnitEstimate {
     value: number
     unit: EstimateUnit
 }
 
 export const HIDDEN_ESTIMATE = '*'
 
-export type Estimate = VisibleEstimate | typeof HIDDEN_ESTIMATE
+export type Estimate = ValueUnitEstimate | typeof HIDDEN_ESTIMATE
 
 export type Estimates = Partial<Record<EstimateType, Estimate>>

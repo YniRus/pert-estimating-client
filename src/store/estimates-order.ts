@@ -16,5 +16,6 @@ export const useEstimatesOrderStore = defineStore('estimates-strategy', () => {
     return {
         $reset,
         order,
+        getDefaultOrder,
     }
 })

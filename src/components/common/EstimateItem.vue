@@ -19,17 +19,41 @@
             </span>
 
             <template v-else-if="isValueUnitEstimate(estimate)">
-                <span class="estimate-item-value">
-                    {{ estimate.value }}
-                </span>
+                <div
+                    class="value-unit-estimate-item"
+                    :class="{ 'cursor-pointer': !isHidden && isCanCopy }"
+                    @click="copyToClipboard"
+                >
+                    <span class="estimate-item-value">
+                        {{ Number(estimate.value.toFixed(1)) }}
+                    </span>
 
-                <EstimateUnit :unit="estimate.unit" />
+                    <EstimateUnit :unit="estimate.unit" />
+
+                    <v-tooltip
+                        v-if="!isHidden && isCanCopy"
+                        activator="parent"
+                        location="top"
+                        :text="copyToClipboardTooltipText"
+                    />
+                </div>
             </template>
         </template>
 
+        <div
+            v-else-if="closestEstimate"
+            class="closest-estimate"
+        >
+            <span class="estimate-item-value">
+                {{ closestEstimate.value }}
+            </span>
+
+            <EstimateUnit :unit="closestEstimate.unit" />
+        </div>
+
         <span
             v-else
-            :class="[ isTarget ? 'text-grey-darken-1' : 'text-grey-lighten-2' ]"
+            class="empty-estimate"
         >
             —
         </span>
@@ -37,28 +61,44 @@
 </template>
 
 <script setup lang="ts">
-import { type Estimate, HIDDEN_ESTIMATE, type VisibleEstimate } from '@/definitions/estimates'
+import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
 import EstimateUnit from '@/components/common/EstimateUnit.vue'
+import { isHiddenEstimate, isValueUnitEstimate } from '@/utils/estimate'
+import { computed, ref } from 'vue'
 
-defineProps<{
+const props = defineProps<{
     estimate?: Estimate
+    closestEstimate?: ValueUnitEstimate | false
     isCanBeTarget?: boolean
     isTarget?: boolean
     isHidden?: boolean
+    isCanCopy?: boolean
 }>()
 
 const emit = defineEmits<{
     select: []
 }>()
 
-function isValueUnitEstimate(estimate: Estimate): estimate is VisibleEstimate {
-    if (typeof estimate !== 'object') return false
+const isCopied = ref(false)
 
-    return 'value' in estimate && 'unit' in estimate
-}
+const copyToClipboardTooltipText = computed(() => {
+    if (!props.isCanCopy || props.isHidden) return ''
 
-function isHiddenEstimate(estimate: Estimate) {
-    return estimate === HIDDEN_ESTIMATE
+    if (isCopied.value) return 'Скопировано!'
+
+    return 'Скопировать'
+})
+
+async function copyToClipboard() {
+    if (!props.isCanCopy || props.isHidden) return
+    if (isCopied.value) return
+    if (!isValueUnitEstimate(props.estimate)) return
+
+    const text = `${props.estimate.value}${props.estimate.unit}`
+    await window.navigator.clipboard.writeText(text)
+
+    isCopied.value = true
+    setTimeout(() => isCopied.value = false, 3000)
 }
 </script>
 
@@ -66,12 +106,18 @@ function isHiddenEstimate(estimate: Estimate) {
 .estimate-item {
     $bg-color: rgb(15 15 15);
 
-    background-color: white;
-    box-shadow: none;
-
     transition-timing-function: ease-in-out;
     transition-duration: 0.2s;
     transition-property: background-color, box-shadow;
+
+    .closest-estimate {
+        opacity: 0.2;
+        filter: grayscale(100%);
+    }
+
+    .empty-estimate {
+        opacity: 0.2;
+    }
 
     &.can-be-target {
         cursor: pointer;
