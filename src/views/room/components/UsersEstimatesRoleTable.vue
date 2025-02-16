@@ -55,7 +55,7 @@
                     <div v-else-if="key === 'pert'">
                         <EstimateItem
                             class="estimate-table-column"
-                            :estimate="calculatePERT(user.estimates)"
+                            :estimate="!isEmptyEstimates(user.estimates) ? calculatePERT(user.estimates) : undefined"
                             :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                             is-can-copy
                         />
@@ -110,6 +110,9 @@ const users = computed(() => {
 
 function isAuthUser(user: User) {
     return user.id === authStore.data?.user.id
+}
+function isEmptyEstimates(estimates?: Estimates) {
+    return !Object.values(estimates || {}).some(Boolean)
 }
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
