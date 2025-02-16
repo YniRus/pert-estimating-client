@@ -17,14 +17,13 @@ class WS {
         reconnection: true,
         reconnectionAttempts: 5,
         autoConnect: false,
+        transports: ['websocket'],
     }
 
     #client?: Socket<ServerToClientEvents, ClientToServerEvents>
 
     init() {
         this.#client = io(import.meta.env.VITE_SERVER_HOST, this.#options)
-
-        this.#client!.io.on('reconnect', () => console.log('Socket reconnected'))
     }
 
     get #connected() {
@@ -33,7 +32,7 @@ class WS {
 
     #connecting = false
 
-    connect(): Promised<true | WSConnectionError> {
+    connect(silent?: boolean): Promised<true | WSConnectionError> {
         if (this.#connected) return true
 
         return new Promise((resolve) => {
@@ -42,7 +41,7 @@ class WS {
                     'Unable to connect: must be initialized first',
                     WSErrorCode.ClientNotInitialized,
                 )
-                console.error(error)
+                !silent && console.error(error)
                 return resolve(error)
             }
 
@@ -65,14 +64,14 @@ class WS {
                 const onConnect = () => {
                     this.#client?.off('connect_error', onConnectError)
                     this.#connecting = false
-                    console.log('Socket connected')
+                    !silent && console.log('Socket connected')
                     resolve(true)
                 }
 
                 const onConnectError = (error: Error) => {
                     this.#client?.off('connect', onConnect)
                     this.#connecting = false
-                    console.error(error)
+                    !silent && console.error(error)
                     resolve(new WSConnectionError(error))
                 }
 
@@ -156,7 +155,7 @@ class WS {
         ...args: AllButLast<EventParams<ClientToServerEvents, Event>>
     ) {
         if (!this.#client || !this.#connected) {
-            const connection = await this.connect()
+            const connection = await this.connect(true)
             if (connection instanceof WSConnectionError) return connection
         }
 
