@@ -9,6 +9,12 @@ export const useEstimatesOrderStore = defineStore('estimates-strategy', () => {
         return [EstimateType.Min, EstimateType.Probable, EstimateType.Max]
     }
 
+    // TODO: New Feature - кастомные order с хранением в localStorage
+
+    function resetIncorrectOrder() {
+        order.value = getDefaultOrder()
+    }
+
     function $reset() {
         order.value = getDefaultOrder()
     }
@@ -17,5 +23,6 @@ export const useEstimatesOrderStore = defineStore('estimates-strategy', () => {
         $reset,
         order,
         getDefaultOrder,
+        resetIncorrectOrder,
     }
 })

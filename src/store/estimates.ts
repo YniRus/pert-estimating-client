@@ -11,7 +11,7 @@ import ws from '@/plugins/ws'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 
 export const useEstimatesStore = defineStore('estimates', () => {
-    const { getDefaultOrder } = useEstimatesOrderStore()
+    const estimatesOrderStore = useEstimatesOrderStore()
 
     const type = ref(getDefaultType())
     const unit = ref(EstimateUnit.Hours)
@@ -22,7 +22,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
     }
 
     function getDefaultType() {
-        return getDefaultOrder()?.[0] || EstimateType.Min
+        const [defaultType] = estimatesOrderStore.getDefaultOrder()
+        return defaultType
     }
 
     function setCurrentType(_type: EstimateType) {
@@ -31,7 +32,11 @@ export const useEstimatesStore = defineStore('estimates', () => {
 
     function setNextType(order: EstimatesOrder) {
         const currentTypeIndex = order.indexOf(type.value)
-        if (currentTypeIndex === -1) return // TODO: Ошибка в order. такого не должно быть
+        if (currentTypeIndex === -1) {
+            // Ошибка в структуре order. Сбрасываем order к настройкам по умолчанию
+            estimatesOrderStore.resetIncorrectOrder()
+            order = estimatesOrderStore.order
+        }
 
         let nextTypeIndex = currentTypeIndex + 1
         if (nextTypeIndex > order.length - 1) nextTypeIndex = 0
