@@ -46,6 +46,7 @@ import { baseEstimateValues, getEstimateUnitColor } from '@/utils/estimate'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue'
+import { toast } from 'vue3-toastify'
 
 const estimatesStore = useEstimatesStore()
 const estimatesOrderStore = useEstimatesOrderStore()
@@ -61,9 +62,11 @@ const tooltipText = computed(() => {
     }
 })
 
-function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
-    estimatesStore.setEstimate(value, customUnit)
-    estimatesStore.setNextType(estimatesOrderStore.order)
+async function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
+    const setEstimateError = await estimatesStore.setEstimate(value, customUnit)
+    setEstimateError && toast.error('Неизвестная ошибка')
+
+    !setEstimateError && estimatesStore.setNextType(estimatesOrderStore.order)
 }
 </script>
 

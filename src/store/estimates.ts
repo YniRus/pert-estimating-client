@@ -9,6 +9,7 @@ import {
 } from '@/definitions/estimates'
 import ws from '@/plugins/ws'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
+import { WSError } from '@/utils/ws-error'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
@@ -44,7 +45,7 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setCurrentType(order[nextTypeIndex])
     }
 
-    function setEstimate(value: number, customUnit?: EstimateUnit) {
+    async function setEstimate(value: number, customUnit?: EstimateUnit) {
         const estimate: Estimate = {
             value,
             unit: customUnit || unit.value,
@@ -52,7 +53,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
 
         estimates.value[type.value] = estimate
 
-        ws.emit('mutation:estimate', type.value, estimate)
+        const response = await ws.emitWithAck('mutation:estimate', type.value, estimate)
+        if (response instanceof WSError) return response
     }
 
     function setEstimates(_estimates: Estimates) {

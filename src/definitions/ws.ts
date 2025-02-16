@@ -11,7 +11,7 @@ export type WSCallback<T> = (response: T | WSError) => void
 export interface ClientToServerEvents extends EventsMap {
     'query:room': (room: UID, callback: WSCallback<Room>) => void
     'query:auth': (callback: WSCallback<AuthData>) => void
-    'mutation:estimate': (type: EstimateType, estimate: Estimate) => void
+    'mutation:estimate': (type: EstimateType, estimate: Estimate, callback: WSCallback<true>) => void
     'mutation:room-estimates-visible': (estimatesVisible: boolean, callback: WSCallback<Room>) => void
     'mutation:room-delete-estimates': (callback: WSCallback<Room>) => void
 }
