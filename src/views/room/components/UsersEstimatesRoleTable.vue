@@ -71,19 +71,23 @@ import { type User } from '@/definitions/user'
 import { calculatePERT } from '@/utils/pert'
 import { useAuthStore } from '@/store/auth'
 import EstimateItem from '@/components/common/EstimateItem.vue'
-import { type Estimates, EstimateType } from '@/definitions/estimates'
+import { type Estimates, EstimateType, type ValueUnitEstimate } from '@/definitions/estimates'
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
-import { getBestValueUnitEstimateOfType } from '@/utils/estimate'
+import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate'
 
 const authStore = useAuthStore()
 const estimatesStore = useEstimatesStore()
-const rooStore = useRoomStore()
+const roomStore = useRoomStore()
 
-defineProps<{
+const props = defineProps<{
     users: User[]
 }>()
+
+interface UserWithPERT extends User {
+    PERT: ValueUnitEstimate
+}
 
 const columns = {
     name: 'Имя',
@@ -93,11 +97,22 @@ const columns = {
     pert: 'PERT',
 }
 
+const users = computed(() => {
+    if (!isEstimatesVisible.value) return props.users
+
+    return (props.users)
+        .map((user) => {
+            (user as UserWithPERT).PERT = calculatePERT(user.estimates, minimalEstimateUnit)
+            return user as UserWithPERT
+        })
+        .sort((a, b) => a.PERT.value - b.PERT.value)
+})
+
 function isAuthUser(user: User) {
     return user.id === authStore.data?.user.id
 }
 
-const isEstimatesVisible = computed(() => rooStore.data?.estimatesVisible)
+const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
 
 function getClosestEstimate(type: EstimateType, estimates?: Estimates) {
     if (estimates?.[type]) return
