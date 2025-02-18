@@ -2,7 +2,8 @@
     <div class="room-actions w-100 px-4 d-flex justify-space-between">
         <v-btn
             text="Очистить"
-            variant="text"
+            color="error"
+            variant="outlined"
             @click="deleteEstimates"
         />
 
@@ -21,18 +22,17 @@
 import { useRoomStore } from '@/store/room'
 import { toast } from 'vue3-toastify'
 import { computed } from 'vue'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/use-confirm'
 
 const roomStore = useRoomStore()
-
-const confirm = useConfirm()
+const { confirm } = useConfirm()
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
 
 const switchEstimatesVisibleBtnText = computed(() => {
     return isEstimatesVisible.value
         ? 'Скрыть'
-        : 'Показать'
+        : 'Раскрыть'
 })
 
 async function switchEstimatesVisible() {
@@ -42,8 +42,9 @@ async function switchEstimatesVisible() {
 }
 
 async function deleteEstimates() {
-    const isConfirmed = await confirm({ content: 'Очистка оценок удалит все текущие оценки у всех пользователей.' })
-    if (!isConfirmed) return
+    if (!await confirm({
+        text: 'Вы уверены, что хотите удалить все текущие оценки у всех пользователей?',
+    })) return
 
     const roomError = await roomStore.deleteEstimates()
 

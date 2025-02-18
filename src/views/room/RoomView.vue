@@ -4,8 +4,8 @@
             <v-btn
                 class="mr-5"
                 text="Покинуть комнату"
-                :ripple="false"
-                variant="text"
+                variant="outlined"
+                append-icon="mdi-chevron-right"
                 :loading="leaveLoading"
                 @click="leaveRoom"
             />
@@ -40,14 +40,14 @@ import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
 import { authUserRoomEstimates } from '@/store/composables/auth-user-room-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
-import { useConfirm } from 'vuetify-use-dialog'
+import { useConfirm } from '@/composables/use-confirm'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
 const { watchEstimatesOn, watchEstimatesOff } = authUserRoomEstimates()
-const confirm = useConfirm()
+const { confirm } = useConfirm()
 
 const props = defineProps<{
     roomId: UID
@@ -107,8 +107,9 @@ onUnmounted(async () => {
 const leaveLoading = ref(false)
 
 async function leaveRoom() {
-    const isConfirmed = await confirm({ content: 'Вы уверены что хотите покинуть комнату?' })
-    if (!isConfirmed) return
+    if (!await confirm({
+        text: 'Вы уверены что хотите покинуть комнату?',
+    })) return
 
     await wrap(leaveLoading, async () => {
         const response = await request.post<null>('/logout')

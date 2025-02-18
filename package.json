@@ -21,8 +21,8 @@
         "vue": "^3.4.21",
         "vue-router": "^4.3.0",
         "vue3-toastify": "^0.2.2",
-        "vuetify": "^3.6.8",
-        "vuetify-use-dialog": "^0.6.11"
+        "vuejs-confirm-dialog": "^0.5.2",
+        "vuetify": "^3.6.8"
     },
     "devDependencies": {
         "@eslint/compat": "^1.1.1",

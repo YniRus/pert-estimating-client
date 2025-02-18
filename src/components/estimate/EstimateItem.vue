@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
-import EstimateUnit from '@/components/common/EstimateUnit.vue'
+import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
 import { isHiddenEstimate, isValueUnitEstimate } from '@/utils/estimate'
 import { computed, ref } from 'vue'
 

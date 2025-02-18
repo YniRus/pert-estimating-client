@@ -30,7 +30,7 @@ import type { User } from '@/definitions/user'
 import { computed } from 'vue'
 import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
 import { calculatePERT } from '@/utils/pert'
-import EstimateItem from '@/components/common/EstimateItem.vue'
+import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import {
     convertEstimateToBestUnit,
     getNearestBaseEstimate,

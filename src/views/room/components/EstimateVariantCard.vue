@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { EstimateUnit as EstimateUnitEnum } from '@/definitions/estimates'
-import EstimateUnit from '@/components/common/EstimateUnit.vue'
+import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
 
 defineProps<{
     value: number

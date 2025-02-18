@@ -6,7 +6,6 @@ import router from '@/router'
 import vuetify from '@/plugins/vuetify'
 import pinia from '@/plugins/pinia'
 import { toastify, toastifyGlobalOptions } from '@/plugins/toastify'
-import { vuetifyDialog, vuetifyDialogGlobalOptions } from '@/plugins/vuetify-dialog'
 
 import '@/styles/variables.css'
 import '@/styles/common.scss'
@@ -17,8 +16,5 @@ createApp(App)
     .use(pinia)
     .use(router)
     .use(vuetify)
-    .use(vuetifyDialog, {
-        confirmDialog: vuetifyDialogGlobalOptions,
-    })
     .use(toastify, toastifyGlobalOptions)
     .mount('#app')

@@ -40,11 +40,10 @@
                     color="success"
                     variant="outlined"
                     :loading="loading"
+                    append-icon="mdi-chevron-right"
+                    text="Создать комнату"
                     @click="create"
-                >
-                    Создать комнату
-                    <v-icon icon="mdi-chevron-right" end />
-                </v-btn>
+                />
             </v-card-actions>
         </v-card>
     </v-dialog>

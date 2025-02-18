@@ -70,7 +70,7 @@
 import { type User } from '@/definitions/user'
 import { calculatePERT } from '@/utils/pert'
 import { useAuthStore } from '@/store/auth'
-import EstimateItem from '@/components/common/EstimateItem.vue'
+import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import { type Estimates, EstimateType, type ValueUnitEstimate } from '@/definitions/estimates'
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
