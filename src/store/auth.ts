@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { AuthData } from '@/definitions/auth'
 import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
+import type { User } from '@/definitions/user'
 
 export const useAuthStore = defineStore('auth', () => {
     const data = ref<AuthData>()
@@ -15,6 +16,10 @@ export const useAuthStore = defineStore('auth', () => {
         data.value = response
     }
 
+    function isAuthUser(user: User) {
+        return user.id === data.value?.user.id
+    }
+
     function $reset() {
         data.value = undefined
     }
@@ -23,5 +28,6 @@ export const useAuthStore = defineStore('auth', () => {
         $reset,
         data,
         auth,
+        isAuthUser,
     }
 })

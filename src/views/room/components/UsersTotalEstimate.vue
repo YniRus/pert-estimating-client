@@ -29,12 +29,11 @@
 import type { User } from '@/definitions/user'
 import { computed } from 'vue'
 import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
-import { calculatePERT } from '@/utils/pert'
+import { calculateAvgPERT } from '@/utils/pert'
 import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import {
     convertEstimateToBestUnit,
     getNearestBaseEstimate,
-    isValueUnitEstimate,
     minimalEstimateUnit,
 } from '@/utils/estimate'
 import { useRoomStore } from '@/store/room'
@@ -48,18 +47,8 @@ const roomStore = useRoomStore()
 const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
 const avgEstimate = computed<ValueUnitEstimate>(() => {
-    const usersWithEstimates = users
-        .filter((user) => Object.values(user.estimates || {}).some(isValueUnitEstimate))
-
-    const sumEstimateValue = usersWithEstimates.reduce((sumEstimateValue, user) => {
-        const value = calculatePERT(user.estimates, minimalEstimateUnit).value
-        return sumEstimateValue + value
-    }, 0)
-
-    return convertEstimateToBestUnit({
-        value: (sumEstimateValue / usersWithEstimates.length) || 0,
-        unit: minimalEstimateUnit,
-    })
+    const avgEstimate = calculateAvgPERT(users, minimalEstimateUnit)
+    return convertEstimateToBestUnit(avgEstimate)
 })
 
 const nearestPredefinedEstimate = computed<Estimate>(() => {

@@ -77,7 +77,7 @@ import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
 import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate'
 
-const authStore = useAuthStore()
+const { isAuthUser } = useAuthStore()
 const estimatesStore = useEstimatesStore()
 const roomStore = useRoomStore()
 
@@ -108,9 +108,6 @@ const users = computed(() => {
         .sort((a, b) => a.PERT.value - b.PERT.value)
 })
 
-function isAuthUser(user: User) {
-    return user.id === authStore.data?.user.id
-}
 function isEmptyEstimates(estimates?: Estimates) {
     return !Object.values(estimates || {}).some(Boolean)
 }
