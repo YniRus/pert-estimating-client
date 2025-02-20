@@ -2,7 +2,6 @@
     <BaseLayout :loading>
         <template #header-actions>
             <v-btn
-                class="mr-5"
                 text="Покинуть комнату"
                 variant="outlined"
                 append-icon="mdi-chevron-right"
@@ -11,16 +10,16 @@
             />
         </template>
 
-        <div
+        <v-container
             v-if="roomStore.data"
-            class="room-view d-flex align-center flex-column"
+            class="ga-5"
         >
             <EstimateVariantCards />
 
-            <RoomActions class="mb-5" />
+            <RoomActions />
 
-            <UsersEstimates class="py-0 mb-5" />
-        </div>
+            <UsersEstimates class="py-0" />
+        </v-container>
     </BaseLayout>
 </template>
 
@@ -108,7 +107,7 @@ const leaveLoading = ref(false)
 
 async function leaveRoom() {
     if (!await confirm({
-        text: 'Вы уверены что хотите покинуть комнату?',
+        text: 'Вы уверены, что хотите покинуть комнату?',
     })) return
 
     await wrap(leaveLoading, async () => {

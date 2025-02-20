@@ -2,14 +2,13 @@
     <BaseLayout>
         <template #header-actions>
             <v-btn
-                class="mr-5"
                 text="Создать комнату"
                 variant="outlined"
                 @click="createRoomDialog = true"
             />
         </template>
 
-        <v-container class="d-flex justify-center mt-5">
+        <v-container>
             <EnterRoomForm
                 :loading
                 @login="login"

@@ -51,15 +51,12 @@ const emit = defineEmits<{
 }>()
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @use 'sass:map';
 @use 'vuetify/settings' as v-settings;
 
 .estimate-variant-card {
-    position: relative;
-    display: flex;
-    min-width: 100px;
-    max-width: 50%;
+    width: var(--estimate-variant-card-width);
 
     .estimate-unit-selector {
         position: absolute;

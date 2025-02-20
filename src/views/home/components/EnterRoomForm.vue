@@ -3,7 +3,8 @@
         class="pa-3"
         elevation="8"
         rounded="lg"
-        width="400"
+        width="100%"
+        max-width="var(--dialog-max-width)"
     >
         <v-form
             ref="form"

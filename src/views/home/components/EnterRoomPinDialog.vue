@@ -1,7 +1,7 @@
 <template>
     <v-dialog
         v-model="dialog"
-        width="400"
+        max-width="var(--dialog-max-width)"
     >
         <v-form
             ref="form"

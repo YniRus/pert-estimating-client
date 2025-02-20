@@ -1,7 +1,7 @@
 <template>
     <v-dialog
         v-model="dialog"
-        width="400"
+        width="var(--dialog-max-width)"
     >
         <v-card>
             <v-card-title class="my-2 d-flex flex-row align-center justify-space-between">

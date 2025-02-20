@@ -5,7 +5,7 @@
         rounded="xl"
         density="compact"
         border="border"
-        class="estimate-type-selector ma-5"
+        class="estimate-type-selector"
         base-color="default"
         mandatory
         @update:model-value="estimatesStore.setUnit"
@@ -28,7 +28,7 @@
         </v-tooltip>
     </v-btn-toggle>
 
-    <div class="estimate-variant-cards w-100 mb-5">
+    <div class="estimate-variant-cards w-100">
         <EstimateVariantCard
             v-for="variant of baseEstimateValues"
             :key="`variant-${variant}`"
@@ -82,19 +82,9 @@ async function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
 
     flex-wrap: wrap;
     gap: map.get(v-settings.$spacers, 5);
-    max-width: var(--content-max-width);
-    padding: 0 map.get(v-settings.$spacers, 5);
-
-    .estimate-variant-card {
-        display: flex;
-        min-width: 100px;
-        max-width: 50%;
-    }
 }
 
 .estimate-type-selector {
-    max-width: 300px;
-
     .v-btn {
         transition-property: color, background-color;
     }

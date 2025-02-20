@@ -1,16 +1,28 @@
 <template>
     <v-layout full-height>
-        <v-app-bar elevation="2" color="grey-lighten-4">
-            <v-app-bar-title>PERT Estimating</v-app-bar-title>
+        <v-app-bar
+            elevation="2"
+            color="grey-lighten-4"
+            density="comfortable"
+            class="px-5"
+        >
+            <template #prepend>
+                <img width="32" src="/favicon.ico">
+            </template>
+
+            <v-app-bar-title class="d-none d-sm-block">
+                PERT Estimating
+            </v-app-bar-title>
 
             <template #append>
                 <slot name="header-actions" />
             </template>
         </v-app-bar>
 
-        <v-main :class="{ 'd-flex align-center justify-center': loading }">
+        <v-main class="d-flex">
             <v-progress-circular
                 v-if="loading"
+                class="ma-auto"
                 indeterminate
                 :size="64"
             />
@@ -29,13 +41,17 @@ defineProps<{
 </script>
 
 <style lang="scss" scoped>
-.v-main {
-    overflow-y: auto;
+@use 'sass:map';
+@use 'vuetify/settings' as v-settings;
+@use '@/styles/mixins';
 
-    height: calc(100vh - var(--v-layout-top) - var(--v-layout-bottom));
-    margin-top: var(--v-layout-top);
-    margin-bottom: var(--v-layout-bottom);
-    padding-top: unset;
-    padding-bottom: unset;
+.v-main {
+    > :deep(.v-container) {
+        @include mixins.flex(column, center);
+
+        width: 100%;
+        max-width: var(--content-max-width);
+        padding: map.get(v-settings.$spacers, 5);
+    }
 }
 </style>

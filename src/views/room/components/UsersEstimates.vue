@@ -1,5 +1,5 @@
 <template>
-    <v-container class="users-estimates px-4 d-flex flex-column ga-5">
+    <v-container class="users-estimates d-flex flex-column pa-0 ga-5">
         <template v-for="(users, group) in groupedUsers" :key="group">
             <v-card
                 v-if="users.length"
@@ -62,9 +62,3 @@ const groupedUsers = computed(() => {
     return groupedUsers
 })
 </script>
-
-<style lang="scss" scoped>
-.users-estimates {
-    max-width: var(--content-max-width);
-}
-</style>

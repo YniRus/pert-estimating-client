@@ -9,7 +9,7 @@
         class="go-to-auth-room-snackbar pb-3"
         multi-line
     >
-        <v-card max-width="360">
+        <v-card max-width="var(--dialog-max-width)">
             <v-card-title>Найдена авторизация</v-card-title>
 
             <v-card-subtitle class="text-wrap">

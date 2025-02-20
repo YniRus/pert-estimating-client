@@ -11,9 +11,3 @@
 <script setup lang="ts">
 import { DialogsWrapper } from 'vuejs-confirm-dialog'
 </script>
-
-<style lang="scss">
-.app-content {
-    max-width: 800px;
-}
-</style>

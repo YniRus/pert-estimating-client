@@ -1,5 +1,5 @@
 <template>
-    <div class="room-actions w-100 px-4 d-flex justify-space-between">
+    <div class="room-actions w-100 d-flex justify-space-between">
         <v-btn
             text="Очистить"
             color="error"
@@ -51,9 +51,3 @@ async function deleteEstimates() {
     roomError && toast.error('Неизвестная ошибка')
 }
 </script>
-
-<style lang="scss" scoped>
-.room-actions {
-    max-width: var(--content-max-width);
-}
-</style>

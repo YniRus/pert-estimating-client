@@ -2,15 +2,14 @@
     <BaseLayout>
         <template #header-actions>
             <v-btn
-                class="mr-5"
                 text="На главную"
-                :ripple="false"
-                variant="text"
+                variant="outlined"
+                append-icon="mdi-chevron-right"
                 @click="toHome"
             />
         </template>
 
-        <v-container class="d-flex justify-center mt-5">
+        <v-container>
             <EnterRoomForm
                 :loading
                 :hide-room-id="true"
