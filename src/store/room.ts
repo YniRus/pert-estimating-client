@@ -74,14 +74,14 @@ export const useRoomStore = defineStore('room', () => {
         user.estimates = estimates
     }
 
-    async function wsOn() {
+    function wsOn() {
         ws.on('on:user-connected', addUser)
         ws.on('on:user-disconnected', removeUser)
         ws.on('on:estimates', setUserEstimates)
         ws.on('on:room', updateRoom)
     }
 
-    async function wsOff() {
+    function wsOff() {
         ws.off('on:user-connected', addUser)
         ws.off('on:user-disconnected', removeUser)
         ws.off('on:estimates', setUserEstimates)

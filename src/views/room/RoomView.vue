@@ -37,15 +37,17 @@ import { FetchError, request } from '@/plugins/ofetch'
 import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
 import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
-import { authUserRoomEstimates } from '@/store/composables/auth-user-room-estimates'
+import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
 import { useConfirm } from '@/composables/use-confirm'
+import { useAuthErrorsWatcher } from '@/store/composables/use-auth-errors-watcher'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
-const { watchEstimatesOn, watchEstimatesOff } = authUserRoomEstimates()
+const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
+const authErrorsWatcher = useAuthErrorsWatcher()
 const { confirm } = useConfirm()
 
 const props = defineProps<{
@@ -94,13 +96,15 @@ onMounted(async () => {
         }
     })
 
-    await roomStore.wsOn()
+    roomStore.wsOn()
     watchEstimatesOn()
+    authErrorsWatcher.watch()
 })
 
-onUnmounted(async () => {
-    await roomStore.wsOff()
+onUnmounted(() => {
+    roomStore.wsOff()
     watchEstimatesOff()
+    authErrorsWatcher.unwatch()
 })
 
 const leaveLoading = ref(false)

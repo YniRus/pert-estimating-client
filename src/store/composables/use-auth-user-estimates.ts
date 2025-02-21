@@ -4,7 +4,7 @@ import { useEstimatesStore } from '@/store/estimates'
 import { computed, ref, watch, type WatchHandle } from 'vue'
 import type { Estimates } from '@/definitions/estimates'
 
-export function authUserRoomEstimates() {
+export function useAuthUserEstimates() {
     const authStore = useAuthStore()
     const roomStore = useRoomStore()
     const estimatesStore = useEstimatesStore()
@@ -20,7 +20,7 @@ export function authUserRoomEstimates() {
     })
 
     const watchEstimatesHandle = ref<WatchHandle>()
-    const watchAuthUserRoomEstimatesHandle = ref<WatchHandle>()
+    const watchAuthUserEstimatesHandle = ref<WatchHandle>()
 
     function watchEstimatesOn() {
         watchEstimatesHandle.value = watch(estimatesStore.estimates, () => {
@@ -29,14 +29,14 @@ export function authUserRoomEstimates() {
             }
         })
 
-        watchAuthUserRoomEstimatesHandle.value = watch(roomAuthUserEstimates, () => {
+        watchAuthUserEstimatesHandle.value = watch(roomAuthUserEstimates, () => {
             estimatesStore.estimates = roomAuthUserEstimates.value
         }, { immediate: true })
     }
 
     function watchEstimatesOff() {
         watchEstimatesHandle.value?.stop()
-        watchAuthUserRoomEstimatesHandle.value?.stop()
+        watchAuthUserEstimatesHandle.value?.stop()
     }
 
     return {
