@@ -61,38 +61,15 @@ onMounted(async () => {
         const authError = await authStore.auth()
 
         if (authError) {
-            await router.push({ name: RouteName.Home })
-            toast.error('Ошибка авторизации')
+            await onError(authError.statusCode)
             return
         }
 
         const roomError = await roomStore.init(props.roomId)
 
         if (roomError) {
-            await router.push({ name: RouteName.Home })
-
-            switch (roomError.code) {
-                case 400: {
-                    toast.error('Ошибка запроса')
-                    return
-                }
-                case 401: {
-                    toast.error('Вы не авторизованы')
-                    return
-                }
-                case 403: {
-                    toast.error('Доступ запрещён')
-                    return
-                }
-                case 404: {
-                    toast.error('Комната не найдена')
-                    return
-                }
-                default: {
-                    toast.error('Неизвестная ошибка')
-                    return
-                }
-            }
+            await onError(roomError.code)
+            return
         }
     })
 
@@ -106,6 +83,33 @@ onUnmounted(() => {
     watchEstimatesOff()
     authErrorsWatcher.unwatch()
 })
+
+async function onError(errorCode?: number) {
+    await router.push({ name: RouteName.Home })
+
+    switch (errorCode) {
+        case 400: {
+            toast.error('Ошибка запроса')
+            return
+        }
+        case 401: {
+            toast.error('Вы не авторизованы')
+            return
+        }
+        case 403: {
+            toast.error('Доступ запрещён')
+            return
+        }
+        case 404: {
+            toast.error('Данные не найдены')
+            return
+        }
+        default: {
+            toast.error('Неизвестная ошибка')
+            return
+        }
+    }
+}
 
 const leaveLoading = ref(false)
 
