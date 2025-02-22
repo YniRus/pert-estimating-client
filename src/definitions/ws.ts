@@ -12,6 +12,7 @@ export interface ClientToServerEvents extends EventsMap {
     'mutation:estimate': (type: EstimateType, estimate: Estimate, callback: WSCallback<true>) => void
     'mutation:room-estimates-visible': (estimatesVisible: boolean, callback: WSCallback<Room>) => void
     'mutation:room-delete-estimates': (callback: WSCallback<Room>) => void
+    'mutation:disconnect': (silent?: boolean) => void
 }
 
 export interface ServerToClientEvents extends EventsMap {
