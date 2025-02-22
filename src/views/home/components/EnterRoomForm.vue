@@ -71,6 +71,7 @@
 import { ref, toRefs } from 'vue'
 import type { VForm } from 'vuetify/components'
 import { UserRole } from '@/definitions/user'
+import { getRoleTitle } from '@/utils/role'
 
 export type EnterRoomFormData = {
     name: string
@@ -96,11 +97,10 @@ const roomIdValidationRules = ref([
 
 const role = ref<UserRole | ''>('')
 
-const roleItems: { title: string, value: string }[] = [
-    { title: 'Без роли', value: '' },
-    { title: 'DEV', value: UserRole.Dev },
-    { title: 'QA', value: UserRole.QA },
-]
+const roleItems = ['', ...Object.values(UserRole)].map((role) => ({
+    value: role,
+    title: getRoleTitle(role),
+}))
 
 function getSelectionText({ title, value }: { title: string, value: string }) {
     return value ? title : ''

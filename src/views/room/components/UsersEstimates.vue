@@ -8,11 +8,8 @@
             >
                 <v-card-text class="pa-4">
                     <div class="d-flex flex-row justify-space-between">
-                        <p
-                            class="text-h4"
-                            :class="{ 'text-uppercase': group !== UNASSIGNED }"
-                        >
-                            {{ group === UNASSIGNED ? 'Без роли' : group }}
+                        <p class="text-h4">
+                            {{ getGroupTitle(group) }}
                         </p>
 
                         <UsersTotalEstimate :users />
@@ -32,6 +29,7 @@ import UsersEstimatesRoleTable from '@/views/room/components/UsersEstimatesRoleT
 import UsersTotalEstimate from '@/views/room/components/UsersTotalEstimate.vue'
 import { useRoomStore } from '@/store/room'
 import { useAuthStore } from '@/store/auth'
+import { getRoleTitle } from '@/utils/role'
 
 const UNASSIGNED = 'unassigned'
 
@@ -61,4 +59,9 @@ const groupedUsers = computed(() => {
 
     return groupedUsers
 })
+
+function getGroupTitle(group: Group) {
+    if (group === UNASSIGNED) return getRoleTitle('')
+    return getRoleTitle(group)
+}
 </script>
