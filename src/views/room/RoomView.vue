@@ -4,7 +4,7 @@
             <v-btn
                 text="Покинуть комнату"
                 variant="outlined"
-                append-icon="mdi-chevron-right"
+                prepend-icon="mdi-chevron-left"
                 :loading="leaveLoading"
                 @click="leaveRoom"
             />

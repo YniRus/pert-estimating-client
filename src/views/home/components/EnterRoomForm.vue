@@ -15,7 +15,7 @@
                     Войти в комнату
                 </p>
 
-                <v-row v-if="!hideRoomId">
+                <v-row v-if="!initialData?.roomId">
                     <v-col class="pb-0">
                         <v-text-field
                             v-model="roomId"
@@ -45,7 +45,7 @@
                                     autocomplete="off"
                                 >
                                     <template #selection="{ item }">
-                                        {{ getSelectionText(item) }}
+                                        {{ getRoleSelectionText(item) }}
                                     </template>
                                 </v-select>
                             </template>
@@ -65,13 +65,24 @@
             </v-container>
         </v-form>
     </v-sheet>
+
+    <EnterRoomPinDialog
+        v-model="enterRoomPinDialog"
+        @login="onLoginWithPin"
+    />
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs } from 'vue'
+import { ref } from 'vue'
 import type { VForm } from 'vuetify/components'
 import { UserRole } from '@/definitions/user'
 import { getRoleTitle } from '@/utils/role'
+import { wrap } from '@/utils/loading'
+import { FetchError, request } from '@/plugins/ofetch'
+import { toast } from 'vue3-toastify'
+import RouteName from '@/router/route-name'
+import { useRouter } from 'vue-router'
+import EnterRoomPinDialog from '@/views/home/components/EnterRoomPinDialog.vue'
 
 export type EnterRoomFormData = {
     name: string
@@ -80,50 +91,89 @@ export type EnterRoomFormData = {
     pin?: string
 }
 
-const props = defineProps<{
-    loading: boolean
-    hideRoomId?: boolean
+const { initialData } = defineProps<{
+    initialData?: Partial<EnterRoomFormData>
 }>()
 
-const { loading } = toRefs(props)
+const router = useRouter()
 
 const form = ref<VForm | null>(null)
 
-const roomId = ref('')
+const roomId = ref(initialData?.roomId || '')
 
 const roomIdValidationRules = ref([
     (value: string) => value ? true : 'Введите ID комнаты',
 ])
 
-const role = ref<UserRole | ''>('')
+const role = ref<UserRole | ''>(initialData?.role || '')
 
 const roleItems = ['', ...Object.values(UserRole)].map((role) => ({
     value: role,
     title: getRoleTitle(role),
 }))
 
-function getSelectionText({ title, value }: { title: string, value: string }) {
+function getRoleSelectionText({ title, value }: { title: string, value: string }) {
     return value ? title : ''
 }
 
-const name = ref('')
+const name = ref(initialData?.name || '')
 
 const nameValidationRules = ref([
     (value: string) => !!value || 'Введите имя',
 ])
 
-const emit = defineEmits<{
-    login: [EnterRoomFormData]
-}>()
-
 async function submit() {
     const { valid } = await form.value!.validate()
     if (!valid) return
 
-    emit('login', {
+    await login(getEnterRoomFormData())
+}
+
+function getEnterRoomFormData(extData?: Partial<EnterRoomFormData>): EnterRoomFormData {
+    return {
+        ...(initialData || {}),
         roomId: roomId.value,
         role: role.value,
         name: name.value,
+        ...(extData || {}),
+    }
+}
+
+const loading = ref(false)
+
+const enterRoomPinDialog = ref(false)
+
+async function onLoginWithPin(pin: string) {
+    await login(getEnterRoomFormData({ pin }))
+}
+
+async function login(data: EnterRoomFormData) {
+    await wrap(loading, async () => {
+        let response = await request.post<null>('/login', data)
+
+        if (response instanceof FetchError) {
+            switch (response.statusCode) {
+                case 404: {
+                    toast.error('Комната не найдена')
+                    return
+                }
+                case 403: { // Комната защищена pin-кодом
+                    enterRoomPinDialog.value = true
+                    return
+                }
+                case 400: {
+                    enterRoomPinDialog.value = true
+                    toast.error('Неверный pin-код')
+                    return
+                }
+                default: {
+                    toast.error('Неизвестная ошибка')
+                    return
+                }
+            }
+        }
+
+        await router.push({ name: RouteName.Room, params: { roomId: data.roomId } })
     })
 }
 </script>

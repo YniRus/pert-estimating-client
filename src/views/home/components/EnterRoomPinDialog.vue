@@ -36,10 +36,10 @@
                     <v-btn
                         color="success"
                         variant="outlined"
+                        text="Войти"
+                        append-icon="mdi-chevron-right"
                         type="submit"
-                    >
-                        Войти
-                    </v-btn>
+                    />
                 </v-card-actions>
             </v-card>
         </v-form>
