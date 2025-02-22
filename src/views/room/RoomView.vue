@@ -10,6 +10,7 @@
                 class="mr-3"
                 size="small"
                 icon="mdi-share-variant"
+                :loading="shareLoading"
                 @click="shareRoomAccessUrl"
             />
 
@@ -73,6 +74,7 @@ onMounted(async () => {
         const authError = await authStore.auth()
 
         if (authError) {
+            await router.push({ name: RouteName.Home })
             await onError(authError.statusCode)
             return
         }
@@ -80,6 +82,7 @@ onMounted(async () => {
         const roomError = await roomStore.init(props.roomId)
 
         if (roomError) {
+            await router.push({ name: RouteName.Home })
             await onError(roomError.code)
             return
         }
@@ -97,8 +100,6 @@ onUnmounted(() => {
 })
 
 async function onError(errorCode?: number) {
-    await router.push({ name: RouteName.Home })
-
     switch (errorCode) {
         case 400: {
             toast.error('Ошибка запроса')
@@ -134,7 +135,7 @@ async function leaveRoom() {
         const response = await request.post<null>('/logout')
 
         if (response instanceof FetchError) {
-            toast.error('Неизвестная ошибка')
+            await onError(response.statusCode)
             return
         } else {
             await ws.disconnect()
@@ -145,15 +146,21 @@ async function leaveRoom() {
     })
 }
 
-function shareRoomAccessUrl() {
-    const targetRoute = router.resolve({
-        name: RouteName.JoinRoom,
-        params: { roomId: props.roomId },
+const shareLoading = ref(false)
+
+async function shareRoomAccessUrl() {
+    await wrap(shareLoading, async () => {
+        const response = await request.get<{ accessUrl: string }>('/room-access-url', {
+            roomId: props.roomId,
+        })
+
+        if (response instanceof FetchError) {
+            await onError(response.statusCode)
+            return
+        } else {
+            navigator.clipboard.writeText(response.accessUrl)
+                .then(() => toast('Скопировано в буфер обмена'))
+        }
     })
-
-    const roomAccessUrl = new URL(targetRoute.fullPath, window.location.toString()).toString()
-
-    navigator.clipboard.writeText(roomAccessUrl)
-        .then(() => toast('Скопировано в буфер обмена'))
 }
 </script>

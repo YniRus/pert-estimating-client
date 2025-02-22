@@ -61,10 +61,6 @@ import { toast } from 'vue3-toastify'
 import { wrap } from '@/utils/loading'
 import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
 
-interface CreateRoomResponse {
-    accessUrl: string
-}
-
 const dialog = defineModel<boolean>()
 
 const pin = ref('')
@@ -73,7 +69,7 @@ const loading = ref(false)
 
 function create() {
     wrap(loading, async () => {
-        const response = await request.post<CreateRoomResponse>('/room', {
+        const response = await request.post<{ accessUrl: string }>('/room', {
             pin: pin.value.trim(),
         })
 
