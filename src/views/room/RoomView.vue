@@ -2,6 +2,18 @@
     <BaseLayout :loading>
         <template #header-actions>
             <v-btn
+                v-tooltip="{
+                    text: 'Поделиться ссылкой для подключения к комнате',
+                    contentClass: 'text-center',
+                    maxWidth: 200,
+                }"
+                class="mr-3"
+                size="small"
+                icon="mdi-share-variant"
+                @click="shareRoomAccessUrl"
+            />
+
+            <v-btn
                 text="Покинуть комнату"
                 variant="outlined"
                 prepend-icon="mdi-chevron-left"
@@ -131,5 +143,17 @@ async function leaveRoom() {
             toast.success('Вы покинули комнату')
         }
     })
+}
+
+function shareRoomAccessUrl() {
+    const targetRoute = router.resolve({
+        name: RouteName.JoinRoom,
+        params: { roomId: props.roomId },
+    })
+
+    const roomAccessUrl = new URL(targetRoute.fullPath, window.location.toString()).toString()
+
+    navigator.clipboard.writeText(roomAccessUrl)
+        .then(() => toast('Скопировано в буфер обмена'))
 }
 </script>
