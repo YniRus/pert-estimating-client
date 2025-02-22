@@ -34,8 +34,17 @@
                 />
 
                 <p class="text-subtitle-2 mt-2">
-                    Обратите внимание! По этой ссылке пользователи смогут подключиться в вашу комнату без необходимости вводить ID комнаты и PIN-код
+                    Обратите внимание! По этой ссылке пользователи смогут подключиться в вашу комнату без необходимости вводить ID комнаты и PIN-код.
                 </p>
+
+                <v-btn
+                    class="mt-5"
+                    variant="outlined"
+                    block
+                    append-icon="mdi-chevron-right"
+                    text="Подключиться к комнате"
+                    @click="toJoinRoom"
+                />
             </v-card-text>
         </v-card>
     </v-dialog>
@@ -43,15 +52,34 @@
 
 <script setup lang="ts">
 import { toast } from 'vue3-toastify'
-
-const dialog = defineModel<boolean>()
+import { useRouter, parseQuery } from 'vue-router'
+import RouteName from '@/router/route-name'
 
 const props = defineProps<{
     accessUrl: string
 }>()
 
+const dialog = defineModel<boolean>()
+
+const router = useRouter()
+
 function copyAccessUrlToClipboard() {
     navigator.clipboard.writeText(props.accessUrl)
         .then(() => toast('Скопировано в буфер обмена'))
+}
+
+function toJoinRoom() {
+    const url = new URL(props.accessUrl)
+    const resolvedRoute = router.resolve({
+        path: url.pathname,
+        query: parseQuery(url.search),
+    })
+
+    if (resolvedRoute.name !== RouteName.JoinRoom) {
+        toast.error('Некорректная ссылка')
+        return
+    }
+
+    router.push(resolvedRoute)
 }
 </script>

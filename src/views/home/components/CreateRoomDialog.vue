@@ -47,6 +47,11 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <CreatedRoomDialog
+        v-model="createdRoomDialog"
+        :access-url="roomAccessUrl"
+    />
 </template>
 
 <script setup lang="ts">
@@ -54,16 +59,13 @@ import { ref } from 'vue'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import { wrap } from '@/utils/loading'
+import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
 
 interface CreateRoomResponse {
     accessUrl: string
 }
 
 const dialog = defineModel<boolean>()
-
-const emit = defineEmits<{
-    created: [string]
-}>()
 
 const pin = ref('')
 
@@ -80,7 +82,16 @@ function create() {
             return
         }
 
-        emit('created', response.accessUrl)
+        onRoomCreated(response.accessUrl)
     })
+}
+
+const roomAccessUrl = ref('')
+const createdRoomDialog = ref(false)
+
+function onRoomCreated(accessUrl: string) {
+    roomAccessUrl.value = accessUrl
+    dialog.value = false
+    createdRoomDialog.value = true
 }
 </script>
