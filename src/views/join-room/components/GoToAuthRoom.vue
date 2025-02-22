@@ -3,46 +3,65 @@
         v-if="authData"
         v-model="visible"
         timeout="-1"
-        variant="elevated"
-        color="white"
-        rounded="lg"
-        class="go-to-auth-room-snackbar pb-3"
-        multi-line
+        variant="text"
+        rounded="pill"
+        class="go-to-auth-room-snackbar mb-4"
+        max-width="var(--dialog-max-width)"
+        transition="slide-y-reverse-transition"
     >
-        <v-card max-width="var(--dialog-max-width)">
-            <v-card-title>Найдена авторизация</v-card-title>
+        <div class="d-flex flex-row align-center pa-1 rounded-pill elevation-3 bg-white">
+            <div class="overline d-flex justify-space-between align-center mb-1 px-1 w-100">
+                <p
+                    v-tooltip="{
+                        text: description,
+                        contentClass: 'text-center',
+                    }"
+                    class="d-flex flex-row text-overline"
+                >
+                    Найдена авторизация
 
-            <v-card-subtitle class="text-wrap">
-                <span v-html="subtitle" />
-            </v-card-subtitle>
-
-            <v-card-text class="pb-2">
-                <div class="auth-user-with-avatar">
-                    <v-avatar
-                        color="primary"
-                        class="text-uppercase"
-                        :icon="authData.user.role ? '' : 'mdi-account'"
-                        :text="authData.user.role"
-                        size="40"
+                    <v-icon
+                        color="grey-lighten-1"
+                        icon="mdi-information-outline"
+                        class="align-self-center ml-1"
                     />
-
-                    <span class="text-body-1 ml-2">{{ authData.user.name }}</span>
-                </div>
-            </v-card-text>
-
-            <v-card-actions>
-                <v-btn
-                    text="Войти"
-                    @click="goToRoom"
-                />
+                </p>
 
                 <v-btn
-                    color="red-lighten-2"
-                    text="Закрыть"
+                    variant="plain"
+                    :ripple="false"
+                    icon="mdi-close"
+                    size="x-small"
                     @click="visible = false"
                 />
-            </v-card-actions>
-        </v-card>
+            </div>
+
+            <p class="d-flex align-center ga-2 mx-2 text-truncate">
+                <v-chip
+                    v-if="authData.user.role"
+                    color="primary"
+                    size="x-small"
+                    variant="flat"
+                    class="flex-shrink-0"
+                >
+                    {{ getRoleTitle(authData.user.role) }}
+                </v-chip>
+
+                <span class="text-body-1 text-truncate">
+                    {{ authData.user.name }}
+                </span>
+            </p>
+
+            <v-btn
+                v-tooltip="{ text: 'Войти' }"
+                color="success"
+                variant="outlined"
+                icon="mdi-chevron-right"
+                size="small"
+                class="ml-auto"
+                @click="goToRoom"
+            />
+        </div>
     </v-snackbar>
 </template>
 
@@ -52,6 +71,7 @@ import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
 import { useAuthStore } from '@/store/auth'
+import { getRoleTitle } from '@/utils/role'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -64,15 +84,15 @@ const visible = ref(false)
 
 const authData = computed(() => authStore.data)
 
-const subtitle = computed(() => {
+const description = computed(() => {
     if (!props.roomId) {
-        return 'Вы можете войти в последнюю авторизованную комнату как:'
+        return 'Вы можете войти в последнюю авторизованную комнату как указанный пользователь'
     }
 
     const isEqualRoom = authData.value?.roomId === props.roomId
     return isEqualRoom
-        ? 'Вы уже авторизованы в <b>этой</b> комнате как:'
-        : 'Вы уже авторизованы в <b>другой</b> комнате как:'
+        ? 'Вы уже авторизованы в этой комнате как указанный пользователь'
+        : 'Вы уже авторизованы в другой комнате как указанный пользователь'
 })
 
 function goToRoom() {
@@ -91,7 +111,17 @@ onMounted(async () => {
 <style scoped lang="scss">
 .go-to-auth-room-snackbar {
     :deep(.v-snackbar__content) { /* stylelint-disable-line */
+        width: 100%;
         padding: unset;
+    }
+
+    :deep(.v-snackbar__wrapper) { /* stylelint-disable-line */
+        overflow: visible;
+    }
+
+    .overline {
+        position: absolute;
+        bottom: calc(100%);
     }
 }
 </style>
