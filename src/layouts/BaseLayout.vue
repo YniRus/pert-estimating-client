@@ -11,7 +11,7 @@
             </template>
 
             <v-app-bar-title class="d-none d-sm-block">
-                PERT Estimating
+                {{ title }}
             </v-app-bar-title>
 
             <template #append>
@@ -38,6 +38,8 @@
 defineProps<{
     loading?: boolean
 }>()
+
+const title = import.meta.env.VITE_APP_TITLE
 </script>
 
 <style lang="scss" scoped>
