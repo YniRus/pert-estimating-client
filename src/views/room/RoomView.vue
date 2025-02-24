@@ -54,6 +54,7 @@ import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimate
 import RoomActions from '@/views/room/components/RoomActions.vue'
 import { useConfirm } from '@/composables/use-confirm'
 import { useAuthErrorsWatcher } from '@/store/composables/use-auth-errors-watcher'
+import { useServerPing } from '@/store/composables/use-server-ping'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -61,6 +62,7 @@ const roomStore = useRoomStore()
 
 const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
 const authErrorsWatcher = useAuthErrorsWatcher()
+const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
 const { confirm } = useConfirm()
 
 const props = defineProps<{
@@ -91,12 +93,14 @@ onMounted(async () => {
     roomStore.wsOn()
     watchEstimatesOn()
     authErrorsWatcher.watch()
+    isServerPingEnabled && pingOn()
 })
 
 onUnmounted(() => {
     roomStore.wsOff()
     watchEstimatesOff()
     authErrorsWatcher.unwatch()
+    isServerPingEnabled && pingOff()
 })
 
 async function onError(errorCode?: number) {
