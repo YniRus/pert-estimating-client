@@ -53,15 +53,16 @@ import { useRoomStore } from '@/store/room'
 import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
 import { useConfirm } from '@/composables/use-confirm'
-import { useAuthErrorsWatcher } from '@/store/composables/use-auth-errors-watcher'
+import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watcher'
 import { useServerPing } from '@/store/composables/use-server-ping'
+import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
 const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
-const authErrorsWatcher = useAuthErrorsWatcher()
+const anotherAuthWatcher = useAnotherAuthWatcher()
 const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
 const { confirm } = useConfirm()
 
@@ -92,14 +93,16 @@ onMounted(async () => {
 
     roomStore.wsOn()
     watchEstimatesOn()
-    authErrorsWatcher.watch()
+    anotherAuthWatcher.watch()
+    authTokenWatcher.watch()
     isServerPingEnabled && pingOn()
 })
 
 onUnmounted(() => {
     roomStore.wsOff()
     watchEstimatesOff()
-    authErrorsWatcher.unwatch()
+    anotherAuthWatcher.unwatch()
+    authTokenWatcher.unwatch()
     isServerPingEnabled && pingOff()
 })
 
@@ -129,6 +132,8 @@ async function onError(errorCode?: number) {
 }
 
 const leaveLoading = ref(false)
+
+const authTokenWatcher = useAuthTokenWatcher(leaveLoading)
 
 async function leaveRoom() {
     if (!await confirm({

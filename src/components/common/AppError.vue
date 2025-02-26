@@ -36,6 +36,8 @@ const appStore = useAppStore()
 const title = computed(() => {
     switch (appStore.error) {
         case AppErrorCode.AnotherAuth: return 'Вы активны в другом окне'
+        case AppErrorCode.AuthTokenChanged: return 'Токен авторизации изменён'
+        case AppErrorCode.AuthTokenRemoved: return 'Токен авторизации удалён'
         default: return 'Критическая ошибка'
     }
 })
@@ -43,6 +45,8 @@ const title = computed(() => {
 const description = computed(() => {
     switch (appStore.error) {
         case AppErrorCode.AnotherAuth: return 'Вы авторизовались в другом окне. Для активации текущего окна - перезагрузите страницу.'
+        case AppErrorCode.AuthTokenChanged: return 'Текущий токен авторизации был изменён, т.к. вы авторизовались в другой комнате или под другим пользователем в другом окне. Для активации текущего окна - перезагрузите страницу.'
+        case AppErrorCode.AuthTokenRemoved: return 'Текущий токен авторизации был удалён. Пожалуйста, закройте эту страницу.'
         default: return 'Произошла критическая ошибка, непредвиденная системой. Пожалуйста, попробуйте позже.'
     }
 })

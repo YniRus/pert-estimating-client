@@ -3,7 +3,7 @@ import ws from '@/plugins/ws'
 import type { User } from '@/definitions/user'
 import { AppErrorCode, useAppStore } from '@/store/app'
 
-export function useAuthErrorsWatcher() {
+export function useAnotherAuthWatcher() {
     const appStore = useAppStore()
     const authStore = useAuthStore()
 
