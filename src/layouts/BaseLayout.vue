@@ -1,5 +1,5 @@
 <template>
-    <v-layout full-height>
+    <v-layout data-layout="base" full-height>
         <v-app-bar
             elevation="2"
             color="grey-lighten-4"
@@ -58,5 +58,15 @@ const title = import.meta.env.VITE_APP_TITLE
         max-width: var(--content-max-width);
         padding: map.get(v-settings.$spacers, 5);
     }
+}
+</style>
+
+<style lang="scss">
+@use '@/styles/toastify';
+
+$header-height: 56px;
+
+body:has(.v-layout[data-layout='base']) {
+    @include toastify.offset-top($header-height);
 }
 </style>

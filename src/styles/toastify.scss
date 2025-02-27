@@ -1,0 +1,8 @@
+@mixin offset-top($top) {
+    .Toastify { /* stylelint-disable-line selector-class-pattern */
+        &__toast-container--top-left,
+        &__toast-container--top-right {
+            top: calc($top + 1em);
+        }
+    }
+}

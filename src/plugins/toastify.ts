@@ -5,4 +5,5 @@ export const toastify = Vue3Toastify
 export const toastifyGlobalOptions = {
     theme: 'auto',
     autoClose: 2000,
+    position: 'top-right',
 } as ToastContainerOptions
