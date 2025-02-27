@@ -7,6 +7,7 @@ import {
     NonValueUnitEstimate,
     type ValueUnitEstimate,
 } from '@/definitions/estimates'
+import { truthy } from '@/utils/utils'
 
 export const baseEstimateValues = [0, 1, 2, 3, 5, 8, 13, 20]
 export const baseNonValueUnitEstimate = Object.values(NonValueUnitEstimate)
@@ -43,8 +44,16 @@ export function isHiddenEstimate(estimate?: unknown) {
     return estimate === HIDDEN_ESTIMATE
 }
 
-export function isEmptyEstimate(estimate?: unknown) {
+export function isEmptyLikeEstimates(estimates?: Estimates) {
+    return Object.values(estimates || {}).every(isEmptyLikeEstimate)
+}
+
+export function isEmptyLikeEstimate(estimate?: unknown) {
     return !estimate || isNonValueUnitEstimate(estimate)
+}
+
+export function isEmptyEstimates(estimates?: Estimates) {
+    return !Object.values(estimates || {}).some(truthy)
 }
 
 const estimateTypesBaseOrder = [EstimateType.Probable, EstimateType.Min, EstimateType.Max]
