@@ -1,22 +1,42 @@
 <template>
     <v-card
-        class="estimate-variant-card px-1 py-12"
-        @click="emit('select', value)"
+        class="estimate-variant-card d-flex px-1 py-12"
+        @click="onSelect(variant)"
     >
-        <v-card-text class="text-center pa-0 text-h4">
-            {{ value }}
+        <v-card-text class="align-self-center text-center pa-0">
+            <v-icon
+                v-if="isNonValueUnitEstimate(variant)"
+                :icon="getNonValueUnitEstimateIcon(variant)"
+                :size="getNonValueUnitEstimateIconSize(variant)"
+            />
+
+            <span v-else class="text-h4">{{ variant }}</span>
+
+            <v-icon
+                v-if="helpText"
+                v-tooltip="{
+                    text: helpText,
+                    contentClass: 'text-center',
+                    maxWidth: 250,
+                }"
+                class="estimate-help ma-1"
+                icon="mdi-information-outline"
+                size="small"
+                color="grey"
+            />
         </v-card-text>
 
         <v-menu
+            v-if="!isNonValueUnitEstimate(variant)"
             location="top"
             open-on-hover
             transition="slide-y-reverse-transition"
         >
             <template #activator="{ props }">
                 <EstimateUnit
-                    class="estimate-unit-selector"
+                    class="estimate-unit-selector mr-1"
                     v-bind="props"
-                    :unit="unit"
+                    :unit="estimatesStore.unit"
                 />
             </template>
 
@@ -26,10 +46,10 @@
                     :key="`estimate-${estimateUnit}`"
                 >
                     <EstimateUnit
-                        v-if="estimateUnit !== unit"
+                        v-if="estimateUnit !== estimatesStore.unit"
                         :unit="estimateUnit"
                         class="cursor-pointer"
-                        @click.stop="emit('select', value, estimateUnit)"
+                        @click.stop="onSelectValueWithCustomUnit(variant, estimateUnit)"
                     />
                 </template>
             </div>
@@ -38,17 +58,51 @@
 </template>
 
 <script setup lang="ts">
-import { EstimateUnit as EstimateUnitEnum } from '@/definitions/estimates'
+import {
+    EstimateUnit as EstimateUnitEnum,
+    NonValueUnitEstimate,
+    type UserEstimate,
+} from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
+import { useEstimatesStore } from '@/store/estimates'
+import { getNonValueUnitEstimateIcon, isNonValueUnitEstimate } from '@/utils/estimate'
+import { computed } from 'vue'
 
-defineProps<{
-    value: number
-    unit: EstimateUnitEnum
+const estimatesStore = useEstimatesStore()
+
+const { variant } = defineProps<{
+    variant: NonValueUnitEstimate | number
 }>()
 
 const emit = defineEmits<{
-    select: [number, EstimateUnitEnum?]
+    select: [UserEstimate]
 }>()
+
+const helpText = computed(() => {
+    if (isNonValueUnitEstimate(variant)) {
+        return 'Такой вариант не учитывается при расчетах и приравнен к —. Но так вы можете сообщить всем что проставили оценку.'
+    }
+    return ''
+})
+
+function getNonValueUnitEstimateIconSize(estimate: NonValueUnitEstimate) {
+    switch (estimate) {
+        case NonValueUnitEstimate.Chill: return 'x-large'
+        case NonValueUnitEstimate.IDontKnow: return 'large'
+    }
+}
+
+function onSelect(value: NonValueUnitEstimate | number) {
+    if (isNonValueUnitEstimate(value)) {
+        emit('select', value)
+    } else {
+        emit('select', { value })
+    }
+}
+
+function onSelectValueWithCustomUnit(value: number, unit: EstimateUnitEnum) {
+    emit('select', { value, unit })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -65,6 +119,12 @@ const emit = defineEmits<{
 
         font-size: v-settings.$badge-font-size;
         line-height: v-settings.$badge-line-height;
+    }
+
+    .estimate-help {
+        position: absolute;
+        top: 0;
+        right: 0;
     }
 }
 </style>

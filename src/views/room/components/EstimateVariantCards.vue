@@ -30,19 +30,18 @@
 
     <div class="estimate-variant-cards w-100">
         <EstimateVariantCard
-            v-for="variant of baseEstimateValues"
+            v-for="variant of variants"
             :key="`variant-${variant}`"
-            :value="variant"
-            :unit="estimatesStore.unit"
+            :variant="variant"
             @select="onSelectEstimate"
         />
     </div>
 </template>
 
 <script setup lang="ts">
-import { EstimateUnit } from '@/definitions/estimates'
+import { EstimateUnit, type UserEstimate } from '@/definitions/estimates'
 import { computed } from 'vue'
-import { baseEstimateValues, getEstimateUnitColor } from '@/utils/estimate'
+import { baseEstimateValues, baseNonValueUnitEstimate, getEstimateUnitColor } from '@/utils/estimate'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue'
@@ -62,8 +61,12 @@ const tooltipText = computed(() => {
     }
 })
 
-async function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
-    const setEstimateError = await estimatesStore.setEstimate(value, customUnit)
+const variants = computed(() => {
+    return [...baseNonValueUnitEstimate, ...baseEstimateValues]
+})
+
+async function onSelectEstimate(estimate: UserEstimate) {
+    const setEstimateError = await estimatesStore.setEstimate(estimate)
     setEstimateError && toast.error('Неизвестная ошибка')
 
     !setEstimateError && estimatesStore.setNextType(estimatesOrderStore.order)
@@ -81,6 +84,7 @@ async function onSelectEstimate(value: number, customUnit?: EstimateUnit) {
     @include mixins.flex-center;
 
     flex-wrap: wrap;
+    align-items: stretch;
     gap: map.get(v-settings.$spacers, 5);
 }
 

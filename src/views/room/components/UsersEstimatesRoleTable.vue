@@ -75,7 +75,7 @@ import { type Estimates, EstimateType, type ValueUnitEstimate } from '@/definiti
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
-import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate'
+import { getBestValueUnitEstimateOfType, isEmptyEstimate, minimalEstimateUnit } from '@/utils/estimate'
 
 const { isAuthUser } = useAuthStore()
 const estimatesStore = useEstimatesStore()
@@ -109,7 +109,7 @@ const users = computed(() => {
 })
 
 function isEmptyEstimates(estimates?: Estimates) {
-    return !Object.values(estimates || {}).some(Boolean)
+    return Object.values(estimates || {}).every(isEmptyEstimate)
 }
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
