@@ -57,6 +57,8 @@ import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watc
 import { useServerPing } from '@/store/composables/use-server-ping'
 import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 
+ws.init()
+
 const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
@@ -73,23 +75,25 @@ const props = defineProps<{
 const loading = ref(false)
 
 onMounted(async () => {
-    await wrap(loading, async () => {
+    const success = await wrap<boolean>(loading, async () => {
         const authError = await authStore.auth()
 
         if (authError) {
-            await router.push({ name: RouteName.Home })
-            await onError(authError.statusCode)
-            return
+            await onMountedError(authError.statusCode)
+            return false
         }
 
         const roomError = await roomStore.init(props.roomId)
 
         if (roomError) {
-            await router.push({ name: RouteName.Home })
-            await onError(roomError.code)
-            return
+            await onMountedError(roomError.code)
+            return false
         }
+
+        return true
     })
+
+    if (!success) return
 
     roomStore.wsOn()
     watchEstimatesOn()
@@ -105,6 +109,15 @@ onUnmounted(() => {
     authTokenWatcher.unwatch()
     isServerPingEnabled && pingOff()
 })
+
+async function onMountedError(errorCode?: number) {
+    if ([401, 403].includes(errorCode!)) {
+        await router.push({ name: RouteName.JoinRoom, params: { roomId: props.roomId } })
+    } else {
+        await router.push({ name: RouteName.Home })
+        await onError(errorCode)
+    }
+}
 
 async function onError(errorCode?: number) {
     switch (errorCode) {

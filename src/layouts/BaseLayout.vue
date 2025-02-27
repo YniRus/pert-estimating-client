@@ -14,7 +14,10 @@
                 {{ title }}
             </v-app-bar-title>
 
-            <template #append>
+            <template
+                v-if="!loading"
+                #append
+            >
                 <slot name="header-actions" />
             </template>
         </v-app-bar>

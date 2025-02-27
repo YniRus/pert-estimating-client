@@ -12,7 +12,7 @@
                             {{ getGroupTitle(group) }}
                         </p>
 
-                        <p class="text-overline ml-4 text-grey">
+                        <p class="text-subtitle-2 ml-4 text-grey">
                             {{ getGroupUsersEstimatesCountText(users) }}
                         </p>
 
