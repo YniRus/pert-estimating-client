@@ -7,12 +7,16 @@
                 rounded="lg"
             >
                 <v-card-text class="pa-4">
-                    <div class="d-flex flex-row justify-space-between">
+                    <div class="d-flex flex-row align-center">
                         <p class="text-h4">
                             {{ getGroupTitle(group) }}
                         </p>
 
-                        <UsersTotalEstimate :users />
+                        <p class="text-subtitle-2 ml-4 text-grey">
+                            {{ getGroupUsersEstimatesCountText(users) }}
+                        </p>
+
+                        <UsersTotalEstimate class="ml-auto" :users />
                     </div>
 
                     <UsersEstimatesRoleTable :users="users" />
@@ -30,6 +34,7 @@ import UsersTotalEstimate from '@/views/room/components/UsersTotalEstimate.vue'
 import { useRoomStore } from '@/store/room'
 import { useAuthStore } from '@/store/auth'
 import { getRoleTitle } from '@/utils/role'
+import { isEmptyEstimates } from '@/utils/estimate'
 
 const UNASSIGNED = 'unassigned'
 
@@ -63,5 +68,10 @@ const groupedUsers = computed(() => {
 function getGroupTitle(group: Group) {
     if (group === UNASSIGNED) return getRoleTitle('')
     return getRoleTitle(group)
+}
+
+function getGroupUsersEstimatesCountText(users: User[]) {
+    const usersWithEstimates = users.reduce((count, user) => count + +(!isEmptyEstimates(user.estimates)), 0)
+    return `${usersWithEstimates} из ${users.length}`
 }
 </script>

@@ -55,7 +55,7 @@
                     <div v-else-if="key === 'pert'">
                         <EstimateItem
                             class="estimate-table-column"
-                            :estimate="!isEmptyEstimates(user.estimates) ? calculatePERT(user.estimates) : undefined"
+                            :estimate="!isEmptyLikeEstimates(user.estimates) ? calculatePERT(user.estimates) : undefined"
                             :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                             is-can-copy
                         />
@@ -75,7 +75,7 @@ import { type Estimates, EstimateType, type ValueUnitEstimate } from '@/definiti
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
-import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate'
+import { getBestValueUnitEstimateOfType, isEmptyLikeEstimates, minimalEstimateUnit } from '@/utils/estimate'
 
 const { isAuthUser } = useAuthStore()
 const estimatesStore = useEstimatesStore()
@@ -107,10 +107,6 @@ const users = computed(() => {
         })
         .sort((a, b) => a.PERT.value - b.PERT.value)
 })
-
-function isEmptyEstimates(estimates?: Estimates) {
-    return !Object.values(estimates || {}).some(Boolean)
-}
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
 

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
     type Estimate,
+    type UserEstimate,
     type Estimates,
     type EstimatesOrder,
     EstimateType,
@@ -10,6 +11,7 @@ import {
 import ws from '@/plugins/ws'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import { WSError } from '@/utils/ws-error'
+import { isNonValueUnitEstimate } from '@/utils/estimate'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
@@ -45,11 +47,10 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setCurrentType(order[nextTypeIndex])
     }
 
-    async function setEstimate(value: number, customUnit?: EstimateUnit) {
-        const estimate: Estimate = {
-            value,
-            unit: customUnit || unit.value,
-        }
+    async function setEstimate(userEstimate: UserEstimate) {
+        const estimate: Estimate = isNonValueUnitEstimate(userEstimate)
+            ? userEstimate
+            : { value: userEstimate.value, unit: userEstimate.unit || unit.value }
 
         estimates.value[type.value] = estimate
 

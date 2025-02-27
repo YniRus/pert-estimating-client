@@ -18,6 +18,7 @@ defineProps<{
 <style scoped lang="scss">
 .v-badge :deep(.v-badge__wrapper) { /* stylelint-disable-line selector-class-pattern */
     width: 24px;
+    margin: 0;
 }
 
 .v-badge :deep(.v-badge__badge) { /* stylelint-disable-line selector-class-pattern */

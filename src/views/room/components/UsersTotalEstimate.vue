@@ -17,7 +17,7 @@
 
             <EstimateItem
                 class="pl-1"
-                :estimate="nearestPredefinedEstimate"
+                :estimate="nearestPredefinedValueEstimate"
                 :is-hidden="isHidden"
                 is-can-copy
             />
@@ -28,12 +28,12 @@
 <script setup lang="ts">
 import type { User } from '@/definitions/user'
 import { computed } from 'vue'
-import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
+import { type ValueUnitEstimate } from '@/definitions/estimates'
 import { calculateAvgPERT } from '@/utils/pert'
 import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import {
     convertEstimateToBestUnit,
-    getNearestBaseEstimate,
+    getNearestBaseValueEstimate,
     minimalEstimateUnit,
 } from '@/utils/estimate'
 import { useRoomStore } from '@/store/room'
@@ -51,7 +51,7 @@ const avgEstimate = computed<ValueUnitEstimate>(() => {
     return convertEstimateToBestUnit(avgEstimate)
 })
 
-const nearestPredefinedEstimate = computed<Estimate>(() => {
-    return getNearestBaseEstimate(avgEstimate.value)
+const nearestPredefinedValueEstimate = computed<ValueUnitEstimate>(() => {
+    return getNearestBaseValueEstimate(avgEstimate.value)
 })
 </script>

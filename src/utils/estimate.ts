@@ -4,8 +4,13 @@ import {
     EstimateType,
     EstimateUnit,
     HIDDEN_ESTIMATE,
+    NonValueUnitEstimate,
     type ValueUnitEstimate,
 } from '@/definitions/estimates'
+import { truthy } from '@/utils/utils'
+
+export const baseEstimateValues = [0, 1, 2, 3, 5, 8, 13, 20]
+export const baseNonValueUnitEstimate = Object.values(NonValueUnitEstimate)
 
 export function getEstimateUnitColor(unit: EstimateUnit) {
     switch (unit) {
@@ -16,14 +21,39 @@ export function getEstimateUnitColor(unit: EstimateUnit) {
     }
 }
 
-export function isValueUnitEstimate(estimate?: Estimate): estimate is ValueUnitEstimate {
-    if (typeof estimate !== 'object') return false
+export function getNonValueUnitEstimateIcon(estimate: NonValueUnitEstimate) {
+    switch (estimate) {
+        case NonValueUnitEstimate.Chill: return 'mdi-tea-outline'
+        case NonValueUnitEstimate.IDontKnow: return 'mdi-help'
+    }
+}
+
+export function isValueUnitEstimate(estimate?: unknown): estimate is ValueUnitEstimate {
+    if (!estimate || typeof estimate !== 'object') return false
 
     return 'value' in estimate && 'unit' in estimate
 }
 
-export function isHiddenEstimate(estimate?: Estimate) {
+export function isNonValueUnitEstimate(estimate?: unknown): estimate is NonValueUnitEstimate {
+    if (!estimate || typeof estimate !== 'string') return false
+
+    return Object.values(NonValueUnitEstimate).includes(estimate as NonValueUnitEstimate)
+}
+
+export function isHiddenEstimate(estimate?: unknown) {
     return estimate === HIDDEN_ESTIMATE
+}
+
+export function isEmptyLikeEstimates(estimates?: Estimates) {
+    return Object.values(estimates || {}).every(isEmptyLikeEstimate)
+}
+
+export function isEmptyLikeEstimate(estimate?: unknown) {
+    return !estimate || isNonValueUnitEstimate(estimate)
+}
+
+export function isEmptyEstimates(estimates?: Estimates) {
+    return !Object.values(estimates || {}).some(truthy)
 }
 
 const estimateTypesBaseOrder = [EstimateType.Probable, EstimateType.Min, EstimateType.Max]
@@ -56,9 +86,8 @@ export function getRatio(unit: EstimateUnit, targetUnit: EstimateUnit) {
 }
 
 export function getEstimateValueInMinimalUnit(estimate?: Estimate): number {
-    return isValueUnitEstimate(estimate)
-        ? estimate.value * ratioToMinimalUnit[estimate.unit]
-        : 0
+    if (!isValueUnitEstimate(estimate)) return 0
+    return estimate.value * ratioToMinimalUnit[estimate.unit]
 }
 
 export function convertEstimateToUnit(estimate: ValueUnitEstimate, targetUnit: EstimateUnit): ValueUnitEstimate {
@@ -79,14 +108,12 @@ export function convertEstimateToBestUnit(estimate: ValueUnitEstimate, minimalVa
     return estimate
 }
 
-export const baseEstimateValues = [0, 1, 2, 3, 5, 8, 13, 20]
-
 interface BaseEstimateWithDiff {
     estimate: ValueUnitEstimate
     diff: number
 }
 
-export function getNearestBaseEstimate(estimate: ValueUnitEstimate) {
+export function getNearestBaseValueEstimate(estimate: ValueUnitEstimate) {
     const nearestBaseEstimateByUnit: BaseEstimateWithDiff[] = []
 
     for (const unit of Object.values(EstimateUnit)) {

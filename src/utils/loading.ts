@@ -1,9 +1,10 @@
 import type { Ref } from 'vue'
+import type { Promised } from '@/definitions/utility'
 
-export async function wrap(loading: Ref<boolean>, callback: () => void | Promise<void>) {
+export async function wrap<T = void>(loading: Ref<boolean>, callback: () => Promised<T>) {
     loading.value = true
     try {
-        await callback()
+        return await callback()
     } finally {
         loading.value = false
     }

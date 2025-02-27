@@ -8,15 +8,17 @@
         @click="isCanBeTarget && emit('select')"
     >
         <template v-if="estimate">
-            <span
+            <v-icon
                 v-if="isHidden ?? isHiddenEstimate(estimate)"
-                class="estimate-item-value"
-            >
-                <v-icon
-                    icon="mdi-eye-off-outline"
-                    class="text-grey"
-                />
-            </span>
+                icon="mdi-eye-off-outline"
+                class="text-grey"
+            />
+
+            <v-icon
+                v-else-if="isNonValueUnitEstimate(estimate)"
+                :icon="getNonValueUnitEstimateIcon(estimate)"
+                :size="getNonValueUnitEstimateIconSize(estimate)"
+            />
 
             <template v-else-if="isValueUnitEstimate(estimate)">
                 <div
@@ -24,7 +26,7 @@
                     :class="{ 'cursor-pointer': !isHidden && isCanCopy }"
                     @click="copyToClipboard"
                 >
-                    <span class="estimate-item-value">
+                    <span class="mr-1">
                         {{ Number(estimate.value.toFixed(1)) }}
                     </span>
 
@@ -44,7 +46,7 @@
             v-else-if="closestEstimate"
             class="closest-estimate"
         >
-            <span class="estimate-item-value">
+            <span class="mr-1">
                 {{ closestEstimate.value }}
             </span>
 
@@ -54,16 +56,19 @@
         <span
             v-else
             class="empty-estimate"
-        >
-            —
-        </span>
+        >—</span>
     </div>
 </template>
 
 <script setup lang="ts">
-import { type Estimate, type ValueUnitEstimate } from '@/definitions/estimates'
+import { type Estimate, NonValueUnitEstimate, type ValueUnitEstimate } from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
-import { isHiddenEstimate, isValueUnitEstimate } from '@/utils/estimate'
+import {
+    getNonValueUnitEstimateIcon,
+    isHiddenEstimate,
+    isNonValueUnitEstimate,
+    isValueUnitEstimate,
+} from '@/utils/estimate'
 import { computed, ref } from 'vue'
 
 const props = defineProps<{
@@ -78,6 +83,13 @@ const props = defineProps<{
 const emit = defineEmits<{
     select: []
 }>()
+
+function getNonValueUnitEstimateIconSize(estimate: NonValueUnitEstimate) {
+    switch (estimate) {
+        case NonValueUnitEstimate.Chill: return 'small'
+        case NonValueUnitEstimate.IDontKnow: return 'x-small'
+    }
+}
 
 const isCopied = ref(false)
 
@@ -106,6 +118,7 @@ async function copyToClipboard() {
 .estimate-item {
     $bg-color: rgb(15 15 15);
 
+    height: 36px;
     transition-timing-function: ease-in-out;
     transition-duration: 0.2s;
     transition-property: background-color, box-shadow;
