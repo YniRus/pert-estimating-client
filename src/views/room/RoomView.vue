@@ -57,7 +57,7 @@ import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watc
 import { useServerPing } from '@/store/composables/use-server-ping'
 import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 
-ws.init()
+await ws.init()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -72,7 +72,7 @@ const props = defineProps<{
     roomId: UID
 }>()
 
-const loading = ref(false)
+const loading = ref(true)
 
 onMounted(async () => {
     const success = await wrap<boolean>(loading, async () => {
@@ -108,6 +108,7 @@ onUnmounted(() => {
     anotherAuthWatcher.unwatch()
     authTokenWatcher.unwatch()
     isServerPingEnabled && pingOff()
+    ws.disconnect()
 })
 
 async function onMountedError(errorCode?: number) {
