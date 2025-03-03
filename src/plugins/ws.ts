@@ -22,7 +22,8 @@ class WS {
 
     #client?: Socket<ServerToClientEvents, ClientToServerEvents>
 
-    init() {
+    async init() {
+        if (this.#connected) await this.disconnect()
         this.#client = io(import.meta.env.VITE_SERVER_HOST, this.#options)
     }
 

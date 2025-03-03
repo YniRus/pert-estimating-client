@@ -83,6 +83,7 @@ import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
 import EnterRoomPinDialog from '@/views/home/components/EnterRoomPinDialog.vue'
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 export type EnterRoomFormData = {
     name: string
@@ -96,6 +97,7 @@ const { initialData } = defineProps<{
 }>()
 
 const router = useRouter()
+const cookies = useCookies()
 
 const form = ref<VForm | null>(null)
 
@@ -171,6 +173,14 @@ async function login(data: EnterRoomFormData) {
                     return
                 }
             }
+        }
+
+        const authToken = cookies.get<string>('authToken', { doNotParse: true })
+        if (!authToken) {
+            toast.error('Токен авторизации не был установлен. Возможно настройки браузера блокируют cookie.', {
+                autoClose: 5000,
+            })
+            return
         }
 
         await router.push({ name: RouteName.Room, params: { roomId: data.roomId } })
