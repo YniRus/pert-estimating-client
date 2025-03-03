@@ -116,8 +116,9 @@ async function onMountedError(errorCode?: number) {
         await router.push({ name: RouteName.JoinRoom, params: { roomId: props.roomId } })
     } else {
         await router.push({ name: RouteName.Home })
-        await onError(errorCode)
     }
+
+    await onError(errorCode)
 }
 
 async function onError(errorCode?: number) {
