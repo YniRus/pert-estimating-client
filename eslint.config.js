@@ -60,7 +60,7 @@ export default ts.config(
         arrowParens: true,
     }),
     {
-        files: ['src/**/__tests__/*'],
+        files: ['src/tests/**/*.test.{js,ts}'],
         plugins: {
             vitest,
         },

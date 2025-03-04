@@ -35,3 +35,8 @@ export function setEstimatesOrderDataToStorage(estimatesOrderData: EstimatesOrde
     const storeValue = JSON.stringify(estimatesOrderData)
     localStorage.setItem(estimatesOrderStorageKey, storeValue)
 }
+
+export const __forTestsOnly__ = {
+    estimatesOrderStorageKey,
+    isValidEstimatesOrderData,
+}
