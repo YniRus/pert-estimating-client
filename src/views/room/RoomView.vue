@@ -65,6 +65,7 @@ import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watc
 import { useServerPing } from '@/store/composables/use-server-ping'
 import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 import UserSettings from '@/components/settings/user-settings/UserSettings.vue'
+import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
 
 await ws.init()
 
@@ -74,6 +75,7 @@ const roomStore = useRoomStore()
 
 const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
 const anotherAuthWatcher = useAnotherAuthWatcher()
+const deleteEstimatesWatcher = useDeleteEstimatesWatcher()
 const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
 const { confirm } = useConfirm()
 
@@ -108,6 +110,7 @@ onMounted(async () => {
     watchEstimatesOn()
     anotherAuthWatcher.watch()
     authTokenWatcher.watch()
+    deleteEstimatesWatcher.watch()
     isServerPingEnabled && pingOn()
 })
 
@@ -116,6 +119,7 @@ onUnmounted(() => {
     watchEstimatesOff()
     anotherAuthWatcher.unwatch()
     authTokenWatcher.unwatch()
+    deleteEstimatesWatcher.unwatch()
     isServerPingEnabled && pingOff()
     ws.disconnect()
 })
