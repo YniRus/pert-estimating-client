@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import ts from 'typescript-eslint'
 import vue from 'eslint-plugin-vue'
 import stylistic from '@stylistic/eslint-plugin'
+import vitest from '@vitest/eslint-plugin'
 
 import { includeIgnoreFile } from '@eslint/compat'
 import path from 'node:path'
@@ -18,6 +19,18 @@ export default ts.config(
     includeIgnoreFile(gitignorePath),
     js.configs.recommended,
     ...ts.configs.recommended,
+    {
+        files: ['**/*.{ts,vue}'],
+        rules: {
+            '@typescript-eslint/no-empty-object-type': ['error', {
+                allowInterfaces: 'always',
+            }],
+            '@typescript-eslint/no-unused-expressions': ['error', {
+                allowTernary: true,
+                allowShortCircuit: true,
+            }],
+        },
+    },
     ...vue.configs['flat/recommended'],
     {
         files: ['*.vue', '**/*.vue'],
@@ -46,4 +59,13 @@ export default ts.config(
         commaDangle: 'always-multiline',
         arrowParens: true,
     }),
+    {
+        files: ['src/**/__tests__/*'],
+        plugins: {
+            vitest,
+        },
+        rules: {
+            ...vitest.configs.recommended.rules,
+        },
+    },
 )
