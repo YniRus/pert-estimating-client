@@ -13,7 +13,14 @@ export enum EstimateType {
     Max = 'max',
 }
 
-export type EstimatesOrder = [EstimateType, EstimateType, EstimateType]
+export type EstimatesOrder = EstimateType[]
+
+export type EstimatesOrderData = EstimatesOrderDataItem[]
+
+export interface EstimatesOrderDataItem {
+    type: EstimateType
+    disabled?: boolean
+}
 
 export interface ValueUnitEstimate {
     value: number

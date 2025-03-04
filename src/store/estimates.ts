@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import {
     type Estimate,
     type UserEstimate,
@@ -25,9 +25,15 @@ export const useEstimatesStore = defineStore('estimates', () => {
     }
 
     function getDefaultType() {
-        const [defaultType] = estimatesOrderStore.getDefaultOrder()
+        const [defaultType] = estimatesOrderStore.order
         return defaultType
     }
+
+    watch(() => estimatesOrderStore.order, () => {
+        if (!estimatesOrderStore.order.includes(type.value)) {
+            type.value = getDefaultType()
+        }
+    })
 
     function setCurrentType(_type: EstimateType) {
         type.value = _type

@@ -1,6 +1,14 @@
 <template>
     <BaseLayout :loading>
         <template #header-actions>
+            <UserSettings />
+
+            <v-divider
+                class="mx-3 my-3"
+                inset
+                vertical
+            />
+
             <v-btn
                 v-tooltip="{
                     text: 'Поделиться ссылкой для подключения к комнате',
@@ -56,6 +64,7 @@ import { useConfirm } from '@/composables/use-confirm'
 import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watcher'
 import { useServerPing } from '@/store/composables/use-server-ping'
 import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
+import UserSettings from '@/components/settings/user-settings/UserSettings.vue'
 
 await ws.init()
 
