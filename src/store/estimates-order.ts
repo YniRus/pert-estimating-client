@@ -34,10 +34,6 @@ export const useEstimatesOrderStore = defineStore('estimates-order', () => {
         setEstimatesOrderDataToStorage(_data)
     }
 
-    function resetIncorrectOrder() {
-        updateOrderData(getDefaultOrderData())
-    }
-
     function $reset() {
         data.value = getDefaultOrderData()
     }
@@ -47,6 +43,5 @@ export const useEstimatesOrderStore = defineStore('estimates-order', () => {
         data,
         order,
         updateOrderData,
-        resetIncorrectOrder,
     }
 })

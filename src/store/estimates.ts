@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import {
     type Estimate,
     type UserEstimate,
@@ -29,12 +29,6 @@ export const useEstimatesStore = defineStore('estimates', () => {
         return defaultType
     }
 
-    watch(() => estimatesOrderStore.order, () => {
-        if (!estimatesOrderStore.order.includes(type.value)) {
-            type.value = getDefaultType()
-        }
-    })
-
     function setCurrentType(_type: EstimateType) {
         type.value = _type
     }
@@ -46,9 +40,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
     function setNextType(order: EstimatesOrder) {
         const currentTypeIndex = order.indexOf(type.value)
         if (currentTypeIndex === -1) {
-            // Ошибка в структуре order. Сбрасываем order к настройкам по умолчанию
-            estimatesOrderStore.resetIncorrectOrder()
-            order = estimatesOrderStore.order
+            setCurrentType(getDefaultType())
+            return
         }
 
         let nextTypeIndex = currentTypeIndex + 1
