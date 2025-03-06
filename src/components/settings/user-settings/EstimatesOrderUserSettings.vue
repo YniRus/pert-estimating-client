@@ -28,6 +28,7 @@
             class="flex-grow-1"
             :class="{ 'disabled': estimateType.disabled }"
             :ripple="false"
+            :data-test-id="`estimate-type-${estimateType.type}`"
             @click="setDisabled(index, !estimateType.disabled)"
         />
     </draggable>

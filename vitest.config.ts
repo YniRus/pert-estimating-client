@@ -6,12 +6,18 @@ export default mergeConfig(
     viteConfig,
     defineConfig({
         test: {
+            globals: true,
             environment: 'jsdom',
-            exclude: configDefaults.exclude,
             root: fileURLToPath(new URL('./', import.meta.url)),
+            exclude: configDefaults.exclude,
             coverage: {
                 provider: 'v8',
                 reporter: ['text'],
+            },
+            server: {
+                deps: {
+                    inline: ['vuetify'],
+                },
             },
         },
     }),

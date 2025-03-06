@@ -80,7 +80,6 @@ describe('useEstimatesOrderStore', () => {
             ]
 
             const store = useEstimatesOrderStore(createTestingPinia({
-                createSpy: vi.fn,
                 initialState: {
                     'estimates-order': {
                         data: [...initialData],
