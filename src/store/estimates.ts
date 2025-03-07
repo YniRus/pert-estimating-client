@@ -25,7 +25,7 @@ export const useEstimatesStore = defineStore('estimates', () => {
     }
 
     function getDefaultType() {
-        const [defaultType] = estimatesOrderStore.getDefaultOrder()
+        const [defaultType] = estimatesOrderStore.order
         return defaultType
     }
 
@@ -33,12 +33,15 @@ export const useEstimatesStore = defineStore('estimates', () => {
         type.value = _type
     }
 
+    function resetCurrentType() {
+        type.value = getDefaultType()
+    }
+
     function setNextType(order: EstimatesOrder) {
         const currentTypeIndex = order.indexOf(type.value)
         if (currentTypeIndex === -1) {
-            // Ошибка в структуре order. Сбрасываем order к настройкам по умолчанию
-            estimatesOrderStore.resetIncorrectOrder()
-            order = estimatesOrderStore.order
+            setCurrentType(getDefaultType())
+            return
         }
 
         let nextTypeIndex = currentTypeIndex + 1
@@ -58,12 +61,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
         if (response instanceof WSError) return response
     }
 
-    function setEstimates(_estimates: Estimates) {
-        estimates.value = _estimates
-    }
-
     function $reset() {
-        type.value = EstimateType.Probable
+        type.value = getDefaultType()
         unit.value = EstimateUnit.Hours
     }
 
@@ -71,11 +70,11 @@ export const useEstimatesStore = defineStore('estimates', () => {
         $reset,
         type,
         setCurrentType,
+        resetCurrentType,
         setNextType,
         unit,
         setUnit,
         estimates,
         setEstimate,
-        setEstimates,
     }
 })

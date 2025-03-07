@@ -23,8 +23,10 @@ import { useRoomStore } from '@/store/room'
 import { toast } from 'vue3-toastify'
 import { computed } from 'vue'
 import { useConfirm } from '@/composables/use-confirm'
+import { useEstimatesStore } from '@/store/estimates'
 
 const roomStore = useRoomStore()
+const estimatesStore = useEstimatesStore()
 const { confirm } = useConfirm()
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
@@ -48,6 +50,11 @@ async function deleteEstimates() {
 
     const roomError = await roomStore.deleteEstimates()
 
-    roomError && toast.error('Неизвестная ошибка')
+    if (roomError) {
+        toast.error('Неизвестная ошибка')
+        return
+    }
+
+    estimatesStore.resetCurrentType()
 }
 </script>

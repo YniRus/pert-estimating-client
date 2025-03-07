@@ -19,5 +19,5 @@ export interface ServerToClientEvents extends EventsMap {
     'on:user-connected': (user: User) => void
     'on:user-disconnected': (userId: UID) => void
     'on:estimates': (userId: UID, estimates: Estimates) => void
-    'on:room': (room: Room) => void
+    'on:room': (room: Room, context?: string) => void
 }

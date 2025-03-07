@@ -84,8 +84,8 @@ async function onSelectEstimate(estimate: UserEstimate) {
     @include mixins.flex-center;
 
     flex-wrap: wrap;
-    align-items: stretch;
     gap: map.get(v-settings.$spacers, 5);
+    align-items: stretch;
 }
 
 .estimate-type-selector {
