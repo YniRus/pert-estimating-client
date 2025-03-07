@@ -37,14 +37,13 @@
 <script setup lang="ts">
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import { VueDraggableNext as draggable } from 'vue-draggable-next'
+import { swap } from '@/utils/utils'
+import { toRaw } from 'vue'
 
 const estimatesOrderStore = useEstimatesOrderStore()
 
 function onChangeSort({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) {
-    const newOrder = [...estimatesOrderStore.data]
-
-    const movedItem = newOrder.splice(oldIndex, 1)[0]
-    newOrder.splice(newIndex, 0, movedItem)
+    const newOrder = swap(toRaw(estimatesOrderStore.data), oldIndex, newIndex)
 
     estimatesOrderStore.updateOrderData(newOrder)
 }
@@ -52,7 +51,7 @@ function onChangeSort({ oldIndex, newIndex }: { oldIndex: number, newIndex: numb
 function setDisabled(index: number, disabled: boolean) {
     if (estimatesOrderStore.order.length === 1 && disabled) return
 
-    const newOrder = [...estimatesOrderStore.data]
+    const newOrder = structuredClone(toRaw(estimatesOrderStore.data))
     newOrder[index].disabled = disabled
 
     estimatesOrderStore.updateOrderData(newOrder)
