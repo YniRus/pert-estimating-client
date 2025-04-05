@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { EstimateUnit } from '@/definitions/estimates'
-import { getEstimateUnitColor } from '@/utils/estimate'
+import { getEstimateUnitColor } from '@/utils/estimate/ui'
 
 defineProps<{
     unit: EstimateUnit

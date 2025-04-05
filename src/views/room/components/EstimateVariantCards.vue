@@ -41,11 +41,12 @@
 <script setup lang="ts">
 import { EstimateUnit, type UserEstimate } from '@/definitions/estimates'
 import { computed } from 'vue'
-import { baseEstimateValues, baseNonValueUnitEstimate, getEstimateUnitColor } from '@/utils/estimate'
+import { baseEstimateValues, baseNonValueUnitEstimate } from '@/utils/estimate/estimate'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue'
 import { toast } from 'vue3-toastify'
+import { getEstimateUnitColor } from '@/utils/estimate/ui'
 
 const estimatesStore = useEstimatesStore()
 const estimatesOrderStore = useEstimatesOrderStore()

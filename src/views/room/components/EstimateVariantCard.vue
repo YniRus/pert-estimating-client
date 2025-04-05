@@ -30,6 +30,7 @@
             v-if="!isNonValueUnitEstimate(variant)"
             location="top"
             open-on-hover
+            :offset="4"
             transition="slide-y-reverse-transition"
         >
             <template #activator="{ props }">
@@ -40,7 +41,7 @@
                 />
             </template>
 
-            <div class="d-flex flex-column ga-1 pb-1">
+            <div class="d-flex flex-column ga-1">
                 <template
                     v-for="estimateUnit of EstimateUnitEnum"
                     :key="`estimate-${estimateUnit}`"
@@ -65,7 +66,8 @@ import {
 } from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
 import { useEstimatesStore } from '@/store/estimates'
-import { getNonValueUnitEstimateIcon, isNonValueUnitEstimate } from '@/utils/estimate'
+import { getNonValueUnitEstimateIcon } from '@/utils/estimate/ui'
+import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
 import { computed } from 'vue'
 
 const estimatesStore = useEstimatesStore()

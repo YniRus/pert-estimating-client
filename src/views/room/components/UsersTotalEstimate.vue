@@ -33,10 +33,10 @@ import { calculateAvgPERT } from '@/utils/pert'
 import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import {
     convertEstimateToBestUnit,
-    getNearestBaseValueEstimate,
     minimalEstimateUnit,
-} from '@/utils/estimate'
+} from '@/utils/estimate/estimate'
 import { useRoomStore } from '@/store/room'
+import { getNearestBaseValueEstimate } from '@/utils/estimate/nearest'
 
 const { users } = defineProps<{
     users: User[]

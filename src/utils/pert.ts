@@ -9,10 +9,10 @@ import {
     convertEstimateToUnit,
     getBestValueUnitEstimateOfType,
     getEstimateValueInMinimalUnit,
-    isValueUnitEstimate,
     minimalEstimateUnit,
-} from '@/utils/estimate'
+} from '@/utils/estimate/estimate'
 import { truthy } from '@/utils/utils'
+import { isValueUnitEstimate } from '@/utils/estimate/guards'
 
 export function calculatePERT(estimates?: Estimates, targetUnit?: EstimateUnit): ValueUnitEstimate {
     const min = getBestValueUnitEstimateOfType(EstimateType.Min, estimates)
@@ -57,7 +57,11 @@ export function calculateAvgPERT<T extends { estimates?: Estimates }>(data: T[],
     }, 0)
 
     return {
-        value: (sumEstimateValue / valueUnitEstimates.length) || 0,
+        value: +(sumEstimateValue / valueUnitEstimates.length).toFixed(16) || 0,
         unit: targetUnit,
     }
+}
+
+export const __forTestsOnly__ = {
+    getEstimateUnitIfSame,
 }

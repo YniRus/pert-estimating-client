@@ -63,13 +63,9 @@
 <script setup lang="ts">
 import { type Estimate, NonValueUnitEstimate, type ValueUnitEstimate } from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
-import {
-    getNonValueUnitEstimateIcon,
-    isHiddenEstimate,
-    isNonValueUnitEstimate,
-    isValueUnitEstimate,
-} from '@/utils/estimate'
 import { computed, ref } from 'vue'
+import { isHiddenEstimate, isNonValueUnitEstimate, isValueUnitEstimate } from '@/utils/estimate/guards'
+import { getNonValueUnitEstimateIcon } from '@/utils/estimate/ui'
 
 const props = defineProps<{
     estimate?: Estimate
