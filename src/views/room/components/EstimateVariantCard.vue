@@ -1,6 +1,6 @@
 <template>
     <v-card
-        class="estimate-variant-card d-flex px-1 py-12"
+        class="estimate-variant-card d-flex px-1 py-11"
         @click="onSelect(variant)"
     >
         <v-card-text class="align-self-center text-center pa-0">
@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import {
-    EstimateUnit as EstimateUnitEnum,
+    EstimateUnit as EstimateUnitEnum, type EstimateVariant,
     NonValueUnitEstimate,
     type UserEstimate,
 } from '@/definitions/estimates'
@@ -73,7 +73,7 @@ import { computed } from 'vue'
 const estimatesStore = useEstimatesStore()
 
 const { variant } = defineProps<{
-    variant: NonValueUnitEstimate | number
+    variant: EstimateVariant
 }>()
 
 const emit = defineEmits<{

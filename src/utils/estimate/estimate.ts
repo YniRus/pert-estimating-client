@@ -3,13 +3,9 @@ import {
     type Estimates,
     EstimateType,
     EstimateUnit,
-    NonValueUnitEstimate,
     type ValueUnitEstimate,
 } from '@/definitions/estimates'
 import { isValueUnitEstimate } from '@/utils/estimate/guards'
-
-export const baseEstimateValues = [0, 1, 2, 3, 5, 8, 13, 20]
-export const baseNonValueUnitEstimate = Object.values(NonValueUnitEstimate)
 
 const estimateTypesWeightsOrder = [EstimateType.Probable, EstimateType.Min, EstimateType.Max]
 
@@ -55,6 +51,7 @@ export function convertEstimateToUnit(estimate: ValueUnitEstimate, targetUnit: E
     }
 }
 
+// TODO: minimalValue должно меняться в зависимости от минимального значимого числа в config.estimateVariants
 export function convertEstimateToBestUnit(estimate: ValueUnitEstimate, minimalValue = 1): ValueUnitEstimate {
     const estimateValueInMinimalUnit = getEstimateValueInMinimalUnit(estimate)
 

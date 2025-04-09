@@ -1,19 +1,20 @@
 import type { ValueUnitEstimate } from '@/definitions/estimates'
 import { EstimateUnit } from '@/definitions/estimates'
-import { baseEstimateValues, convertEstimateToUnit, getRatio } from '@/utils/estimate/estimate'
+import { convertEstimateToUnit, getRatio } from '@/utils/estimate/estimate'
+import { baseEstimateValues } from '@/utils/estimate/values'
 
 interface BaseEstimateWithDiff {
     estimate: ValueUnitEstimate
     diff: number
 }
 
-export function getNearestBaseValueEstimate(estimate: ValueUnitEstimate) {
+export function getNearestBaseValueEstimate(estimate: ValueUnitEstimate, values = baseEstimateValues) {
     const nearestBaseEstimateByUnit: BaseEstimateWithDiff[] = []
 
     for (const unit of Object.values(EstimateUnit)) {
         const { value } = convertEstimateToUnit(estimate, unit)
 
-        const valuesInOrder = [value, ...baseEstimateValues].sort((a, b) => a - b)
+        const valuesInOrder = [value, ...values].sort((a, b) => a - b)
         const valueIndex = valuesInOrder.indexOf(value)
         const [estimateValue, nearestValue] = [valuesInOrder[valueIndex], valuesInOrder[valueIndex + 1]]
 

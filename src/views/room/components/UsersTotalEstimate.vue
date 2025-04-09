@@ -37,12 +37,14 @@ import {
 } from '@/utils/estimate/estimate'
 import { useRoomStore } from '@/store/room'
 import { getNearestBaseValueEstimate } from '@/utils/estimate/nearest'
+import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
 
 const { users } = defineProps<{
     users: User[]
 }>()
 
 const roomStore = useRoomStore()
+const { estimateValues } = useRoomEstimateVariants()
 
 const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
@@ -52,6 +54,6 @@ const avgEstimate = computed<ValueUnitEstimate>(() => {
 })
 
 const nearestPredefinedValueEstimate = computed<ValueUnitEstimate>(() => {
-    return getNearestBaseValueEstimate(avgEstimate.value)
+    return getNearestBaseValueEstimate(avgEstimate.value, estimateValues.value)
 })
 </script>

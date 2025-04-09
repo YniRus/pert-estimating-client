@@ -32,6 +32,8 @@ export enum NonValueUnitEstimate {
     IDontKnow = 'i-dont-know',
 }
 
+export type EstimateVariant = NonValueUnitEstimate | number
+
 export const HIDDEN_ESTIMATE = '*'
 
 export type Estimate = NonValueUnitEstimate | ValueUnitEstimate | typeof HIDDEN_ESTIMATE

@@ -30,6 +30,19 @@
                             />
                         </v-col>
                     </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <p class="text-subtitle-1 mb-2">
+                                Шкала оценки
+                            </p>
+
+                            <EstimateVariantsSelector
+                                :variants="estimateVariants"
+                                @change="estimateVariants = $event"
+                            />
+                        </v-col>
+                    </v-row>
                 </v-container>
             </v-form>
 
@@ -60,10 +73,14 @@ import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import { wrap } from '@/utils/loading'
 import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
+import EstimateVariantsSelector from '@/components/settings/room-config/EstimateVariantsSelector.vue'
+import type { EstimateVariant } from '@/definitions/estimates'
 
 const dialog = defineModel<boolean>()
 
 const pin = ref('')
+
+const estimateVariants = ref<EstimateVariant[]>()
 
 const loading = ref(false)
 
@@ -71,6 +88,9 @@ function create() {
     wrap(loading, async () => {
         const response = await request.post<{ accessUrl: string }>('/room', {
             pin: pin.value.trim(),
+            config: {
+                estimateVariants: estimateVariants.value,
+            },
         })
 
         if (response instanceof FetchError) {

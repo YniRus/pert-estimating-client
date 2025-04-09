@@ -4,6 +4,10 @@ export function truthy<T>(value: T): value is Truthy<T> {
     return Boolean(value)
 }
 
+export function isNumber(value: unknown): value is number {
+    return Number.isFinite(value)
+}
+
 export function swap<T>(source: T[], from: number, to: number) {
     if (!Array.isArray(source)) return []
     const array = structuredClone(source)
