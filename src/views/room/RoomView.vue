@@ -187,9 +187,7 @@ const shareLoading = ref(false)
 
 async function shareRoomAccessUrl() {
     await wrap(shareLoading, async () => {
-        const response = await request.get<{ accessUrl: string }>('/room-access-url', {
-            roomId: props.roomId,
-        })
+        const response = await request.get<{ accessUrl: string }>('/room-access-url')
 
         if (response instanceof FetchError) {
             await onError(response.statusCode)

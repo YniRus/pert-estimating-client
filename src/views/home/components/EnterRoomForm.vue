@@ -15,8 +15,8 @@
                     Войти в комнату
                 </p>
 
-                <v-row v-if="!initialData?.roomId">
-                    <v-col class="pb-0">
+                <v-row>
+                    <v-col>
                         <v-text-field
                             v-model="roomId"
                             :rules="roomIdValidationRules"
@@ -26,39 +26,12 @@
                     </v-col>
                 </v-row>
 
-                <v-row>
-                    <v-col>
-                        <v-text-field
-                            v-model="name"
-                            :rules="nameValidationRules"
-                            label="Введите имя"
-                            variant="outlined"
-                        >
-                            <template #prepend>
-                                <v-select
-                                    v-model="role"
-                                    width="100"
-                                    :items="roleItems"
-                                    variant="outlined"
-                                    label="Роль"
-                                    hide-details
-                                    autocomplete="off"
-                                >
-                                    <template #selection="{ item }">
-                                        {{ getRoleSelectionText(item) }}
-                                    </template>
-                                </v-select>
-                            </template>
-                        </v-text-field>
-                    </v-col>
-                </v-row>
-
                 <v-btn
                     :loading="loading"
                     class="mt-2"
-                    text="Войти"
+                    text="К авторизации"
+                    append-icon="mdi-chevron-right"
                     type="submit"
-                    height="40"
                     variant="outlined"
                     block
                 />
@@ -66,76 +39,48 @@
         </v-form>
     </v-sheet>
 
-    <EnterRoomPinDialog
+    <RoomPinGuardDialog
         v-model="enterRoomPinDialog"
-        @login="onLoginWithPin"
+        @pin="onEnterWithPin"
     />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { VForm } from 'vuetify/components'
-import { UserRole } from '@/definitions/user'
-import { getRoleTitle } from '@/utils/role'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
-import EnterRoomPinDialog from '@/views/home/components/EnterRoomPinDialog.vue'
+import RoomPinGuardDialog from '@/components/dialogs/RoomPinGuardDialog.vue'
 
 export type EnterRoomFormData = {
-    name: string
     roomId: string
-    role?: UserRole | ''
     pin?: string
 }
-
-const { initialData } = defineProps<{
-    initialData?: Partial<EnterRoomFormData>
-}>()
 
 const router = useRouter()
 
 const form = ref<VForm | null>(null)
 
-const roomId = ref(initialData?.roomId || '')
+const roomId = ref('')
 
 const roomIdValidationRules = ref([
     (value: string) => value ? true : 'Введите ID комнаты',
-])
-
-const role = ref<UserRole | ''>(initialData?.role || '')
-
-const roleItems = ['', ...Object.values(UserRole)].map((role) => ({
-    value: role,
-    title: getRoleTitle(role),
-}))
-
-function getRoleSelectionText({ title, value }: { title: string, value: string }) {
-    return value ? title : ''
-}
-
-const name = ref(initialData?.name || '')
-
-const nameValidationRules = ref([
-    (value: string) => !!value || 'Введите имя',
 ])
 
 async function submit() {
     const { valid } = await form.value!.validate()
     if (!valid) return
 
-    await login(getEnterRoomFormData())
+    await enterRoom(getEnterRoomFormData())
 }
 
-function getEnterRoomFormData(extData?: Partial<EnterRoomFormData>): EnterRoomFormData {
+function getEnterRoomFormData(pin?: string): EnterRoomFormData {
     return {
-        ...(initialData || {}),
         roomId: roomId.value,
-        role: role.value,
-        name: name.value,
-        ...(extData || {}),
+        pin,
     }
 }
 
@@ -143,13 +88,14 @@ const loading = ref(false)
 
 const enterRoomPinDialog = ref(false)
 
-async function onLoginWithPin(pin: string) {
-    await login(getEnterRoomFormData({ pin }))
+async function onEnterWithPin(pin: string) {
+    await enterRoom(getEnterRoomFormData(pin))
 }
 
-async function login(data: EnterRoomFormData) {
+// TODO: Унифицировать обработку ошибок, сделать универсальнее
+async function enterRoom(data: EnterRoomFormData) {
     await wrap(loading, async () => {
-        let response = await request.post<null>('/login', data)
+        let response = await request.get<null>('/is-room-access-available', data)
 
         if (response instanceof FetchError) {
             switch (response.statusCode) {
@@ -162,8 +108,14 @@ async function login(data: EnterRoomFormData) {
                     return
                 }
                 case 400: {
-                    enterRoomPinDialog.value = true
-                    toast.error('Неверный pin-код')
+                    if (response.statusMessage === 'Invalid pin') {
+                        enterRoomPinDialog.value = true
+                        toast.error('Неверный pin-код')
+                    } else if (response.statusMessage === 'Invalid roomId') {
+                        toast.error('Неверный id комнаты')
+                    } else {
+                        toast.error('Неизвестная ошибка')
+                    }
                     return
                 }
                 default: {
@@ -173,7 +125,11 @@ async function login(data: EnterRoomFormData) {
             }
         }
 
-        await router.push({ name: RouteName.Room, params: { roomId: data.roomId } })
+        await router.push({
+            name: RouteName.JoinRoom,
+            params: { roomId: data.roomId },
+            query: { pin: data.pin },
+        })
     })
 }
 </script>

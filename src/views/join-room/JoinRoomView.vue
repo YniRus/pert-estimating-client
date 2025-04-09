@@ -1,5 +1,5 @@
 <template>
-    <BaseLayout>
+    <BaseLayout :loading>
         <template #header-actions>
             <v-btn
                 text="На главную"
@@ -10,27 +10,108 @@
         </template>
 
         <v-container>
-            <EnterRoomForm :initial-data="{ roomId, pin }" />
+            <JoinRoomForm
+                :room-id
+                :pin
+            />
 
-            <GoToAuthRoom :room-id="roomId" />
+            <GoToAuthRoom :room-id />
         </v-container>
     </BaseLayout>
+
+    <RoomPinGuardDialog
+        v-model="enterRoomPinDialogVisible"
+        persistent
+        @pin="onPin"
+    />
 </template>
 
 <script setup lang="ts">
-import EnterRoomForm from '@/views/home/components/EnterRoomForm.vue'
 import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import GoToAuthRoom from '@/views/join-room/components/GoToAuthRoom.vue'
+import { onMounted, ref } from 'vue'
+import { FetchError, request } from '@/plugins/ofetch'
+import { toast } from 'vue3-toastify'
+import RoomPinGuardDialog from '@/components/dialogs/RoomPinGuardDialog.vue'
+import JoinRoomForm from '@/views/join-room/components/JoinRoomForm.vue'
 
 const router = useRouter()
 
-const { roomId, pin } = defineProps<{
+const { roomId, pin: initialPin } = defineProps<{
     roomId: UID
     pin?: string
 }>()
+
+const pin = ref(initialPin || '')
+
+const loading = ref(true)
+
+const enterRoomPinDialogVisible = ref(false)
+
+async function getRoomConfig() {
+    const response = await request.get<null>('is-room-access-available', {
+        roomId,
+        pin: pin.value || undefined,
+    })
+
+    if (response instanceof FetchError) {
+        switch (response.statusCode) {
+            case 404: {
+                await router.push({ name: RouteName.Home })
+                toast.error('Комната не найдена')
+                return
+            }
+            case 403: { // Комната защищена pin-кодом
+                enterRoomPinDialogVisible.value = true
+                return
+            }
+            case 400: {
+                if (response.statusMessage === 'Invalid pin') {
+                    enterRoomPinDialogVisible.value = true
+                    toast.error('Неверный pin-код')
+                } else if (response.statusMessage === 'Invalid roomId') {
+                    await router.push({ name: RouteName.Home })
+                    toast.error('Неверный id комнаты')
+                } else {
+                    await router.push({ name: RouteName.Home })
+                    toast.error('Неизвестная ошибка')
+                }
+                return
+            }
+            default: {
+                await router.push({ name: RouteName.Home })
+                toast.error('Неизвестная ошибка')
+                return
+            }
+        }
+    }
+
+    loading.value = false
+}
+
+onMounted(async () => {
+    await getRoomConfig()
+})
+
+async function setPinToRoute(pin: string) {
+    await router.replace({
+        ...router.currentRoute.value,
+        query: {
+            ...router.currentRoute.value.query,
+            pin,
+        },
+    })
+}
+
+async function onPin(newPin: string) {
+    pin.value = newPin
+    await setPinToRoute(newPin)
+
+    await getRoomConfig()
+}
 
 function toHome() {
     router.push({ name: RouteName.Home })

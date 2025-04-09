@@ -1,17 +1,19 @@
 <template>
     <v-dialog
         v-model="dialog"
+        :persistent
         max-width="var(--dialog-max-width)"
     >
         <v-form
             ref="form"
-            @submit.prevent="login"
+            @submit.prevent="submit"
         >
             <v-card>
                 <v-card-title class="my-2 d-flex flex-row align-center justify-space-between">
                     Комната защищена PIN-кодом
 
                     <v-btn
+                        v-if="!persistent"
                         icon="mdi-close"
                         variant="plain"
                         density="comfortable"
@@ -34,9 +36,19 @@
 
                 <v-card-actions>
                     <v-btn
+                        v-if="persistent"
+                        text="На главную"
+                        variant="outlined"
+                        prepend-icon="mdi-chevron-left"
+                        @click="toHome"
+                    />
+
+                    <v-spacer />
+
+                    <v-btn
                         color="success"
                         variant="outlined"
-                        text="Войти"
+                        text="Подтвердить"
                         append-icon="mdi-chevron-right"
                         type="submit"
                     />
@@ -49,8 +61,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { VForm } from 'vuetify/components'
+import RouteName from '@/router/route-name'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const dialog = defineModel<boolean>()
+
+const { persistent } = defineProps<{
+    persistent?: boolean
+}>()
 
 const pin = ref('')
 
@@ -59,16 +79,20 @@ const pinValidationRules = ref([
 ])
 
 const emit = defineEmits<{
-    login: [string]
+    pin: [string]
 }>()
 
 const form = ref<VForm | null>(null)
 
-async function login() {
+async function submit() {
     const { valid } = await form.value!.validate()
     if (!valid) return
 
     dialog.value = false
-    emit('login', pin.value)
+    emit('pin', pin.value)
+}
+
+function toHome() {
+    router.push({ name: RouteName.Home })
 }
 </script>
