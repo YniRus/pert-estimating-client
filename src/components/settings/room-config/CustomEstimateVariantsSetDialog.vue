@@ -88,11 +88,12 @@
 
             <v-card-actions>
                 <v-spacer />
+
                 <v-btn
                     variant="outlined"
                     color="primary"
                     text="Применить"
-                    :disabled="customValues.length === 0"
+                    :disabled="!isSubmitAvailable"
                     @click="submitCustomVariantsSet"
                 />
             </v-card-actions>
@@ -129,6 +130,8 @@ function setDisableStateNonValueVariant(index: number, newDisabledState: boolean
 const newCustomValue = ref<number | null>(null)
 const customValues = ref<number[]>([])
 
+const hasCustomValues = computed(() => customValues.value.length > 0)
+
 const sortedCustomValues = computed(() => {
     return [...customValues.value].sort((a, b) => a - b)
 })
@@ -148,10 +151,8 @@ const isValidCustomValue = computed(() => {
 function formatValue(value: number) {
     if (value >= 100) {
         return Math.floor(value)
-    } else if (value >= 10) {
-        return parseFloat(value.toFixed(1))
     } else {
-        return parseFloat(value.toFixed(2))
+        return parseFloat(value.toFixed(1))
     }
 }
 
@@ -184,10 +185,12 @@ const isLimitCustomVariantsReached = computed(() => {
     return customVariantsSet.value.length >= 14
 })
 
-watch(() => initialVariants, () => {
-    if (!initialVariants) return
+const hasInitialVariants = computed(() => !!initialVariants)
 
-    const [initialNonValueVariants, initialCustomValues] = initialVariants.reduce(([nonValueVariants, values], variant) => {
+watch(() => initialVariants, () => {
+    if (!hasInitialVariants.value) return
+
+    const [initialNonValueVariants, initialCustomValues] = initialVariants!.reduce(([nonValueVariants, values], variant) => {
         if (isNonValueUnitEstimate(variant)) {
             nonValueVariants.push(variant)
         } else {
@@ -207,11 +210,27 @@ watch(() => initialVariants, () => {
     }
 }, { immediate: true })
 
+const isChanged = computed(() => {
+    const _initialVariants = initialVariants || []
+
+    if (customVariantsSet.value.length !== _initialVariants.length) return true
+
+    return customVariantsSet.value.some((variant, index) => variant !== _initialVariants[index])
+})
+
 const emit = defineEmits<{
     submit: [EstimateVariant[]]
 }>()
 
+const isSubmitAvailable = computed(() => {
+    if (!hasCustomValues.value) return false
+    if (!hasInitialVariants.value) return true
+
+    return isChanged.value
+})
+
 function submitCustomVariantsSet() {
+    if (!isSubmitAvailable.value) return
     emit('submit', customVariantsSet.value)
     dialog.value = false
 }

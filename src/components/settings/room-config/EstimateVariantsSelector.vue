@@ -33,22 +33,32 @@
                     class="py-2"
                     @click="onChangeSet(set.variants)"
                 >
-                    <v-list-item-title class="text-subtitle-2 mb-2">
+                    <v-list-item-title class="text-subtitle-2 mb-2 d-flex justify-space-between align-center">
                         {{ set.name }}
+
+                        <v-btn
+                            size="x-small"
+                            color="primary"
+                            variant="text"
+                            class="ml-2"
+                            :prepend-icon="set.key === CustomEstimateValuesKey ? 'mdi-cog' : 'mdi-pencil'"
+                            :text="set.key === CustomEstimateValuesKey ? 'Настроить' : 'В свой набор'"
+                            @click.stop="openCustomEstimateVariantsSetDialog(set.variants)"
+                        />
                     </v-list-item-title>
 
                     <EstimateVariantsSelectorCards :variants="set.variants" />
                 </v-list-item>
             </v-list>
 
-            <v-card-actions>
+            <v-card-actions v-if="!hasCustomVariantsSet">
                 <v-btn
                     block
                     variant="outlined"
-                    prepend-icon="mdi-pencil"
-                    @click="customEstimateVariantsSetDialogOpen = true"
+                    prepend-icon="mdi-plus"
+                    @click="openCustomEstimateVariantsSetDialog([])"
                 >
-                    Свой набор
+                    Добавить свой набор
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -56,13 +66,13 @@
 
     <CustomEstimateVariantsSetDialog
         v-model="customEstimateVariantsSetDialogOpen"
-        :initial-variants="customVariantsSet"
+        :initial-variants="currentCustomVariantsSet"
         @submit="onCustomVariantsSetSubmit"
     />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import EstimateVariantsSelectorCards from '@/components/settings/room-config/EstimateVariantsSelectorCards.vue'
 import CustomEstimateVariantsSetDialog from '@/components/settings/room-config/CustomEstimateVariantsSetDialog.vue'
 import { type EstimateVariant, NonValueUnitEstimate } from '@/definitions/estimates'
@@ -90,7 +100,12 @@ const emit = defineEmits<{
 const menuOpen = ref(false)
 
 const customEstimateVariantsSetDialogOpen = ref(false)
+const currentCustomVariantsSet = ref<EstimateVariant[]>([])
 const customVariantsSet = ref<EstimateVariant[]>([])
+
+const hasCustomVariantsSet = computed(() => {
+    return customVariantsSet.value.length
+})
 
 function onCustomVariantsSetSubmit(variants: EstimateVariant[]) {
     customVariantsSet.value = variants
@@ -161,5 +176,10 @@ watch(() => selectedSet.value.key, () => {
 function onChangeSet(variants: EstimateVariant[]) {
     emit('change', variants)
     menuOpen.value = false
+}
+
+function openCustomEstimateVariantsSetDialog(setVariants: EstimateVariant[]) {
+    currentCustomVariantsSet.value = [...setVariants]
+    customEstimateVariantsSetDialogOpen.value = true
 }
 </script>
