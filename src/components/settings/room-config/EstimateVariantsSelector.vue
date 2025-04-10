@@ -33,20 +33,38 @@
                     class="py-2"
                     @click="onChangeSet(set.variants)"
                 >
-                    <v-list-item-title class="text-subtitle-2  mb-2">
+                    <v-list-item-title class="text-subtitle-2 mb-2">
                         {{ set.name }}
                     </v-list-item-title>
 
                     <EstimateVariantsSelectorCards :variants="set.variants" />
                 </v-list-item>
             </v-list>
+
+            <v-card-actions>
+                <v-btn
+                    block
+                    variant="outlined"
+                    prepend-icon="mdi-pencil"
+                    @click="customEstimateVariantsSetDialogOpen = true"
+                >
+                    Свой набор
+                </v-btn>
+            </v-card-actions>
         </v-card>
     </v-menu>
+
+    <CustomEstimateVariantsSetDialog
+        v-model="customEstimateVariantsSetDialogOpen"
+        :initial-variants="customVariantsSet"
+        @submit="onCustomVariantsSetSubmit"
+    />
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import EstimateVariantsSelectorCards from '@/components/settings/room-config/EstimateVariantsSelectorCards.vue'
+import CustomEstimateVariantsSetDialog from '@/components/settings/room-config/CustomEstimateVariantsSetDialog.vue'
 import { type EstimateVariant, NonValueUnitEstimate } from '@/definitions/estimates'
 import {
     CustomEstimateValuesKey,
@@ -71,32 +89,56 @@ const emit = defineEmits<{
 
 const menuOpen = ref(false)
 
-const estimateVariantsSets = ref<EstimateVariantSet[]>([
-    {
-        name: 'Модифицированный Фибоначчи',
-        key: PredefinedEstimateValuesKey.ModifiedFibonacci,
-        variants: [
-            ...Object.values(NonValueUnitEstimate),
-            ...predefinedEstimateValues[PredefinedEstimateValuesKey.ModifiedFibonacci],
-        ],
-    },
-    {
-        name: 'Четная вероятность',
-        key: PredefinedEstimateValuesKey.EvenProbabilities,
-        variants: [
-            ...Object.values(NonValueUnitEstimate),
-            ...predefinedEstimateValues[PredefinedEstimateValuesKey.EvenProbabilities],
-        ],
-    },
-    {
-        name: 'Четные целые',
-        key: PredefinedEstimateValuesKey.EvenIntegers,
-        variants: [
-            ...Object.values(NonValueUnitEstimate),
-            ...predefinedEstimateValues[PredefinedEstimateValuesKey.EvenIntegers],
-        ],
-    },
-])
+const customEstimateVariantsSetDialogOpen = ref(false)
+const customVariantsSet = ref<EstimateVariant[]>([])
+
+function onCustomVariantsSetSubmit(variants: EstimateVariant[]) {
+    customVariantsSet.value = variants
+    onChangeSet(variants)
+}
+
+function getCustomEstimateVariantsSet(variants: EstimateVariant[]): EstimateVariantSet {
+    return {
+        name: 'Свой набор',
+        key: CustomEstimateValuesKey,
+        variants,
+    }
+}
+
+const estimateVariantsSets = computed(() => {
+    const sets: EstimateVariantSet[] = [
+        {
+            name: 'Модифицированный Фибоначчи',
+            key: PredefinedEstimateValuesKey.ModifiedFibonacci,
+            variants: [
+                ...Object.values(NonValueUnitEstimate),
+                ...predefinedEstimateValues[PredefinedEstimateValuesKey.ModifiedFibonacci],
+            ],
+        },
+        {
+            name: 'Четная вероятность',
+            key: PredefinedEstimateValuesKey.EvenProbabilities,
+            variants: [
+                ...Object.values(NonValueUnitEstimate),
+                ...predefinedEstimateValues[PredefinedEstimateValuesKey.EvenProbabilities],
+            ],
+        },
+        {
+            name: 'Четные целые',
+            key: PredefinedEstimateValuesKey.EvenIntegers,
+            variants: [
+                ...Object.values(NonValueUnitEstimate),
+                ...predefinedEstimateValues[PredefinedEstimateValuesKey.EvenIntegers],
+            ],
+        },
+    ]
+
+    if (customVariantsSet.value.length) {
+        sets.push(getCustomEstimateVariantsSet(customVariantsSet.value))
+    }
+
+    return sets
+})
 
 const selectedSet = computed<EstimateVariantSet>(() => {
     if (!variants) return estimateVariantsSets.value[0]
@@ -107,12 +149,14 @@ const selectedSet = computed<EstimateVariantSet>(() => {
 
     if (matchedSet) return matchedSet
 
-    return {
-        name: 'Собственный набор',
-        key: CustomEstimateValuesKey,
-        variants,
-    }
+    return getCustomEstimateVariantsSet(variants)
 })
+
+watch(() => selectedSet.value.key, () => {
+    if (!customVariantsSet.value.length && selectedSet.value.key === CustomEstimateValuesKey) {
+        customVariantsSet.value = [...selectedSet.value.variants]
+    }
+}, { immediate: true })
 
 function onChangeSet(variants: EstimateVariant[]) {
     emit('change', variants)

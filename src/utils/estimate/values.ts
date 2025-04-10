@@ -6,7 +6,7 @@ export enum PredefinedEstimateValuesKey {
     EvenIntegers = 'even-integers',
 }
 
-export const CustomEstimateValuesKey = 'custom' as const
+export const CustomEstimateValuesKey = 'custom'
 
 export type EstimateValuesKey = PredefinedEstimateValuesKey | typeof CustomEstimateValuesKey
 
