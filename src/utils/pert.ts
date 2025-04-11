@@ -30,9 +30,13 @@ export function calculatePERT(estimates?: Estimates, targetUnit?: EstimateUnit):
 
     targetUnit = targetUnit || getEstimateUnitIfSame(min, probable, max)
 
-    return targetUnit
+    const pertEstimate = targetUnit
         ? convertEstimateToUnit(estimateInMinimalUnit, targetUnit)
         : convertEstimateToBestUnit(estimateInMinimalUnit)
+
+    pertEstimate.value = +(pertEstimate.value.toFixed(1)) || 0
+
+    return pertEstimate
 }
 
 function getPertValue(min: number, probable: number, max: number) {
@@ -57,7 +61,7 @@ export function calculateAvgPERT<T extends { estimates?: Estimates }>(data: T[],
     }, 0)
 
     return {
-        value: +(sumEstimateValue / valueUnitEstimates.length).toFixed(16) || 0,
+        value: +(sumEstimateValue / valueUnitEstimates.length).toFixed(1) || 0,
         unit: targetUnit,
     }
 }

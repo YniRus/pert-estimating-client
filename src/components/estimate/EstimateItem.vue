@@ -27,7 +27,7 @@
                     @click="copyToClipboard"
                 >
                     <span class="mr-1">
-                        {{ Number(estimate.value.toFixed(1)) }}
+                        {{ estimate.value }}
                     </span>
 
                     <EstimateUnit :unit="estimate.unit" />

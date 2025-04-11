@@ -73,7 +73,8 @@ describe('calculatePERT', () => {
 
         const result = calculatePERT(estimates)
 
-        expect(result).toEqual({ value: 1.125, unit: EstimateUnit.Days })
+        // PERT: 1.125d (no Fixed)
+        expect(result).toEqual({ value: 1.1, unit: EstimateUnit.Days })
     })
 
     it('should calculate PERT value correctly with all three estimates provided with not same unit and targetUnit', () => {
@@ -99,8 +100,7 @@ describe('calculatePERT', () => {
         // (3 + 5*4 + 5) / 6 = 4.66(6)7 hours
         const result = calculatePERT(estimates)
 
-        expect(result.unit).toBe(EstimateUnit.Hours)
-        expect(result.value).toBeCloseTo(4.666667, 6)
+        expect(result).toEqual({ value: 4.7, unit: EstimateUnit.Hours })
     })
 
     it('should calculate PERT value correctly when some types is NonValueUnitEstimate', () => {
@@ -115,8 +115,7 @@ describe('calculatePERT', () => {
         // (3 + 3*4 + 2*8) / 6 = 5.166(6)7
         const result = calculatePERT(estimates)
 
-        expect(result.unit).toBe(EstimateUnit.Hours)
-        expect(result.value).toBeCloseTo(5.166667, 6)
+        expect(result).toEqual({ value: 5.2, unit: EstimateUnit.Hours })
     })
 
     it('should calculate PERT value correctly when only one type of estimate is provided', () => {
@@ -129,8 +128,7 @@ describe('calculatePERT', () => {
         // Expected PERT calculation with only Max provided:
         // Min and Probable will be undefined, so getBestValueUnitEstimateOfType will provide max for both
         // (3 + 3*4 + 3) / 6 = 3 days
-        expect(result.value).toBe(3)
-        expect(result.unit).toBe(EstimateUnit.Days)
+        expect(result).toEqual({ value: 3, unit: EstimateUnit.Days })
     })
 
     it('should calculate PERT value correctly when estimates are undefined', () => {
@@ -161,8 +159,7 @@ describe('calculatePERT', () => {
 
         // Expected PERT calculation:
         // (2 + 3*4 + 5) / 6 = 3.166(6)7 days
-        expect(result.value).toBeCloseTo(3.166667, 6)
-        expect(result.unit).toBe(EstimateUnit.Days)
+        expect(result).toEqual({ value: 3.2, unit: EstimateUnit.Days })
 
         const resultWithoutTarget = calculatePERT(estimates)
 
@@ -228,8 +225,7 @@ describe('calculateAvgPERT', () => {
         // First estimate: (2 + 3*4 + 5) / 6 = 3.166(6)7 days
         // Second estimate: (1 + 4*4 + 6) / 6 = 3.833(3)3 days
         // Average: (3.166667 + 3.833333) / 2 = 3.5 days
-        expect(result.value).toBeCloseTo(3.5, 6)
-        expect(result.unit).toBe(EstimateUnit.Days)
+        expect(result).toEqual({ value: 3.5, unit: EstimateUnit.Days })
 
         const resultInHours = calculateAvgPERT(data, EstimateUnit.Hours)
 
@@ -237,8 +233,7 @@ describe('calculateAvgPERT', () => {
         // First estimate: (2*8 + 3*8*4 + 5*8) / 6 = 25.333(3) hours
         // Second estimate: (1*8 + 4*8*4 + 6*8) / 6 = 30.666(6)7 hours
         // Average: (25.333333 + 30.66667) / 2 = 28 hours
-        expect(resultInHours.value).toBeCloseTo(28, 6)
-        expect(resultInHours.unit).toBe(EstimateUnit.Hours)
+        expect(resultInHours).toEqual({ value: 28, unit: EstimateUnit.Hours })
     })
 
     it('should correctly calculate the average PERT value when estimates have different units and need conversion', () => {
@@ -265,8 +260,7 @@ describe('calculateAvgPERT', () => {
         // First estimate: (2 + 8*4 + 5) / 6 = 6.5 hours
         // Second estimate: (24 + 4*4 + 6) / 6 = 7.666(6)7 hours
         // Average: (6.5 + 7.666667) / 2 = 7.0833(3)4
-        expect(result.value).toBeCloseTo(7.083333, 6)
-        expect(result.unit).toBe(EstimateUnit.Hours)
+        expect(result).toEqual({ value: 7.1, unit: EstimateUnit.Hours })
     })
 
     it('should handle cases where some estimates are missing from the data array', () => {
@@ -297,8 +291,7 @@ describe('calculateAvgPERT', () => {
         // Second estimate: (5 + 5*4 + 5) / 6 = 5 days (Min and Probable are missing, so Max is used)
         // Third estimate: (1 + 1*4 + 4) / 6 = 1.5 days (Probable is missing, so Min is used)
         // Average: (2.833334 + 5 + 1.5) / 3 = 3.111(1) days
-        expect(result.value).toBeCloseTo(3.1111, 4)
-        expect(result.unit).toBe(EstimateUnit.Days)
+        expect(result).toEqual({ value: 3.1, unit: EstimateUnit.Days })
     })
 
     it('should handle cases where some estimates are NonValueUnitEstimates in the data array', () => {
@@ -325,8 +318,7 @@ describe('calculateAvgPERT', () => {
         // First estimate: (2 + 2*4 + 5) / 6 = 2.5 days (Probable is NonValueUnitEstimate, so Min is used)
         // Second estimate: (4 + 4*4 + 6) / 6 = 4.333(3)3 days (Min is NonValueUnitEstimate, so Probable is used)
         // Average: (2.5 + 4.333333) / 2 = 3.416(6)7 days
-        expect(result.value).toBeCloseTo(3.416667, 6)
-        expect(result.unit).toBe(EstimateUnit.Days)
+        expect(result).toEqual({ value: 3.4, unit: EstimateUnit.Days })
     })
 
     it('should correct result for floating partial result and integer final result', () => {
@@ -368,5 +360,53 @@ describe('calculateAvgPERT', () => {
         const result = calculateAvgPERT(data, EstimateUnit.Hours)
 
         expect(result).toEqual({ value: 3, unit: EstimateUnit.Hours })
+    })
+
+    it('should correct result for floating partial result and integer final result (another case)', () => {
+        const data = [
+            {
+                estimates: {
+                    [EstimateType.Min]: { value: 1, unit: EstimateUnit.Days },
+                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                    [EstimateType.Max]: { value: 2, unit: EstimateUnit.Days },
+                },
+            },
+            {
+                estimates: {
+                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                    [EstimateType.Max]: { value: 3, unit: EstimateUnit.Days },
+                },
+            },
+            {
+                estimates: {
+                    [EstimateType.Min]: { value: 13, unit: EstimateUnit.Hours },
+                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
+                },
+            },
+            {
+                estimates: {
+                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
+                },
+            },
+            {
+                estimates: {
+                    [EstimateType.Min]: { value: 3, unit: EstimateUnit.Days },
+                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
+                },
+            },
+            {
+                estimates: {
+                    [EstimateType.Probable]: { value: 5, unit: EstimateUnit.Days },
+                    [EstimateType.Max]: { value: 8, unit: EstimateUnit.Days },
+                },
+            },
+        ]
+
+        const result = calculateAvgPERT(data, EstimateUnit.Days)
+
+        expect(result).toEqual({ value: 3, unit: EstimateUnit.Days })
     })
 })

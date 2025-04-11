@@ -31,7 +31,6 @@
                         maxlength="3"
                         :rules="customValueRules"
                         hide-details
-                        class="mb-3"
                         density="compact"
                         bg-color="white"
                     >
@@ -46,6 +45,10 @@
                             />
                         </template>
                     </v-text-field>
+
+                    <p class="text-caption opacity-60 pt-1">
+                        Вы можете добавлять новые значения, с точностью до 0.1
+                    </p>
                 </v-form>
 
                 <p v-if="isLimitCustomVariantsReached" class="text-caption text-error mb-2">
@@ -55,7 +58,7 @@
                 <transition-group
                     name="value-variants-list"
                     tag="div"
-                    class="d-flex flex-wrap ga-1"
+                    class="d-flex flex-wrap ga-1 mt-2"
                 >
                     <div
                         v-for="(variant, index) in nonValueVariants"
