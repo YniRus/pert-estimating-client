@@ -51,7 +51,6 @@ export function convertEstimateToUnit(estimate: ValueUnitEstimate, targetUnit: E
     }
 }
 
-// TODO: minimalValue должно меняться в зависимости от минимального значимого числа в config.estimateVariants
 export function convertEstimateToBestUnit(estimate: ValueUnitEstimate, minimalValue = 1): ValueUnitEstimate {
     const estimateValueInMinimalUnit = getEstimateValueInMinimalUnit(estimate)
 

@@ -38,6 +38,7 @@ import {
 import { useRoomStore } from '@/store/room'
 import { getNearestBaseValueEstimate } from '@/utils/estimate/nearest'
 import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
+import { getMinimalNonZeroValue } from '@/utils/estimate/values'
 
 const { users } = defineProps<{
     users: User[]
@@ -50,7 +51,11 @@ const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
 const avgEstimate = computed<ValueUnitEstimate>(() => {
     const avgEstimate = calculateAvgPERT(users, minimalEstimateUnit)
-    return convertEstimateToBestUnit(avgEstimate)
+    const avgEstimateInBestUnit = convertEstimateToBestUnit(avgEstimate, getMinimalNonZeroValue(estimateValues.value))
+
+    avgEstimateInBestUnit.value = +avgEstimateInBestUnit.value.toFixed(2)
+
+    return avgEstimateInBestUnit
 })
 
 const nearestPredefinedValueEstimate = computed<ValueUnitEstimate>(() => {

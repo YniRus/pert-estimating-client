@@ -159,6 +159,7 @@ const selectedSet = computed<EstimateVariantSet>(() => {
     if (!variants) return estimateVariantsSets.value[0]
 
     const matchedSet = estimateVariantsSets.value.find((set) => {
+        if (set.variants.length !== variants.length) return false
         return set.variants.every((variant) => variants.includes(variant))
     })
 

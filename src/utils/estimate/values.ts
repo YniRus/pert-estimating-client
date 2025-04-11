@@ -18,3 +18,9 @@ export const predefinedEstimateValues: Record<PredefinedEstimateValuesKey, numbe
 
 export const baseEstimateValues = predefinedEstimateValues[PredefinedEstimateValuesKey.ModifiedFibonacci]
 export const nonValueUnitEstimateVariants = Object.values(NonValueUnitEstimate)
+
+export function getMinimalNonZeroValue(values: number[], fallbackValue = 1): number {
+    const [firstValue, secondValue] = values
+
+    return firstValue > 0 ? firstValue : secondValue || fallbackValue
+}

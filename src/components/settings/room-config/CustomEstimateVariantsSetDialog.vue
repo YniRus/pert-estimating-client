@@ -133,10 +133,15 @@ function setDisableStateNonValueVariant(index: number, newDisabledState: boolean
 const newCustomValue = ref<number | null>(null)
 const customValues = ref<number[]>([])
 
-const hasCustomValues = computed(() => customValues.value.length > 0)
-
 const sortedCustomValues = computed(() => {
     return [...customValues.value].sort((a, b) => a - b)
+})
+
+const hasNonZeroCustomValues = computed(() => {
+    if (!sortedCustomValues.value.length) return false
+
+    const hasNonZero = sortedCustomValues.value.find((value) => value > 0)
+    return !!hasNonZero
 })
 
 const customValueRules = [
@@ -226,7 +231,7 @@ const emit = defineEmits<{
 }>()
 
 const isSubmitAvailable = computed(() => {
-    if (!hasCustomValues.value) return false
+    if (!hasNonZeroCustomValues.value) return false
     if (!hasInitialVariants.value) return true
 
     return isChanged.value
