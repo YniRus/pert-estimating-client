@@ -38,8 +38,8 @@
                             </p>
 
                             <EstimateVariantsSelector
-                                :variants="estimateVariants"
-                                @change="estimateVariants = $event"
+                                :selected-set-id="estimateVariantsSetId"
+                                @change="estimateVariantsSetId = $event"
                             />
                         </v-col>
                     </v-row>
@@ -74,22 +74,31 @@ import { toast } from 'vue3-toastify'
 import { wrap } from '@/utils/loading'
 import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
 import EstimateVariantsSelector from '@/components/settings/room-config/EstimateVariantsSelector.vue'
-import type { EstimateVariant } from '@/definitions/estimates'
+import type { EstimateVariantsSetId } from '@/definitions/estimate-variants-sets'
+import { useEstimateVariantsSetsStore } from '@/store/estimate-variants-sets'
+
+const estimateVariantsSetsStore = useEstimateVariantsSetsStore()
 
 const dialog = defineModel<boolean>()
 
 const pin = ref('')
 
-const estimateVariants = ref<EstimateVariant[]>()
+const estimateVariantsSetId = ref<EstimateVariantsSetId>()
 
 const loading = ref(false)
 
 function create() {
+    const estimateVariants = estimateVariantsSetsStore.sets.find((set) => set.id === estimateVariantsSetId.value)
+    if (!estimateVariants) {
+        toast.error('Что-то пошло не так, попробуйте перезагрузить страницу.')
+        return
+    }
+
     wrap(loading, async () => {
         const response = await request.post<{ accessUrl: string }>('/room', {
             pin: pin.value.trim(),
             config: {
-                estimateVariants: estimateVariants.value,
+                estimateVariants: estimateVariants.variants,
             },
         })
 

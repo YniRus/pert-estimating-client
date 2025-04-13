@@ -5,10 +5,19 @@
     >
         <v-card>
             <v-card-title class="my-2 d-flex flex-row align-center justify-space-between">
-                Свой набор
+                <v-text-field
+                    v-model="name"
+                    label="Название"
+                    hide-details
+                    placeholder="Название"
+                    variant="plain"
+                    density="compact"
+                    :rules="setNameValidationRules"
+                />
 
                 <v-btn
                     icon="mdi-close"
+                    class="ml-4"
                     variant="plain"
                     density="comfortable"
                     @click="dialog = false"
@@ -108,11 +117,12 @@
 import { ref, computed, watch } from 'vue'
 import EstimateVariantsSelectorCard from '@/components/settings/room-config/EstimateVariantsSelectorCard.vue'
 import type { VForm } from 'vuetify/components'
-import { type EstimateVariant, NonValueUnitEstimate } from '@/definitions/estimates'
+import { NonValueUnitEstimate } from '@/definitions/estimates'
 import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
+import type { EstimateVariantsSet } from '@/definitions/estimate-variants-sets'
 
-const { initialVariants } = defineProps<{
-    initialVariants?: EstimateVariant[]
+const { initialSet } = defineProps<{
+    initialSet: EstimateVariantsSet
 }>()
 
 const dialog = defineModel<boolean>()
@@ -129,6 +139,15 @@ function setDisableStateNonValueVariant(index: number, newDisabledState: boolean
     if (isLimitCustomVariantsReached.value && newDisabledState === false) return
     nonValueVariants.value[index].disabled = !nonValueVariants.value[index].disabled
 }
+
+const name = ref<string>(initialSet.name)
+const setNameValidationRules = [
+    (value: string) => !!value,
+]
+
+const isValidName = computed(() => {
+    return !!name.value
+})
 
 const newCustomValue = ref<number | null>(null)
 const customValues = ref<number[]>([])
@@ -181,7 +200,7 @@ function removeCustomValue(value: number) {
     customValues.value.splice(index, 1)
 }
 
-const customVariantsSet = computed(() => {
+const setVariants = computed(() => {
     const enabledNonValueVariants = nonValueVariants.value
         .filter((variant) => !variant.disabled)
         .map((variant) => variant.value)
@@ -189,16 +208,22 @@ const customVariantsSet = computed(() => {
     return [...enabledNonValueVariants, ...sortedCustomValues.value]
 })
 
+const customVariantsSet = computed<EstimateVariantsSet>(() => ({
+    ...initialSet,
+    name: name.value,
+    variants: setVariants.value,
+}))
+
 const isLimitCustomVariantsReached = computed(() => {
-    return customVariantsSet.value.length >= 14
+    return setVariants.value.length >= 14
 })
 
-const hasInitialVariants = computed(() => !!initialVariants)
+watch(dialog, () => {
+    if (!dialog.value) return
 
-watch(() => initialVariants, () => {
-    if (!hasInitialVariants.value) return
+    name.value = initialSet.name
 
-    const [initialNonValueVariants, initialCustomValues] = initialVariants!.reduce(([nonValueVariants, values], variant) => {
+    const [initialNonValueVariants, initialCustomValues] = initialSet.variants.reduce(([nonValueVariants, values], variant) => {
         if (isNonValueUnitEstimate(variant)) {
             nonValueVariants.push(variant)
         } else {
@@ -216,23 +241,24 @@ watch(() => initialVariants, () => {
             nonValueVariants.value[index].disabled = false
         }
     }
-}, { immediate: true })
+})
 
 const isChanged = computed(() => {
-    const _initialVariants = initialVariants || []
+    const initialVariants = initialSet?.variants || []
 
-    if (customVariantsSet.value.length !== _initialVariants.length) return true
+    if (setVariants.value.length !== initialVariants.length) return true
+    if (name.value !== initialSet.name) return true
 
-    return customVariantsSet.value.some((variant, index) => variant !== _initialVariants[index])
+    return setVariants.value.some((variant, index) => variant !== initialVariants[index])
 })
 
 const emit = defineEmits<{
-    submit: [EstimateVariant[]]
+    submit: [EstimateVariantsSet]
 }>()
 
 const isSubmitAvailable = computed(() => {
     if (!hasNonZeroCustomValues.value) return false
-    if (!hasInitialVariants.value) return true
+    if (!isValidName.value) return false
 
     return isChanged.value
 })
@@ -241,6 +267,9 @@ function submitCustomVariantsSet() {
     if (!isSubmitAvailable.value) return
     emit('submit', customVariantsSet.value)
     dialog.value = false
+    customValues.value = []
+    newCustomValue.value = null
+    name.value = ''
 }
 </script>
 

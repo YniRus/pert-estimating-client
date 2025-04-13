@@ -1,4 +1,5 @@
-import { type EstimatesOrderData, EstimateType } from '@/definitions/estimates'
+import { EstimateType } from '@/definitions/estimates'
+import type { EstimatesOrderData } from '@/definitions/estimates-order'
 
 const estimatesOrderStorageKey = 'PERT-estimating_estimates-order'
 
