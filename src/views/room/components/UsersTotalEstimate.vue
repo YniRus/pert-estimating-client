@@ -33,25 +33,32 @@ import { calculateAvgPERT } from '@/utils/pert'
 import EstimateItem from '@/components/estimate/EstimateItem.vue'
 import {
     convertEstimateToBestUnit,
-    getNearestBaseValueEstimate,
     minimalEstimateUnit,
-} from '@/utils/estimate'
+} from '@/utils/estimate/estimate'
 import { useRoomStore } from '@/store/room'
+import { getNearestBaseValueEstimate } from '@/utils/estimate/nearest'
+import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
+import { getMinimalNonZeroValue } from '@/utils/estimate/values'
 
 const { users } = defineProps<{
     users: User[]
 }>()
 
 const roomStore = useRoomStore()
+const { estimateValues } = useRoomEstimateVariants()
 
 const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
 const avgEstimate = computed<ValueUnitEstimate>(() => {
     const avgEstimate = calculateAvgPERT(users, minimalEstimateUnit)
-    return convertEstimateToBestUnit(avgEstimate)
+    const avgEstimateInBestUnit = convertEstimateToBestUnit(avgEstimate, getMinimalNonZeroValue(estimateValues.value))
+
+    avgEstimateInBestUnit.value = +avgEstimateInBestUnit.value.toFixed(2)
+
+    return avgEstimateInBestUnit
 })
 
 const nearestPredefinedValueEstimate = computed<ValueUnitEstimate>(() => {
-    return getNearestBaseValueEstimate(avgEstimate.value)
+    return getNearestBaseValueEstimate(avgEstimate.value, estimateValues.value)
 })
 </script>

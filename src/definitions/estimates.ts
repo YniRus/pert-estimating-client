@@ -13,15 +13,6 @@ export enum EstimateType {
     Max = 'max',
 }
 
-export type EstimatesOrder = EstimateType[]
-
-export type EstimatesOrderData = EstimatesOrderDataItem[]
-
-export interface EstimatesOrderDataItem {
-    type: EstimateType
-    disabled?: boolean
-}
-
 export interface ValueUnitEstimate {
     value: number
     unit: EstimateUnit
@@ -31,6 +22,8 @@ export enum NonValueUnitEstimate {
     Chill = 'chill',
     IDontKnow = 'i-dont-know',
 }
+
+export type EstimateVariant = NonValueUnitEstimate | ValueUnitEstimate['value']
 
 export const HIDDEN_ESTIMATE = '*'
 

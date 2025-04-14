@@ -75,7 +75,8 @@ import { type Estimates, EstimateType, type ValueUnitEstimate } from '@/definiti
 import { useEstimatesStore } from '@/store/estimates'
 import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
-import { getBestValueUnitEstimateOfType, isEmptyLikeEstimates, minimalEstimateUnit } from '@/utils/estimate'
+import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate/estimate'
+import { isEmptyLikeEstimates } from '@/utils/estimate/guards'
 
 const { isAuthUser } = useAuthStore()
 const estimatesStore = useEstimatesStore()

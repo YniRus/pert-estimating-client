@@ -34,7 +34,7 @@ import UsersTotalEstimate from '@/views/room/components/UsersTotalEstimate.vue'
 import { useRoomStore } from '@/store/room'
 import { useAuthStore } from '@/store/auth'
 import { getRoleTitle } from '@/utils/role'
-import { isEmptyEstimates } from '@/utils/estimate'
+import { isEmptyEstimates } from '@/utils/estimate/guards'
 
 const UNASSIGNED = 'unassigned'
 

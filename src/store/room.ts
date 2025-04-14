@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Room } from '@/definitions/room'
+import type { Room, RoomWithoutConfig } from '@/definitions/room'
 import type { UID } from '@/definitions/aliases'
 import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
@@ -34,7 +34,7 @@ export const useRoomStore = defineStore('room', () => {
         updateRoom(response)
     }
 
-    function updateRoom(room: Room) {
+    function updateRoom(room: RoomWithoutConfig) {
         if (!data.value) return
         if (room.id !== data.value?.id) return
 

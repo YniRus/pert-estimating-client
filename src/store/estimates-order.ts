@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import {
-    type EstimatesOrder,
-    type EstimatesOrderData,
-    EstimateType,
-} from '@/definitions/estimates'
+import { type EstimatesOrder, type EstimatesOrderData } from '@/definitions/estimates-order'
+import { EstimateType } from '@/definitions/estimates'
 import {
     getStoredEstimatesOrderDataIfValid,
     setEstimatesOrderDataToStorage,

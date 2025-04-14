@@ -30,7 +30,7 @@
 
     <div class="estimate-variant-cards w-100">
         <EstimateVariantCard
-            v-for="variant of variants"
+            v-for="variant of estimateVariants"
             :key="`variant-${variant}`"
             :variant="variant"
             @select="onSelectEstimate"
@@ -41,12 +41,14 @@
 <script setup lang="ts">
 import { EstimateUnit, type UserEstimate } from '@/definitions/estimates'
 import { computed } from 'vue'
-import { baseEstimateValues, baseNonValueUnitEstimate, getEstimateUnitColor } from '@/utils/estimate'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue'
 import { toast } from 'vue3-toastify'
+import { getEstimateUnitColor } from '@/utils/estimate/ui'
+import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
 
+const { estimateVariants } = useRoomEstimateVariants()
 const estimatesStore = useEstimatesStore()
 const estimatesOrderStore = useEstimatesOrderStore()
 
@@ -59,10 +61,6 @@ const tooltipText = computed(() => {
         case EstimateUnit.Months: return tooltipText += 'месяцах'
         default: return ''
     }
-})
-
-const variants = computed(() => {
-    return [...baseNonValueUnitEstimate, ...baseEstimateValues]
 })
 
 async function onSelectEstimate(estimate: UserEstimate) {
@@ -84,7 +82,7 @@ async function onSelectEstimate(estimate: UserEstimate) {
     @include mixins.flex-center;
 
     flex-wrap: wrap;
-    gap: map.get(v-settings.$spacers, 5);
+    gap: map.get(v-settings.$spacers, 4);
     align-items: stretch;
 }
 

@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import { createTestingPinia } from '@pinia/testing'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
-import type { EstimatesOrderData } from '@/definitions/estimates'
+import type { EstimatesOrderData } from '@/definitions/estimates-order'
 import { EstimateType } from '@/definitions/estimates'
 
 import { getStoredEstimatesOrderDataIfValid } from '@/utils/estimates-order-data'

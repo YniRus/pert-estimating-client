@@ -1,6 +1,6 @@
 <template>
     <v-card
-        class="estimate-variant-card d-flex px-1 py-12"
+        class="estimate-variant-card d-flex px-1 py-11"
         @click="onSelect(variant)"
     >
         <v-card-text class="align-self-center text-center pa-0">
@@ -30,6 +30,7 @@
             v-if="!isNonValueUnitEstimate(variant)"
             location="top"
             open-on-hover
+            :offset="4"
             transition="slide-y-reverse-transition"
         >
             <template #activator="{ props }">
@@ -40,7 +41,7 @@
                 />
             </template>
 
-            <div class="d-flex flex-column ga-1 pb-1">
+            <div class="d-flex flex-column ga-1">
                 <template
                     v-for="estimateUnit of EstimateUnitEnum"
                     :key="`estimate-${estimateUnit}`"
@@ -59,19 +60,20 @@
 
 <script setup lang="ts">
 import {
-    EstimateUnit as EstimateUnitEnum,
+    EstimateUnit as EstimateUnitEnum, type EstimateVariant,
     NonValueUnitEstimate,
     type UserEstimate,
 } from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
 import { useEstimatesStore } from '@/store/estimates'
-import { getNonValueUnitEstimateIcon, isNonValueUnitEstimate } from '@/utils/estimate'
+import { getNonValueUnitEstimateIcon } from '@/utils/estimate/ui'
+import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
 import { computed } from 'vue'
 
 const estimatesStore = useEstimatesStore()
 
 const { variant } = defineProps<{
-    variant: NonValueUnitEstimate | number
+    variant: EstimateVariant
 }>()
 
 const emit = defineEmits<{

@@ -4,14 +4,14 @@ import {
     type Estimate,
     type UserEstimate,
     type Estimates,
-    type EstimatesOrder,
     EstimateType,
     EstimateUnit,
 } from '@/definitions/estimates'
+import type { EstimatesOrder } from '@/definitions/estimates-order'
 import ws from '@/plugins/ws'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import { WSError } from '@/utils/ws-error'
-import { isNonValueUnitEstimate } from '@/utils/estimate'
+import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
