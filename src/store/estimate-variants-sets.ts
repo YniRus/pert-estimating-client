@@ -4,6 +4,11 @@ import { NonValueUnitEstimate } from '@/definitions/estimates'
 import { predefinedEstimateValues, PredefinedEstimateValuesKey } from '@/utils/estimate/values'
 import type { EstimateVariantsSet } from '@/definitions/estimate-variants-sets'
 import type { UID } from '@/definitions/aliases'
+import {
+    getStoredCustomEstimateVariantsSetsIfValid,
+    removeEstimateVariantsSetFromStorage,
+    setEstimateVariantsSetToStorage,
+} from '@/utils/estimate-variants-sets'
 
 export const useEstimateVariantsSetsStore = defineStore('estimate-variants-sets', () => {
     const predefinedSets: EstimateVariantsSet[] = [
@@ -33,20 +38,28 @@ export const useEstimateVariantsSetsStore = defineStore('estimate-variants-sets'
         },
     ]
 
-    const customSets = ref<EstimateVariantsSet[]>([])
+    const customSets = ref<EstimateVariantsSet[]>(getCustomSets())
+
+    function getCustomSets() {
+        return getStoredCustomEstimateVariantsSetsIfValid() || []
+    }
 
     function applyCustomVariantsSet(customSet: EstimateVariantsSet) {
         const existedSet = customSets.value.find((set) => set.id === customSet.id)
 
         if (existedSet) {
+            existedSet.name = customSet.name
             existedSet.variants = customSet.variants
         } else {
             customSets.value.push(customSet)
         }
+
+        setEstimateVariantsSetToStorage(customSet)
     }
 
     function removeCustomVariantsSet(customSetId: UID) {
         customSets.value = customSets.value.filter((set) => set.id !== customSetId)
+        removeEstimateVariantsSetFromStorage(customSetId)
     }
 
     const sets = computed(() => [...predefinedSets, ...customSets.value])
