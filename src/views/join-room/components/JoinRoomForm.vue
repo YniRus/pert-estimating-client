@@ -22,6 +22,7 @@
                             :rules="nameValidationRules"
                             label="Введите имя"
                             variant="outlined"
+                            hide-details
                         >
                             <template #prepend>
                                 <v-select
@@ -42,9 +43,28 @@
                     </v-col>
                 </v-row>
 
+                <v-row class="mt-0">
+                    <v-col class="py-0">
+                        <v-checkbox
+                            v-model="rememberMe"
+                            density="compact"
+                            hide-details
+                        >
+                            <template #label="{ props }">
+                                <label
+                                    class="pl-1 text-caption cursor-pointer"
+                                    v-bind="props"
+                                >
+                                    Запомнить на этом устройстве
+                                </label>
+                            </template>
+                        </v-checkbox>
+                    </v-col>
+                </v-row>
+
                 <v-btn
                     :loading="loading"
-                    class="mt-2"
+                    class="mt-4"
                     text="Подключиться"
                     type="submit"
                     variant="outlined"
@@ -66,6 +86,7 @@ import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
 import type { UID } from '@/definitions/aliases'
+import { getStoredAuthUserIfValid, removeAuthUserFromStorage, setAuthUserToStorage } from '@/utils/last-auth-user'
 
 export type JoinRoomFormData = {
     roomId: string
@@ -83,7 +104,9 @@ const router = useRouter()
 
 const form = ref<VForm | null>(null)
 
-const role = ref<UserRole | ''>('')
+const lastAuthUser = getStoredAuthUserIfValid()
+
+const role = ref<UserRole | ''>(lastAuthUser?.role || '')
 
 const roleItems = ['', ...Object.values(UserRole)].map((role) => ({
     value: role,
@@ -94,11 +117,13 @@ function getRoleSelectionText({ title, value }: { title: string, value: string }
     return value ? title : ''
 }
 
-const name = ref('')
+const name = ref(lastAuthUser?.name || '')
 
 const nameValidationRules = ref([
-    (value: string) => !!value || 'Введите имя',
+    (value: string) => !!value.trim(),
 ])
+
+const rememberMe = ref(!!lastAuthUser)
 
 async function submit() {
     const { valid } = await form.value!.validate()
@@ -127,7 +152,20 @@ async function login(data: JoinRoomFormData) {
             return
         }
 
+        onLoginSuccess(data)
+
         await router.push({ name: RouteName.Room, params: { roomId: data.roomId } })
     })
+}
+
+function onLoginSuccess(data: JoinRoomFormData) {
+    if (rememberMe.value) {
+        setAuthUserToStorage({
+            name: data.name,
+            role: data.role || undefined,
+        })
+    } else {
+        removeAuthUserFromStorage()
+    }
 }
 </script>
