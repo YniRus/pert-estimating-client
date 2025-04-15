@@ -33,7 +33,7 @@ import type { UID } from '@/definitions/aliases'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 import GoToAuthRoom from '@/views/join-room/components/GoToAuthRoom.vue'
 import { onMounted, ref } from 'vue'
-import { FetchError, request } from '@/plugins/ofetch'
+import { FetchError, type FetchErrorData, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import RoomPinGuardDialog from '@/components/dialogs/RoomPinGuardDialog.vue'
 import JoinRoomForm from '@/views/join-room/components/JoinRoomForm.vue'
@@ -52,7 +52,7 @@ const loading = ref(true)
 const enterRoomPinDialogVisible = ref(false)
 
 async function getRoomConfig() {
-    const response = await request.get<null>('is-room-access-available', {
+    const response = await request.get<null, FetchErrorData>('is-room-access-available', {
         roomId,
         pin: pin.value || undefined,
     })
@@ -69,10 +69,10 @@ async function getRoomConfig() {
                 return
             }
             case 400: {
-                if (response.statusMessage === 'Invalid pin') {
+                if (response.data?.error?.message === 'Invalid pin') {
                     enterRoomPinDialogVisible.value = true
                     toast.error('Неверный pin-код')
-                } else if (response.statusMessage === 'Invalid roomId') {
+                } else if (response.data?.error?.message === 'Invalid roomId') {
                     await router.push({ name: RouteName.Home })
                     toast.error('Неверный id комнаты')
                 } else {
