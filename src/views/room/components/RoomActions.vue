@@ -9,6 +9,7 @@
                 color="error"
                 variant="outlined"
                 icon="mdi-refresh"
+                :disabled
                 @click="deleteEstimates"
             />
 
@@ -16,6 +17,7 @@
                 variant="outlined"
                 :color="isEstimatesVisible ? 'primary' : 'default'"
                 :icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                :disabled
                 @click="switchEstimatesVisible"
             />
         </template>
@@ -25,6 +27,7 @@
                 text="Очистить"
                 color="error"
                 variant="outlined"
+                :disabled
                 @click="deleteEstimates"
             />
 
@@ -34,6 +37,7 @@
                 :color="isEstimatesVisible ? 'primary' : 'default'"
                 :prepend-icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
                 :width="146"
+                :disabled
                 @click="switchEstimatesVisible"
             />
         </template>
@@ -46,12 +50,21 @@ import { toast } from 'vue3-toastify'
 import { computed, ref, onMounted, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useConfirm } from '@/composables/use-confirm'
 import { useEstimatesStore } from '@/store/estimates'
+import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
 
 const roomStore = useRoomStore()
 const estimatesStore = useEstimatesStore()
 const { confirm } = useConfirm()
 
-const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
+const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
+
+const disabled = computed(() => !hasUsersWhoCanEstimates.value)
+
+const isEstimatesVisible = computed(() => {
+    if (!hasUsersWhoCanEstimates.value) return false
+
+    return roomStore.data?.estimatesVisible
+})
 
 const switchEstimatesVisibleBtnText = computed(() => {
     return isEstimatesVisible.value

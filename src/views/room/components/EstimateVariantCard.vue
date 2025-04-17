@@ -1,6 +1,7 @@
 <template>
     <v-card
         class="estimate-variant-card d-flex px-1 py-11"
+        :disabled="!canEstimate"
         @click="onSelect(variant)"
     >
         <v-card-text class="align-self-center text-center pa-0">
@@ -19,7 +20,7 @@
                     contentClass: 'text-center',
                     maxWidth: 250,
                 }"
-                class="estimate-help ma-1"
+                class="estimate-help ma-1 pointer-events-auto"
                 icon="mdi-information-outline"
                 size="small"
                 color="grey"
@@ -27,7 +28,7 @@
         </v-card-text>
 
         <v-menu
-            v-if="!isNonValueUnitEstimate(variant)"
+            v-if="!isNonValueUnitEstimate(variant) && canEstimate"
             location="top"
             open-on-hover
             :offset="4"
@@ -74,6 +75,7 @@ const estimatesStore = useEstimatesStore()
 
 const { variant } = defineProps<{
     variant: EstimateVariant
+    canEstimate?: boolean
 }>()
 
 const emit = defineEmits<{

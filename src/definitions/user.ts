@@ -4,6 +4,8 @@ import type { Estimates } from '@/definitions/estimates'
 export enum UserRole {
     Dev = 'dev',
     QA = 'qa',
+    SA = 'sa',
+    RoomAdmin = 'room-admin',
 }
 
 export interface User {

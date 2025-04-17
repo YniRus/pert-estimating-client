@@ -28,14 +28,30 @@
                                 <v-select
                                     v-model="role"
                                     width="100"
-                                    :items="roleItems"
+                                    :items="roleSelectItems"
                                     variant="outlined"
                                     label="Роль"
                                     hide-details
                                     autocomplete="off"
                                 >
                                     <template #selection="{ item }">
-                                        {{ getRoleSelectionText(item) }}
+                                        {{ getRoleShortTitle(item.value) }}
+                                    </template>
+
+                                    <template #item="{ props: itemProps, item, index }">
+                                        <template v-if="item.raw.type === 'subheader'">
+                                            <v-divider v-if="index > 0" />
+
+                                            <v-list-subheader v-bind="itemProps" />
+                                        </template>
+
+                                        <v-list-item
+                                            v-else
+                                            v-bind="itemProps"
+                                            :max-width="220"
+                                            :lines="false"
+                                            :subtitle="getRoleDescription(item.value)"
+                                        />
                                     </template>
                                 </v-select>
                             </template>
@@ -76,10 +92,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { VForm } from 'vuetify/components'
 import { UserRole } from '@/definitions/user'
-import { getRoleTitle } from '@/utils/role'
+import { getRoleDescription, getRoleShortTitle, getRoleTitle } from '@/utils/role'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
@@ -108,13 +124,24 @@ const lastAuthUser = getStoredAuthUserIfValid()
 
 const role = ref<UserRole | ''>(lastAuthUser?.role || '')
 
-const roleItems = ['', ...Object.values(UserRole)].map((role) => ({
-    value: role,
-    title: getRoleTitle(role),
-}))
+const baseRoles = Object.values(UserRole).filter((role) => ![UserRole.RoomAdmin].includes(role))
+const specialRoles = Object.values(UserRole).filter((role) => [UserRole.RoomAdmin].includes(role))
 
-function getRoleSelectionText({ title, value }: { title: string, value: string }) {
-    return value ? title : ''
+const roleSelectItems = computed(() => {
+    return [
+        { type: 'subheader', title: 'Базовые роли' },
+        ...baseRoles.map(getRoleSelectItem),
+        { type: 'subheader', title: 'Специальные роли' },
+        ...specialRoles.map(getRoleSelectItem),
+    ]
+})
+
+function getRoleSelectItem(role: UserRole) {
+    return {
+        type: 'item',
+        value: role,
+        title: getRoleTitle(role),
+    }
 }
 
 const name = ref(lastAuthUser?.name || '')
