@@ -1,5 +1,9 @@
 <template>
-    <v-layout data-layout="base" full-height>
+    <v-layout
+        data-layout="base"
+        class="overflow-visible"
+        full-height
+    >
         <v-app-bar
             elevation="2"
             color="grey-lighten-4"

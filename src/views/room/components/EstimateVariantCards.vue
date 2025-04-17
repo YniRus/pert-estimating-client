@@ -1,5 +1,6 @@
 <template>
     <v-btn-toggle
+        v-if="canEstimate"
         :model-value="estimatesStore.unit"
         divided
         rounded="xl"
@@ -33,6 +34,7 @@
             v-for="variant of estimateVariants"
             :key="`variant-${variant}`"
             :variant="variant"
+            :can-estimate="canEstimate"
             @select="onSelectEstimate"
         />
     </div>
@@ -47,6 +49,10 @@ import EstimateVariantCard from '@/views/room/components/EstimateVariantCard.vue
 import { toast } from 'vue3-toastify'
 import { getEstimateUnitColor } from '@/utils/estimate/ui'
 import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
+
+defineProps<{
+    canEstimate?: boolean
+}>()
 
 const { estimateVariants } = useRoomEstimateVariants()
 const estimatesStore = useEstimatesStore()
@@ -75,8 +81,6 @@ async function onSelectEstimate(estimate: UserEstimate) {
 @use 'sass:map';
 @use 'vuetify/settings' as v-settings;
 @use '@/styles/mixins';
-
-@import '@/styles/variables';
 
 .estimate-variant-cards {
     @include mixins.flex-center;

@@ -1,35 +1,70 @@
 <template>
-    <div class="room-actions w-100 d-flex justify-space-between">
-        <v-btn
-            text="Очистить"
-            color="error"
-            variant="outlined"
-            @click="deleteEstimates"
-        />
+    <div
+        ref="actions"
+        class="room-actions d-flex justify-space-between"
+        :class="{ 'is-sticky': isSticky }"
+    >
+        <template v-if="isSticky">
+            <v-btn
+                color="error"
+                variant="outlined"
+                icon="mdi-refresh"
+                :disabled
+                @click="deleteEstimates"
+            />
 
-        <v-btn
-            :text="switchEstimatesVisibleBtnText"
-            variant="outlined"
-            :color="isEstimatesVisible ? 'primary' : 'default'"
-            :prepend-icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
-            :width="146"
-            @click="switchEstimatesVisible"
-        />
+            <v-btn
+                variant="outlined"
+                :color="isEstimatesVisible ? 'primary' : 'default'"
+                :icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                :disabled
+                @click="switchEstimatesVisible"
+            />
+        </template>
+
+        <template v-else>
+            <v-btn
+                text="Очистить"
+                color="error"
+                variant="outlined"
+                :disabled
+                @click="deleteEstimates"
+            />
+
+            <v-btn
+                :text="switchEstimatesVisibleBtnText"
+                variant="outlined"
+                :color="isEstimatesVisible ? 'primary' : 'default'"
+                :prepend-icon="isEstimatesVisible ? 'mdi-eye-off' : 'mdi-eye'"
+                :width="146"
+                :disabled
+                @click="switchEstimatesVisible"
+            />
+        </template>
     </div>
 </template>
 
 <script setup lang="ts">
 import { useRoomStore } from '@/store/room'
 import { toast } from 'vue3-toastify'
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useConfirm } from '@/composables/use-confirm'
 import { useEstimatesStore } from '@/store/estimates'
+import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
 
 const roomStore = useRoomStore()
 const estimatesStore = useEstimatesStore()
 const { confirm } = useConfirm()
 
-const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
+const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
+
+const disabled = computed(() => !hasUsersWhoCanEstimates.value)
+
+const isEstimatesVisible = computed(() => {
+    if (!hasUsersWhoCanEstimates.value) return false
+
+    return roomStore.data?.estimatesVisible
+})
 
 const switchEstimatesVisibleBtnText = computed(() => {
     return isEstimatesVisible.value
@@ -57,4 +92,82 @@ async function deleteEstimates() {
 
     estimatesStore.resetCurrentType()
 }
+
+const actionsRef = useTemplateRef<HTMLDivElement>('actions')
+
+let observer: IntersectionObserver | null = null
+const STICKY_BREAKPOINT = 950
+const isSticky = ref(false)
+const canSticky = ref(window.innerWidth >= STICKY_BREAKPOINT)
+
+onMounted(() => {
+    if (!actionsRef.value) return
+
+    setupObserver()
+    window.addEventListener('resize', onResize)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', onResize)
+    disconnectObserver()
+})
+
+function onResize() {
+    canSticky.value = window.innerWidth >= STICKY_BREAKPOINT
+}
+
+watch(canSticky, () => {
+    if (canSticky.value) {
+        setupObserver()
+    } else {
+        disconnectObserver()
+        isSticky.value = false
+    }
+})
+
+function setupObserver() {
+    if (!canSticky.value || !actionsRef.value) return
+
+    disconnectObserver()
+
+    observer = new IntersectionObserver((entries) => {
+        isSticky.value = !entries[0].isIntersecting
+    }, { threshold: 1, rootMargin: '-1px 0px 0px 0px' })
+
+    observer.observe(actionsRef.value)
+}
+
+function disconnectObserver() {
+    if (observer) {
+        observer.disconnect()
+        observer = null
+    }
+}
 </script>
+
+<style lang="scss" scoped>
+@use 'sass:map';
+@use 'vuetify/settings' as v-settings;
+
+.room-actions {
+    width: 100%;
+
+    @media (width >= 950px) {
+        position: sticky;
+        top: 0;
+        transition: width 0.2s ease-out, padding-top 0s;
+
+        &.is-sticky {
+            $sticky-button-height: 48px;
+
+            pointer-events: none;
+            width: calc(var(--content-max-width) + #{$sticky-button-height} * 2);
+            padding-top: map.get(v-settings.$spacers, 5);
+
+            > * {
+                pointer-events: auto;
+            }
+        }
+    }
+}
+</style>

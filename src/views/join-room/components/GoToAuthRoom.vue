@@ -44,7 +44,7 @@
                     variant="flat"
                     class="flex-shrink-0"
                 >
-                    {{ getRoleTitle(authData.user.role) }}
+                    {{ getRoleShortTitle(authData.user.role) }}
                 </v-chip>
 
                 <span class="text-body-1 text-truncate">
@@ -71,7 +71,7 @@ import { useRouter } from 'vue-router'
 import RouteName from '@/router/route-name'
 import type { UID } from '@/definitions/aliases'
 import { useAuthStore } from '@/store/auth'
-import { getRoleTitle } from '@/utils/role'
+import { getRoleShortTitle } from '@/utils/role'
 
 const router = useRouter()
 const authStore = useAuthStore()

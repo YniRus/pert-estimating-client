@@ -1,7 +1,11 @@
 <template>
     <BaseLayout :loading>
         <template #header-actions>
-            <UserSettings />
+            <div class="d-flex ga-3">
+                <RoomInfo />
+
+                <UserSettings />
+            </div>
 
             <v-divider
                 class="mx-3 my-3"
@@ -35,7 +39,7 @@
             v-if="roomStore.data"
             class="ga-5"
         >
-            <EstimateVariantCards />
+            <EstimateVariantCards :can-estimate="canEstimate" />
 
             <RoomActions />
 
@@ -46,7 +50,7 @@
 
 <script setup lang="ts">
 import type { UID } from '@/definitions/aliases'
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { toast } from 'vue3-toastify'
 import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
@@ -66,6 +70,7 @@ import { useServerPing } from '@/store/composables/use-server-ping'
 import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 import UserSettings from '@/components/settings/user-settings/UserSettings.vue'
 import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
+import RoomInfo from '@/views/room/components/RoomInfo.vue'
 
 await ws.init()
 
@@ -198,4 +203,9 @@ async function shareRoomAccessUrl() {
         }
     })
 }
+
+const canEstimate = computed(() => {
+    if (!authStore.data?.user) return false
+    return authStore.isCanEstimateUser(authStore.data.user)
+})
 </script>
