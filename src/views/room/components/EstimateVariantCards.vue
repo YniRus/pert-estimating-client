@@ -76,8 +76,6 @@ async function onSelectEstimate(estimate: UserEstimate) {
 @use 'vuetify/settings' as v-settings;
 @use '@/styles/mixins';
 
-@import '@/styles/variables';
-
 .estimate-variant-cards {
     @include mixins.flex-center;
 
