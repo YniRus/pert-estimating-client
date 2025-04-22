@@ -327,4 +327,8 @@ function submitCustomVariantsSet() {
         transition: transform 0.3s ease;
     }
 }
+
+.text-caption {
+    font-size: 0.73rem !important;
+}
 </style>

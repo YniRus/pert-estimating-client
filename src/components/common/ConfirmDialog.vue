@@ -19,7 +19,9 @@
             <v-divider />
 
             <v-container>
-                {{ text }}
+                <v-card-text class="pa-0">
+                    {{ text }}
+                </v-card-text>
             </v-container>
 
             <v-divider />

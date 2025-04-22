@@ -10,11 +10,7 @@
             density="comfortable"
             class="px-5"
         >
-            <template #prepend>
-                <img width="32" src="/favicon.ico">
-            </template>
-
-            <v-app-bar-title class="d-none d-sm-block">
+            <v-app-bar-title class="d-none d-sm-block ml-0">
                 {{ title }}
             </v-app-bar-title>
 

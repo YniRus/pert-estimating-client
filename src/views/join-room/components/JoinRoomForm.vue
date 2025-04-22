@@ -33,6 +33,9 @@
                                     label="Роль"
                                     hide-details
                                     autocomplete="off"
+                                    :menu-props="{
+                                        maxHeight: '400px',
+                                    }"
                                 >
                                     <template #selection="{ item }">
                                         {{ getRoleShortTitle(item.value) }}
@@ -42,13 +45,15 @@
                                         <template v-if="item.raw.type === 'subheader'">
                                             <v-divider v-if="index > 0" />
 
-                                            <v-list-subheader v-bind="itemProps" />
+                                            <v-list-subheader
+                                                :title="item.raw.title"
+                                            />
                                         </template>
 
                                         <v-list-item
                                             v-else
                                             v-bind="itemProps"
-                                            :max-width="220"
+                                            :max-width="232"
                                             :lines="false"
                                             :subtitle="getRoleDescription(item.value)"
                                         />
@@ -129,6 +134,7 @@ const specialRoles = Object.values(UserRole).filter((role) => [UserRole.RoomAdmi
 
 const roleSelectItems = computed(() => {
     return [
+        { type: 'item', value: '', title: getRoleTitle('') },
         { type: 'subheader', title: 'Базовые роли' },
         ...baseRoles.map(getRoleSelectItem),
         { type: 'subheader', title: 'Специальные роли' },

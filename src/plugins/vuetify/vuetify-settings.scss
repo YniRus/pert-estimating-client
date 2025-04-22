@@ -1,0 +1,59 @@
+@use 'sass:map';
+
+$font-weights: (
+    'thin': 100,
+    'light': 200,
+    'regular': 300,
+    'medium': 400,
+    'bold': 600,
+    'black': 800
+);
+
+@use 'vuetify/settings' with (
+    $body-font-family: ('Geologica', sans-serif),
+    $font-weights: $font-weights,
+    $typography: (
+        'h1': (
+            'weight': map.get($font-weights, 'light'),
+        ),
+        'h2': (
+            'weight': map.get($font-weights, 'light'),
+        ),
+        'h3': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'h4': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'h5': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'h6': (
+            'weight': map.get($font-weights, 'medium'),
+        ),
+        'subtitle-1': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'subtitle-2': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'body-1': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'body-2': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'button': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'caption': (
+            'weight': map.get($font-weights, 'regular'),
+        ),
+        'overline': (
+            'weight': map.get($font-weights, 'regular'),
+        )
+    ),
+    $input-details-font-weight: 300,
+    $messages-font-size: 11px,
+    $table-header-font-weight: 400,
+);
