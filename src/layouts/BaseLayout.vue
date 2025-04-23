@@ -10,9 +10,21 @@
             density="comfortable"
             class="px-5"
         >
-            <v-app-bar-title class="d-none d-sm-block ml-0">
-                {{ title }}
-            </v-app-bar-title>
+            <div class="d-flex ga-4">
+                <v-app-bar-title class="d-none d-sm-block ml-0">
+                    {{ title }}
+                </v-app-bar-title>
+
+                <v-btn
+                    v-tooltip="{ text: 'Скоро...' }"
+                    text="Документация"
+                    append-icon="mdi-open-in-new"
+                    variant="plain"
+                    role="link"
+                    size="small"
+                    :ripple="false"
+                />
+            </div>
 
             <template
                 v-if="!loading"
