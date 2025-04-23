@@ -130,7 +130,7 @@ const form = ref<VForm | null>(null)
 
 function getDefaultNonValueVariants() {
     return Object.values(NonValueUnitEstimate)
-        .map((variant) => ({ value: variant, disabled: false }))
+        .map((variant) => ({ value: variant, disabled: true }))
 }
 
 const nonValueVariants = ref(getDefaultNonValueVariants())
@@ -220,6 +220,7 @@ const isLimitCustomVariantsReached = computed(() => {
 
 watch(dialog, () => {
     if (!dialog.value) return
+    reset()
 
     name.value = initialSet.name
 
@@ -267,8 +268,13 @@ function submitCustomVariantsSet() {
     if (!isSubmitAvailable.value) return
     emit('submit', customVariantsSet.value)
     dialog.value = false
+    reset()
+}
+
+function reset() {
     customValues.value = []
     newCustomValue.value = null
+    nonValueVariants.value = getDefaultNonValueVariants()
     name.value = ''
 }
 </script>
