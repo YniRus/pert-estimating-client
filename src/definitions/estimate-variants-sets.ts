@@ -9,3 +9,5 @@ export interface EstimateVariantsSet {
     name: string
     variants: EstimateVariant[]
 }
+
+export interface ImportEstimateVariantsSet extends Omit<EstimateVariantsSet, 'id'> {}

@@ -42,14 +42,33 @@
                             {{ set.name }}
                         </span>
 
-                        <div>
+                        <div class="d-flex ga-2 ml-2">
+                            <v-btn
+                                v-if="!isPredefinedVariantsSet(set)"
+                                size="x-small"
+                                color="primary"
+                                variant="text"
+                                density="comfortable"
+                                icon="mdi-content-copy"
+                                @click.stop="copyToClipboard(set)"
+                            />
+
                             <v-btn
                                 size="x-small"
                                 color="primary"
                                 variant="text"
-                                class="ml-2"
                                 density="comfortable"
-                                :icon="isPredefinedVariantsSet(set) ? 'mdi-content-copy' : 'mdi-pencil'"
+                                icon="mdi-pencil-box-multiple-outline"
+                                @click.stop="createCustomEstimateVariantsSet(set)"
+                            />
+
+                            <v-btn
+                                v-if="!isPredefinedVariantsSet(set)"
+                                size="x-small"
+                                color="primary"
+                                variant="text"
+                                density="comfortable"
+                                icon="mdi-pencil"
                                 @click.stop="openCustomEstimateVariantsSetDialog(set)"
                             />
 
@@ -58,7 +77,6 @@
                                 size="x-small"
                                 color="error"
                                 variant="text"
-                                class="ml-2"
                                 density="comfortable"
                                 icon="mdi-delete-outline"
                                 @click.stop="removeCustomEstimateVariantsSet(set)"
@@ -72,13 +90,30 @@
 
             <v-card-actions>
                 <v-btn
-                    block
+                    class="flex-grow-1"
                     variant="outlined"
                     prepend-icon="mdi-plus"
-                    @click="openCustomEstimateVariantsSetDialog()"
+                    @click="createCustomEstimateVariantsSet()"
                 >
                     Новый набор
                 </v-btn>
+
+                <div
+                    v-tooltip="{
+                        text: importButtonTooltip,
+                        contentClass: 'text-center',
+                        maxWidth: 300,
+                    }"
+                    class="ml-2"
+                >
+                    <v-btn
+                        variant="outlined"
+                        :disabled="clipboardReadPermission === 'denied'"
+                        @click="importCustomEstimateVariantsSet()"
+                    >
+                        <v-icon icon="mdi-import" />
+                    </v-btn>
+                </div>
             </v-card-actions>
         </v-card>
     </v-menu>
@@ -94,11 +129,18 @@
 import { computed, ref } from 'vue'
 import EstimateVariantsSelectorCards from '@/components/settings/room-config/EstimateVariantsSelectorCards.vue'
 import CustomEstimateVariantsSetDialog from '@/components/settings/room-config/CustomEstimateVariantsSetDialog.vue'
-import type { EstimateVariantsSet, EstimateVariantsSetId } from '@/definitions/estimate-variants-sets'
+import type {
+    EstimateVariantsSet,
+    EstimateVariantsSetId,
+    ImportEstimateVariantsSet,
+} from '@/definitions/estimate-variants-sets'
 import { randomUUID } from '@/utils/crypto'
 import { useEstimateVariantsSetsStore } from '@/store/estimate-variants-sets'
 import { PredefinedEstimateValuesKey } from '@/utils/estimate/values'
 import { useConfirm } from '@/composables/use-confirm'
+import { toast } from 'vue3-toastify'
+import { usePermission } from '@vueuse/core'
+import { isValidEstimateVariantsSet } from '@/utils/estimate-variants-sets'
 
 const { selectedSetId } = defineProps<{
     selectedSetId?: EstimateVariantsSetId
@@ -144,10 +186,10 @@ function onChangeSet(setId: EstimateVariantsSetId) {
     menuOpen.value = false
 }
 
-function openCustomEstimateVariantsSetDialog(variantsSet?: EstimateVariantsSet) {
+function createCustomEstimateVariantsSet(variantsSet?: EstimateVariantsSet) {
     if (!variantsSet) {
         variantsSet = getEmptyCustomEstimateVariantsSet()
-    } else if (isPredefinedVariantsSet(variantsSet)) {
+    } else {
         variantsSet = {
             id: randomUUID(),
             name: variantsSet.name + ` (копия)`,
@@ -155,8 +197,50 @@ function openCustomEstimateVariantsSetDialog(variantsSet?: EstimateVariantsSet) 
         }
     }
 
+    openCustomEstimateVariantsSetDialog(variantsSet)
+}
+
+function openCustomEstimateVariantsSetDialog(variantsSet: EstimateVariantsSet) {
     customVariantsSetToEdit.value = variantsSet
     customEstimateVariantsSetDialogOpen.value = true
+}
+
+function copyToClipboard(variantsSet: EstimateVariantsSet) {
+    const variantsSetToClipboard: ImportEstimateVariantsSet = {
+        name: variantsSet.name,
+        variants: variantsSet.variants,
+    }
+
+    navigator.clipboard.writeText(JSON.stringify(variantsSetToClipboard))
+        .then(() => toast('Скопировано в буфер обмена'))
+}
+
+const clipboardReadPermission = usePermission('clipboard-read')
+
+const importButtonTooltip = computed(() => {
+    if (clipboardReadPermission.value === 'denied') {
+        return 'Вы запретили доступ к буферу обмена. Разрешите для возможности импортировать наборы оценок.'
+    }
+
+    return 'Импорт из буфера обмена'
+})
+
+async function importCustomEstimateVariantsSet() {
+    try {
+        const clipboardText = await navigator.clipboard.readText()
+        const estimateVariantsSet = JSON.parse(clipboardText)
+        if (isValidEstimateVariantsSet<ImportEstimateVariantsSet>(estimateVariantsSet, true)) {
+            onCustomVariantsSetSubmit({
+                id: randomUUID(),
+                ...estimateVariantsSet,
+            })
+        }
+    } catch {
+        if (clipboardReadPermission.value === 'denied') return
+        toast('В буфере обмена нет набора оценок или он некорректный. Попробуйте скопировать снова.', {
+            type: 'error',
+        })
+    }
 }
 
 const { confirm } = useConfirm()

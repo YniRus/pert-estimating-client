@@ -1,6 +1,10 @@
 import { NonValueUnitEstimate } from '@/definitions/estimates'
 import { truthy } from '@/utils/utils'
-import type { EstimateVariantsSet, EstimateVariantsSetId } from '@/definitions/estimate-variants-sets'
+import type {
+    EstimateVariantsSet,
+    EstimateVariantsSetId,
+    ImportEstimateVariantsSet,
+} from '@/definitions/estimate-variants-sets'
 
 const estimatesOrderStoragePrefix = 'PERT-estimating_custom-estimate-variants-set'
 
@@ -20,9 +24,13 @@ export function getStoredCustomEstimateVariantsSetsIfValid() {
         .filter(truthy)
 }
 
-function isValidEstimateVariantsSet(maybeEstimateVariantsSet: unknown): maybeEstimateVariantsSet is EstimateVariantsSet {
+export function isValidEstimateVariantsSet<
+    T extends EstimateVariantsSet | ImportEstimateVariantsSet,
+>(maybeEstimateVariantsSet: unknown, asImport = false): maybeEstimateVariantsSet is T {
     if (typeof maybeEstimateVariantsSet !== 'object' || maybeEstimateVariantsSet === null) return false
-    if (!('id' in maybeEstimateVariantsSet) || typeof maybeEstimateVariantsSet.id !== 'string') return false
+    if (!asImport) {
+        if (!('id' in maybeEstimateVariantsSet) || typeof maybeEstimateVariantsSet.id !== 'string') return false
+    }
     if (!('name' in maybeEstimateVariantsSet) || typeof maybeEstimateVariantsSet.name !== 'string') return false
     if (!('variants' in maybeEstimateVariantsSet) || !Array.isArray(maybeEstimateVariantsSet.variants)) return false
 
