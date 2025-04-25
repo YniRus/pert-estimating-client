@@ -19,3 +19,7 @@ export function swap<T>(source: T[], from: number, to: number) {
 
     return array
 }
+
+export function randomNumber(min: number, max: number) {
+    return Math.random() * (max - min) + min
+}

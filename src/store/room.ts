@@ -6,6 +6,7 @@ import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
 import type { User } from '@/definitions/user'
 import type { Estimates } from '@/definitions/estimates'
+import { spawnBubbleNotification } from '@/utils/bubble-notifications'
 
 export const useRoomStore = defineStore('room', () => {
     const data = ref<Room>()
@@ -72,6 +73,8 @@ export const useRoomStore = defineStore('room', () => {
         if (!user) return
 
         user.estimates = estimates
+
+        spawnBubbleNotification({ text: user.name })
     }
 
     function wsOn() {
