@@ -14,7 +14,7 @@ export function getStoredCustomEstimateVariantsSetsIfValid() {
         .map((storageKey) => {
             try {
                 const set = JSON.parse(localStorage.getItem(storageKey)!)
-                if (!isValidEstimateVariantsSet(set)) return null
+                if (!isValidEstimateVariantsSet<EstimateVariantsSet>(set)) return null
 
                 return set
             } catch {
