@@ -2,7 +2,9 @@ import { ref } from 'vue'
 import { request } from '@/plugins/ofetch'
 
 export function useServerPing() {
-    const interval = +import.meta.env.VITE_SERVER_PING_INTERVAL
+    const interval = import.meta.env.VITE_SERVER_PING_INTERVAL
+        ? +import.meta.env.VITE_SERVER_PING_INTERVAL
+        : null
     const intervalId = ref<ReturnType<typeof setInterval>>()
 
     const isServerPingEnabled = !Number.isNaN(interval)
@@ -13,7 +15,7 @@ export function useServerPing() {
 
     function pingOn() {
         if (!isServerPingEnabled) return
-        intervalId.value = setInterval(ping, interval)
+        intervalId.value = setInterval(ping, interval!)
     }
 
     function pingOff() {
