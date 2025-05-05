@@ -24,7 +24,9 @@ class WS {
 
     async init() {
         if (this.#connected) await this.disconnect()
-        this.#client = io(import.meta.env.VITE_SERVER_HOST, this.#options)
+        this.#client = import.meta.env.VITE_SERVER_HOST
+            ? io(import.meta.env.VITE_SERVER_HOST, this.#options)
+            : io(this.#options)
     }
 
     get #connected() {

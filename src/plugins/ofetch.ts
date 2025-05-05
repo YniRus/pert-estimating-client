@@ -24,7 +24,7 @@ const baseFetch = ofetch.create({
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     },
-    baseURL: import.meta.env.VITE_SERVER_HOST,
+    baseURL: import.meta.env.VITE_SERVER_HOST || '/api',
     credentials: 'include',
 })
 
