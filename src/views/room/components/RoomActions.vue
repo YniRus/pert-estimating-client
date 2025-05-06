@@ -27,6 +27,8 @@
                 text="Очистить"
                 color="error"
                 variant="outlined"
+                prepend-icon="mdi-refresh"
+                :width="146"
                 :disabled
                 @click="deleteEstimates"
             />
