@@ -6,7 +6,7 @@ import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
 import type { User } from '@/definitions/user'
 import type { Estimates } from '@/definitions/estimates'
-import { spawnBubbleNotification } from '@/utils/bubble-notifications'
+import { useUserEstimatesNotifications } from '@/store/composables/use-user-estimates-notificatons'
 
 export const useRoomStore = defineStore('room', () => {
     const data = ref<Room>()
@@ -66,6 +66,8 @@ export const useRoomStore = defineStore('room', () => {
         return data.value.users.findIndex((user) => user.id === userId)
     }
 
+    const { onUserEstimates } = useUserEstimatesNotifications()
+
     function setUserEstimates(userId: UID, estimates: Estimates) {
         if (!data.value) return
 
@@ -74,7 +76,7 @@ export const useRoomStore = defineStore('room', () => {
 
         user.estimates = estimates
 
-        spawnBubbleNotification({ text: user.name })
+        onUserEstimates(user)
     }
 
     function wsOn() {

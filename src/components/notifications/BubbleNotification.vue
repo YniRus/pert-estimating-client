@@ -25,7 +25,7 @@ const emit = defineEmits<{
 const positionX = ref(getWindowMiddle())
 
 function getWindowMiddle() {
-    return window.innerWidth / 2
+    return (document.documentElement.clientWidth) / 2
 }
 
 onMounted(() => {
@@ -51,12 +51,12 @@ onMounted(() => {
 
 @keyframes bubble-float {
     0% {
-        transform: translateY(100%);
+        transform: translateX(-50%) translateY(100%);
         opacity: 1;
     }
 
     100% {
-        transform: translateY(-120px);
+        transform: translateX(-50%) translateY(-120px);
         opacity: 0;
     }
 }

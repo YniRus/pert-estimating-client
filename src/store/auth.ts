@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
         return user.id === data.value?.user.id
     }
 
+    // TODO: Вынести отсюда
     function isCanEstimateUser(user: User) {
         return user.role !== UserRole.RoomAdmin
     }

@@ -7,7 +7,7 @@ export function useServerPing() {
         : null
     const intervalId = ref<ReturnType<typeof setInterval>>()
 
-    const isServerPingEnabled = !Number.isNaN(interval)
+    const isServerPingEnabled = Number.isInteger(interval)
 
     async function ping() {
         await request.post('/ping')

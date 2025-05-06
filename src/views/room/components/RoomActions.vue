@@ -1,7 +1,7 @@
 <template>
     <div
         ref="actions"
-        class="room-actions d-flex justify-space-between"
+        class="room-actions d-flex justify-space-between align-center"
         :class="{ 'is-sticky': isSticky }"
     >
         <template v-if="isSticky">
@@ -31,6 +31,13 @@
                 @click="deleteEstimates"
             />
 
+            <v-slide-y-reverse-transition leave-absolute>
+                <RoomLastEstimateTimer
+                    v-if="lastEstimateTimerStore.isEnabled"
+                    :disabled
+                />
+            </v-slide-y-reverse-transition>
+
             <v-btn
                 :text="switchEstimatesVisibleBtnText"
                 variant="outlined"
@@ -49,14 +56,17 @@ import { useRoomStore } from '@/store/room'
 import { toast } from 'vue3-toastify'
 import { computed, ref, onMounted, onBeforeUnmount, useTemplateRef, watch } from 'vue'
 import { useConfirm } from '@/composables/use-confirm'
-import { useEstimatesStore } from '@/store/estimates'
 import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
+import RoomLastEstimateTimer from '@/components/estimate/timer/RoomLastEstimateTimer.vue'
+import { useLastEstimateTimerStore } from '@/store/last-estimate-timer'
+import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
 
 const roomStore = useRoomStore()
-const estimatesStore = useEstimatesStore()
 const { confirm } = useConfirm()
 
 const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
+const { onRoomDeleteEstimates } = useDeleteEstimatesWatcher()
+const lastEstimateTimerStore = useLastEstimateTimerStore()
 
 const disabled = computed(() => !hasUsersWhoCanEstimates.value)
 
@@ -90,7 +100,7 @@ async function deleteEstimates() {
         return
     }
 
-    estimatesStore.resetCurrentType()
+    onRoomDeleteEstimates()
 }
 
 const actionsRef = useTemplateRef<HTMLDivElement>('actions')

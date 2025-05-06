@@ -12,6 +12,7 @@ import ws from '@/plugins/ws'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
 import { WSError } from '@/utils/ws-error'
 import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
+import { useUserEstimatesNotifications } from '@/store/composables/use-user-estimates-notificatons'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
@@ -50,6 +51,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setCurrentType(order[nextTypeIndex])
     }
 
+    const { triggerLastEstimateTimer } = useUserEstimatesNotifications()
+
     async function setEstimate(userEstimate: UserEstimate) {
         const estimate: Estimate = isNonValueUnitEstimate(userEstimate)
             ? userEstimate
@@ -59,6 +62,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
 
         const response = await ws.emitWithAck('mutation:estimate', type.value, estimate)
         if (response instanceof WSError) return response
+
+        triggerLastEstimateTimer()
     }
 
     function $reset() {

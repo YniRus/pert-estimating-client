@@ -1,5 +1,6 @@
 import ws from '@/plugins/ws'
 import { useEstimatesStore } from '@/store/estimates'
+import { useLastEstimateTimerStore } from '@/store/last-estimate-timer'
 
 enum UpdateRoomContext {
     UpdateEstimatesVisible = 'update-estimates-visible',
@@ -8,11 +9,17 @@ enum UpdateRoomContext {
 
 export function useDeleteEstimatesWatcher() {
     const estimatesStore = useEstimatesStore()
+    const lastEstimateTimerStore = useLastEstimateTimerStore()
 
     function onRoom(_: unknown, context?: string) {
         if (context === UpdateRoomContext.DeleteEstimates) {
-            estimatesStore.resetCurrentType()
+            onRoomDeleteEstimates()
         }
+    }
+
+    function onRoomDeleteEstimates() {
+        estimatesStore.resetCurrentType()
+        lastEstimateTimerStore.stop()
     }
 
     function watch() {
@@ -26,5 +33,6 @@ export function useDeleteEstimatesWatcher() {
     return {
         watch,
         unwatch,
+        onRoomDeleteEstimates,
     }
 }
