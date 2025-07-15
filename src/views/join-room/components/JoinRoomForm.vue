@@ -25,40 +25,7 @@
                             hide-details
                         >
                             <template #prepend>
-                                <v-select
-                                    v-model="role"
-                                    width="100"
-                                    :items="roleSelectItems"
-                                    variant="outlined"
-                                    label="Роль"
-                                    hide-details
-                                    autocomplete="off"
-                                    :menu-props="{
-                                        maxHeight: '400px',
-                                    }"
-                                >
-                                    <template #selection="{ item }">
-                                        {{ getRoleShortTitle(item.value) }}
-                                    </template>
-
-                                    <template #item="{ props: itemProps, item, index }">
-                                        <template v-if="item.raw.type === 'subheader'">
-                                            <v-divider v-if="index > 0" />
-
-                                            <v-list-subheader
-                                                :title="item.raw.title"
-                                            />
-                                        </template>
-
-                                        <v-list-item
-                                            v-else
-                                            v-bind="itemProps"
-                                            :max-width="232"
-                                            :lines="false"
-                                            :subtitle="getRoleDescription(item.value)"
-                                        />
-                                    </template>
-                                </v-select>
+                                <RoleSelect v-model="role" />
                             </template>
                         </v-text-field>
                     </v-col>
@@ -97,10 +64,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import type { VForm } from 'vuetify/components'
 import { UserRole } from '@/definitions/user'
-import { getRoleDescription, getRoleShortTitle, getRoleTitle } from '@/utils/role'
 import { wrap } from '@/utils/loading'
 import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
@@ -108,6 +74,7 @@ import RouteName from '@/router/route-name'
 import { useRouter } from 'vue-router'
 import type { UID } from '@/definitions/aliases'
 import { getStoredAuthUserIfValid, removeAuthUserFromStorage, setAuthUserToStorage } from '@/utils/last-auth-user'
+import RoleSelect from '@/views/join-room/components/RoleSelect.vue'
 
 export type JoinRoomFormData = {
     roomId: string
@@ -128,27 +95,6 @@ const form = ref<VForm | null>(null)
 const lastAuthUser = getStoredAuthUserIfValid()
 
 const role = ref<UserRole | ''>(lastAuthUser?.role || '')
-
-const baseRoles = Object.values(UserRole).filter((role) => ![UserRole.RoomAdmin].includes(role))
-const specialRoles = Object.values(UserRole).filter((role) => [UserRole.RoomAdmin].includes(role))
-
-const roleSelectItems = computed(() => {
-    return [
-        { type: 'item', value: '', title: getRoleTitle('') },
-        { type: 'subheader', title: 'Базовые роли' },
-        ...baseRoles.map(getRoleSelectItem),
-        { type: 'subheader', title: 'Специальные роли' },
-        ...specialRoles.map(getRoleSelectItem),
-    ]
-})
-
-function getRoleSelectItem(role: UserRole) {
-    return {
-        type: 'item',
-        value: role,
-        title: getRoleTitle(role),
-    }
-}
 
 const name = ref(lastAuthUser?.name || '')
 

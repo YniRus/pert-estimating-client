@@ -3,6 +3,8 @@ import type { Estimates } from '@/definitions/estimates'
 
 export enum UserRole {
     Dev = 'dev',
+    Frontend = 'frontend',
+    Backend = 'backend',
     QA = 'qa',
     SA = 'sa',
     RoomAdmin = 'room-admin',
