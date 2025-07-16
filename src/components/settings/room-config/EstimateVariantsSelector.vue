@@ -35,6 +35,7 @@
                     :key="set.id"
                     :active="selectedSet.id === set.id"
                     class="py-2"
+                    :ripple="false"
                     @click="onChangeSet(set.id)"
                 >
                     <v-list-item-title class="text-subtitle-2 mb-2 d-flex justify-space-between align-center">
@@ -42,46 +43,11 @@
                             {{ set.name }}
                         </span>
 
-                        <div class="d-flex ga-2 ml-2">
-                            <v-btn
-                                v-if="!isPredefinedVariantsSet(set)"
-                                size="x-small"
-                                color="primary"
-                                variant="text"
-                                density="comfortable"
-                                icon="mdi-content-copy"
-                                @click.stop="copyToClipboard(set)"
-                            />
-
-                            <v-btn
-                                size="x-small"
-                                color="primary"
-                                variant="text"
-                                density="comfortable"
-                                icon="mdi-pencil-box-multiple-outline"
-                                @click.stop="createCustomEstimateVariantsSet(set)"
-                            />
-
-                            <v-btn
-                                v-if="!isPredefinedVariantsSet(set)"
-                                size="x-small"
-                                color="primary"
-                                variant="text"
-                                density="comfortable"
-                                icon="mdi-pencil"
-                                @click.stop="openCustomEstimateVariantsSetDialog(set)"
-                            />
-
-                            <v-btn
-                                v-if="!isPredefinedVariantsSet(set)"
-                                size="x-small"
-                                color="error"
-                                variant="text"
-                                density="comfortable"
-                                icon="mdi-delete-outline"
-                                @click.stop="removeCustomEstimateVariantsSet(set)"
-                            />
-                        </div>
+                        <EstimateVariantsSetMenu
+                            class="ml-2"
+                            :actions="getVariantsSetMenuActions(set)"
+                            @action="onAction(set, $event)"
+                        />
                     </v-list-item-title>
 
                     <EstimateVariantsSelectorCards :variants="set.variants" />
@@ -129,10 +95,11 @@
 import { computed, ref } from 'vue'
 import EstimateVariantsSelectorCards from '@/components/settings/room-config/EstimateVariantsSelectorCards.vue'
 import CustomEstimateVariantsSetDialog from '@/components/settings/room-config/CustomEstimateVariantsSetDialog.vue'
-import type {
-    EstimateVariantsSet,
-    EstimateVariantsSetId,
-    ImportEstimateVariantsSet,
+import {
+    type EstimateVariantsSet,
+    type EstimateVariantsSetId,
+    EstimateVariantsSetMenuAction,
+    type ImportEstimateVariantsSet,
 } from '@/definitions/estimate-variants-sets'
 import { randomUUID } from '@/utils/crypto'
 import { useEstimateVariantsSetsStore } from '@/store/estimate-variants-sets'
@@ -141,6 +108,7 @@ import { useConfirm } from '@/composables/use-confirm'
 import { toast } from 'vue3-toastify'
 import { usePermission } from '@vueuse/core'
 import { isValidEstimateVariantsSet } from '@/utils/estimate-variants-sets'
+import EstimateVariantsSetMenu from '@/components/settings/room-config/EstimateVariantsSetMenu.vue'
 
 const { selectedSetId } = defineProps<{
     selectedSetId?: EstimateVariantsSetId
@@ -179,6 +147,33 @@ const selectedSet = computed<EstimateVariantsSet>(() => {
 
 function isPredefinedVariantsSet(set: EstimateVariantsSet) {
     return Object.values(PredefinedEstimateValuesKey).includes(set.id as PredefinedEstimateValuesKey)
+}
+
+function getVariantsSetMenuActions(set: EstimateVariantsSet) {
+    const actions = new Set([
+        EstimateVariantsSetMenuAction.CopyToClipboard,
+        EstimateVariantsSetMenuAction.CreateCopy,
+    ])
+
+    if (!isPredefinedVariantsSet(set)) {
+        actions.add(EstimateVariantsSetMenuAction.Edit)
+        actions.add(EstimateVariantsSetMenuAction.Delete)
+    }
+
+    return actions
+}
+
+function onAction(set: EstimateVariantsSet, action: EstimateVariantsSetMenuAction) {
+    switch (action) {
+        case EstimateVariantsSetMenuAction.CopyToClipboard:
+            return copyToClipboard(set)
+        case EstimateVariantsSetMenuAction.CreateCopy:
+            return createCustomEstimateVariantsSet(set)
+        case EstimateVariantsSetMenuAction.Edit:
+            return openCustomEstimateVariantsSetDialog(set)
+        case EstimateVariantsSetMenuAction.Delete:
+            return removeCustomEstimateVariantsSet(set)
+    }
 }
 
 function onChangeSet(setId: EstimateVariantsSetId) {

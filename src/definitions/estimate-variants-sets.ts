@@ -11,3 +11,10 @@ export interface EstimateVariantsSet {
 }
 
 export interface ImportEstimateVariantsSet extends Omit<EstimateVariantsSet, 'id'> {}
+
+export enum EstimateVariantsSetMenuAction {
+    CopyToClipboard = 'copyToClipboard',
+    CreateCopy = 'createCopy',
+    Edit = 'edit',
+    Delete = 'delete',
+}
