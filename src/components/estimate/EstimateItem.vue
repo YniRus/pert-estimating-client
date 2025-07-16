@@ -36,6 +36,7 @@
                         v-if="!isHidden && isCanCopy"
                         activator="parent"
                         location="top"
+                        :open-delay="300"
                         :text="copyToClipboardTooltipText"
                     />
                 </div>

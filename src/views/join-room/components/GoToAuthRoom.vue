@@ -47,7 +47,15 @@
                     {{ getRoleShortTitle(authData.user.role) }}
                 </v-chip>
 
-                <span class="text-body-1 text-truncate">
+                <span
+                    v-tooltip="{
+                        text: authData.user.name,
+                        openDelay: 500,
+                        maxWidth: 400,
+                        offset: 16,
+                    }"
+                    class="text-body-1 text-truncate"
+                >
                     {{ authData.user.name }}
                 </span>
             </p>

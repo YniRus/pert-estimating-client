@@ -24,6 +24,7 @@
                         class="estimate-table-column name d-flex align-center justify-space-between"
                     >
                         <span
+                            v-tooltip="{ text: user.name, openDelay: 500, maxWidth: 300 }"
                             class="text-truncate"
                             :class="{ 'font-weight-bold': isAuthUser(user) }"
                         >
