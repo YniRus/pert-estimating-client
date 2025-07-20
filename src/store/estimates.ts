@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
     type Estimate,
-    type UserEstimate,
+    type UserSetEstimate,
     type Estimates,
     EstimateType,
     EstimateUnit,
@@ -53,7 +53,7 @@ export const useEstimatesStore = defineStore('estimates', () => {
 
     const { triggerLastEstimateTimer } = useUserEstimatesNotifications()
 
-    async function setEstimate(userEstimate: UserEstimate) {
+    async function setEstimate(userEstimate: UserSetEstimate) {
         const estimate: Estimate = isNonValueUnitEstimate(userEstimate)
             ? userEstimate
             : { value: userEstimate.value, unit: userEstimate.unit || unit.value }

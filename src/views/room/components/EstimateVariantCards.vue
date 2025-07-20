@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { EstimateUnit, type UserEstimate } from '@/definitions/estimates'
+import { EstimateUnit, type UserSetEstimate } from '@/definitions/estimates'
 import { computed } from 'vue'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
@@ -69,8 +69,8 @@ const tooltipText = computed(() => {
     }
 })
 
-async function onSelectEstimate(estimate: UserEstimate) {
-    const setEstimateError = await estimatesStore.setEstimate(estimate)
+async function onSelectEstimate(userEstimate: UserSetEstimate) {
+    const setEstimateError = await estimatesStore.setEstimate(userEstimate)
     setEstimateError && toast.error('Неизвестная ошибка')
 
     !setEstimateError && estimatesStore.setNextType(estimatesOrderStore.order)

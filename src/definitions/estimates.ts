@@ -29,6 +29,6 @@ export const HIDDEN_ESTIMATE = '*'
 
 export type Estimate = NonValueUnitEstimate | ValueUnitEstimate | typeof HIDDEN_ESTIMATE
 
-export type UserEstimate = NonValueUnitEstimate | PartialPick<ValueUnitEstimate, 'unit'>
+export type UserSetEstimate = NonValueUnitEstimate | PartialPick<ValueUnitEstimate, 'unit'>
 
 export type Estimates = Partial<Record<EstimateType, Estimate>>

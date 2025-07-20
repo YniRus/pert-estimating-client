@@ -63,7 +63,7 @@
 import {
     EstimateUnit as EstimateUnitEnum, type EstimateVariant,
     NonValueUnitEstimate,
-    type UserEstimate,
+    type UserSetEstimate,
 } from '@/definitions/estimates'
 import EstimateUnit from '@/components/estimate/EstimateUnit.vue'
 import { useEstimatesStore } from '@/store/estimates'
@@ -79,7 +79,7 @@ const { variant } = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    select: [UserEstimate]
+    select: [UserSetEstimate]
 }>()
 
 const helpText = computed(() => {
