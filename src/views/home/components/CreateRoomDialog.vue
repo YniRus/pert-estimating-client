@@ -30,20 +30,12 @@
                             />
                         </v-col>
                     </v-row>
-
-                    <v-row>
-                        <v-col>
-                            <p class="text-subtitle-1 mb-2">
-                                Шкала оценки
-                            </p>
-
-                            <EstimateVariantsSelector
-                                :selected-set-id="estimateVariantsSetId"
-                                @change="estimateVariantsSetId = $event"
-                            />
-                        </v-col>
-                    </v-row>
                 </v-container>
+
+                <RoomConfigEditor
+                    v-model="roomConfig"
+                    class="py-1"
+                />
             </v-form>
 
             <v-divider class="mt-2" />
@@ -73,38 +65,26 @@ import { FetchError, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import { wrap } from '@/utils/loading'
 import CreatedRoomDialog from '@/views/home/components/CreatedRoomDialog.vue'
-import EstimateVariantsSelector from '@/components/settings/room-config/EstimateVariantsSelector.vue'
-import type { EstimateVariantsSetId } from '@/definitions/estimate-variants-sets'
-import { useEstimateVariantsSetsStore } from '@/store/estimate-variants-sets'
 import type { RoomConfig } from '@/definitions/room'
+import RoomConfigEditor from '@/views/home/components/RoomConfigEditor.vue'
 
 interface CreateRoomData {
     pin?: string
     config?: RoomConfig
 }
 
-const estimateVariantsSetsStore = useEstimateVariantsSetsStore()
-
 const dialog = defineModel<boolean>()
 
 const pin = ref('')
 
-const estimateVariantsSetId = ref<EstimateVariantsSetId>()
+const roomConfig = ref<RoomConfig>()
 
 const loading = ref(false)
 
 function create() {
     const createRoomData: CreateRoomData = {
         pin: pin.value.trim() || undefined,
-    }
-
-    if (estimateVariantsSetId.value) {
-        const estimateVariants = estimateVariantsSetsStore.sets.find((set) => set.id === estimateVariantsSetId.value)
-        if (estimateVariants) {
-            createRoomData.config = {
-                estimateVariants: estimateVariants.variants,
-            }
-        }
+        config: roomConfig.value || undefined,
     }
 
     wrap(loading, async () => {

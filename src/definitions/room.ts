@@ -13,4 +13,5 @@ export interface RoomWithoutConfig extends Omit<Room, 'config'> {}
 
 export interface RoomConfig {
     estimateVariants?: EstimateVariant[]
+    withConfirmEstimates?: boolean
 }
