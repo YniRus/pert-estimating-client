@@ -62,7 +62,6 @@ import { FetchError, request } from '@/plugins/ofetch'
 import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
 import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
-import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
 import { useConfirm } from '@/composables/use-confirm'
 import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watcher'
@@ -78,7 +77,6 @@ const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
-const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
 const anotherAuthWatcher = useAnotherAuthWatcher()
 const deleteEstimatesWatcher = useDeleteEstimatesWatcher()
 const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
@@ -112,7 +110,6 @@ onMounted(async () => {
     if (!success) return
 
     roomStore.wsOn()
-    watchEstimatesOn()
     anotherAuthWatcher.watch()
     authTokenWatcher.watch()
     deleteEstimatesWatcher.watch()
@@ -121,7 +118,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
     roomStore.wsOff()
-    watchEstimatesOff()
     anotherAuthWatcher.unwatch()
     authTokenWatcher.unwatch()
     deleteEstimatesWatcher.unwatch()

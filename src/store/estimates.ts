@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import {
     type Estimate,
     type UserSetEstimate,
-    type Estimates,
     EstimateType,
     EstimateUnit,
 } from '@/definitions/estimates'
@@ -13,13 +12,16 @@ import { useEstimatesOrderStore } from '@/store/estimates-order'
 import { WSError } from '@/utils/ws-error'
 import { isNonValueUnitEstimate } from '@/utils/estimate/guards'
 import { useUserEstimatesNotifications } from '@/store/composables/use-user-estimates-notificatons'
+import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
+import { useUpdateEstimatesCallback } from '@/store/composables/use-update-estimates-callback'
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
+    const { setAuthUserEstimate } = useAuthUserEstimates()
+    const { onSetAuthUserEstimates } = useUpdateEstimatesCallback()
 
     const type = ref(getDefaultType())
     const unit = ref(EstimateUnit.Hours)
-    const estimates = ref<Estimates>({})
 
     function setUnit(_unit: EstimateUnit) {
         unit.value = _unit
@@ -58,7 +60,8 @@ export const useEstimatesStore = defineStore('estimates', () => {
             ? userEstimate
             : { value: userEstimate.value, unit: userEstimate.unit || unit.value }
 
-        estimates.value[type.value] = estimate
+        setAuthUserEstimate(type.value, estimate)
+        onSetAuthUserEstimates()
 
         const response = await ws.emitWithAck('mutation:estimate', type.value, estimate)
         if (response instanceof WSError) return response
@@ -79,7 +82,6 @@ export const useEstimatesStore = defineStore('estimates', () => {
         setNextType,
         unit,
         setUnit,
-        estimates,
         setEstimate,
     }
 })

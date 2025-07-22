@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { AuthData } from '@/definitions/auth'
-import { type User, UserRole } from '@/definitions/user'
+import { type AuthUser, type User, UserRole } from '@/definitions/user'
 import { FetchError, request } from '@/plugins/ofetch'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // TODO: Вынести отсюда
-    function isCanEstimateUser(user: User) {
+    function isCanEstimateUser(user: User | AuthUser) {
         return user.role !== UserRole.RoomAdmin
     }
 

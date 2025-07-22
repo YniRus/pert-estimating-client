@@ -51,12 +51,12 @@ function getEstimateUnitIfSame(...args: (ValueUnitEstimate | undefined)[]) {
     return uniqueEstimateUnits[0]
 }
 
-export function calculateAvgPERT<T extends { estimates?: Estimates }>(data: T[], targetUnit: EstimateUnit): ValueUnitEstimate {
+export function calculateAvgPERT(data: Estimates[], targetUnit: EstimateUnit): ValueUnitEstimate {
     const valueUnitEstimates = data
-        .filter((user) => Object.values(user.estimates || {}).some(isValueUnitEstimate))
+        .filter((estimates) => Object.values(estimates || {}).some(isValueUnitEstimate))
 
-    const sumEstimateValue = valueUnitEstimates.reduce((sumEstimateValue, user) => {
-        const value = calculatePERT(user.estimates, targetUnit).value
+    const sumEstimateValue = valueUnitEstimates.reduce((sumEstimateValue, estimates) => {
+        const value = calculatePERT(estimates, targetUnit).value
         return sumEstimateValue + value
     }, 0)
 

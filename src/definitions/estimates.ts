@@ -32,3 +32,8 @@ export type Estimate = NonValueUnitEstimate | ValueUnitEstimate | typeof HIDDEN_
 export type UserSetEstimate = NonValueUnitEstimate | PartialPick<ValueUnitEstimate, 'unit'>
 
 export type Estimates = Partial<Record<EstimateType, Estimate>>
+
+export type UserEstimates = {
+    estimates: Estimates
+    confirmed?: boolean
+}

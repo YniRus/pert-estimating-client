@@ -1,5 +1,5 @@
 import type { UID } from '@/definitions/aliases'
-import type { Estimates } from '@/definitions/estimates'
+import type { UserEstimates } from '@/definitions/estimates'
 
 export enum UserRole {
     Dev = 'dev',
@@ -14,7 +14,7 @@ export interface User {
     id: UID
     role?: UserRole
     name: string
-    estimates?: Estimates
+    estimates: UserEstimates
 }
 
 export interface AuthUser extends Omit<User, 'estimates'> {}

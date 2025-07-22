@@ -16,6 +16,7 @@
             <tr
                 v-for="user in users"
                 :key="user.id"
+                class="position-relative"
                 :class="{ 'current-user': isAuthUser(user) }"
             >
                 <td v-for="(_, key) in columns" :key>
@@ -23,6 +24,11 @@
                         v-if="key === 'name'"
                         class="estimate-table-column name d-flex align-center justify-space-between"
                     >
+                        <EstimateConfirmStatus
+                            v-if="withConfirmEstimates"
+                            :user-estimates="user.estimates"
+                        />
+
                         <span
                             v-tooltip="{ text: user.name, openDelay: 500, maxWidth: 300 }"
                             class="text-truncate"
@@ -45,8 +51,8 @@
                     <EstimateItem
                         v-else-if="isEstimateTypeColumn(key)"
                         class="estimate-table-column"
-                        :estimate="user.estimates?.[key]"
-                        :closest-estimate="getClosestEstimate(key, user.estimates)"
+                        :estimate="user.estimates.estimates?.[key]"
+                        :closest-estimate="getClosestEstimate(key, user.estimates.estimates)"
                         :is-can-be-target="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(key)"
                         :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
@@ -56,7 +62,7 @@
                     <div v-else-if="key === 'pert'">
                         <EstimateItem
                             class="estimate-table-column"
-                            :estimate="!isEmptyLikeEstimates(user.estimates) ? calculatePERT(user.estimates) : undefined"
+                            :estimate="!isEmptyLikeEstimates(user.estimates.estimates) ? calculatePERT(user.estimates.estimates) : undefined"
                             :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                             is-can-copy
                         />
@@ -78,10 +84,13 @@ import { useRoomStore } from '@/store/room'
 import { computed } from 'vue'
 import { getBestValueUnitEstimateOfType, minimalEstimateUnit } from '@/utils/estimate/estimate'
 import { isEmptyLikeEstimates } from '@/utils/estimate/guards'
+import EstimateConfirmStatus from '@/views/room/components/EstimateConfirmStatus.vue'
+import { useRoomConfig } from '@/store/composables/use-room-config'
 
 const { isAuthUser } = useAuthStore()
-const estimatesStore = useEstimatesStore()
 const roomStore = useRoomStore()
+const estimatesStore = useEstimatesStore()
+const { withConfirmEstimates } = useRoomConfig()
 
 const props = defineProps<{
     users: User[]
@@ -104,7 +113,7 @@ const users = computed(() => {
 
     return (props.users)
         .map((user) => {
-            (user as UserWithPERT).PERT = calculatePERT(user.estimates, minimalEstimateUnit)
+            (user as UserWithPERT).PERT = calculatePERT(user.estimates.estimates, minimalEstimateUnit)
             return user as UserWithPERT
         })
         .sort((a, b) => a.PERT.value - b.PERT.value)
@@ -131,11 +140,20 @@ function setCurrentEstimateType(type: EstimateType) {
 </script>
 
 <style scoped lang="scss">
+@use 'sass:map';
+@use 'vuetify/settings' as v-settings;
+
 .estimate-table-column {
     width: 80px;
 
     &.name {
         width: 180px;
+    }
+}
+
+.v-table {
+    :deep(.v-table__wrapper) { /* stylelint-disable-line */
+        padding: 0 map.get(v-settings.$spacers, 4);
     }
 }
 </style>

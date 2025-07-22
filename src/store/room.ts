@@ -74,15 +74,27 @@ export const useRoomStore = defineStore('room', () => {
         const user = data.value.users.find((user) => user.id === userId)
         if (!user) return
 
-        user.estimates = estimates
+        user.estimates.estimates = estimates
 
         onUserEstimates(user)
+    }
+
+    function setUserEstimatesConfirmed(userId: UID, confirmed: boolean) {
+        if (!data.value) return
+
+        const user = data.value.users.find((user) => user.id === userId)
+        if (!user) return
+
+        user.estimates.confirmed = confirmed
     }
 
     function wsOn() {
         ws.on('on:user-connected', addUser)
         ws.on('on:user-disconnected', removeUser)
         ws.on('on:estimates', setUserEstimates)
+        if (data.value?.config?.withConfirmEstimates) {
+            ws.on('on:estimates-confirm', setUserEstimatesConfirmed)
+        }
         ws.on('on:room', updateRoom)
     }
 
@@ -90,6 +102,9 @@ export const useRoomStore = defineStore('room', () => {
         ws.off('on:user-connected', addUser)
         ws.off('on:user-disconnected', removeUser)
         ws.off('on:estimates', setUserEstimates)
+        if (data.value?.config?.withConfirmEstimates) {
+            ws.off('on:estimates-confirm', setUserEstimatesConfirmed)
+        }
         ws.off('on:room', updateRoom)
     }
 
