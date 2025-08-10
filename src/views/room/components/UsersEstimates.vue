@@ -6,8 +6,8 @@
                 elevation="2"
                 rounded="lg"
             >
-                <v-card-text class="pa-4">
-                    <div class="d-flex flex-row align-center">
+                <v-card-text class="pa-0 py-4">
+                    <div class="d-flex flex-row align-center px-4">
                         <p class="text-h4">
                             {{ getGroupTitle(group) }}
                         </p>
@@ -54,7 +54,7 @@ function getGroupTitle(group: Group) {
 }
 
 function getGroupUsersEstimatesCountText(users: User[]) {
-    const usersWithEstimates = users.reduce((count, user) => count + +(!isEmptyEstimates(user.estimates)), 0)
+    const usersWithEstimates = users.reduce((count, user) => count + +(!isEmptyEstimates(user.estimates.estimates)), 0)
     return `${usersWithEstimates} из ${users.length}`
 }
 </script>

@@ -15,6 +15,8 @@
                 :pin
             />
 
+            <RoomConfigInfo :room-config />
+
             <GoToAuthRoom :room-id />
         </v-container>
     </BaseLayout>
@@ -37,6 +39,8 @@ import { FetchError, type FetchErrorData, request } from '@/plugins/ofetch'
 import { toast } from 'vue3-toastify'
 import RoomPinGuardDialog from '@/components/dialogs/RoomPinGuardDialog.vue'
 import JoinRoomForm from '@/views/join-room/components/JoinRoomForm.vue'
+import type { RoomConfig } from '@/definitions/room'
+import RoomConfigInfo from '@/views/join-room/components/RoomConfigInfo.vue'
 
 const router = useRouter()
 
@@ -51,8 +55,10 @@ const loading = ref(true)
 
 const enterRoomPinDialogVisible = ref(false)
 
+const roomConfig = ref<RoomConfig>()
+
 async function getRoomConfig() {
-    const response = await request.get<null, FetchErrorData>('is-room-access-available', {
+    const response = await request.get<{ config?: RoomConfig }, FetchErrorData>('room-config', {
         roomId,
         pin: pin.value || undefined,
     })
@@ -88,6 +94,8 @@ async function getRoomConfig() {
             }
         }
     }
+
+    roomConfig.value = response.config
 
     loading.value = false
 }

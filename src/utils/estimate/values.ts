@@ -1,4 +1,4 @@
-import { NonValueUnitEstimate } from '@/definitions/estimates'
+import { type EstimateVariant, NonValueUnitEstimate } from '@/definitions/estimates'
 
 export enum PredefinedEstimateValuesKey {
     ModifiedFibonacci = 'modified-fibonacci',
@@ -14,6 +14,7 @@ export const predefinedEstimateValues: Record<PredefinedEstimateValuesKey, numbe
 
 export const baseEstimateValues = predefinedEstimateValues[PredefinedEstimateValuesKey.ModifiedFibonacci]
 export const nonValueUnitEstimateVariants = Object.values(NonValueUnitEstimate)
+export const defaultEstimateVariants: EstimateVariant[] = [...nonValueUnitEstimateVariants, ...baseEstimateValues]
 
 export function getMinimalNonZeroValue(values: number[], fallbackValue = 1): number {
     const [firstValue, secondValue] = values

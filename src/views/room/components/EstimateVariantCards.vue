@@ -7,6 +7,7 @@
         density="compact"
         border="border"
         class="estimate-type-selector"
+        :disabled="disabled"
         base-color="default"
         mandatory
         @update:model-value="estimatesStore.setUnit"
@@ -22,6 +23,7 @@
         </v-btn>
 
         <v-tooltip
+            v-if="!disabled"
             activator="parent"
             location="bottom"
         >
@@ -34,6 +36,7 @@
             v-for="variant of estimateVariants"
             :key="`variant-${variant}`"
             :variant="variant"
+            :disabled="disabled"
             :can-estimate="canEstimate"
             @select="onSelectEstimate"
         />
@@ -41,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { EstimateUnit, type UserEstimate } from '@/definitions/estimates'
+import { EstimateUnit, type UserSetEstimate } from '@/definitions/estimates'
 import { computed } from 'vue'
 import { useEstimatesStore } from '@/store/estimates'
 import { useEstimatesOrderStore } from '@/store/estimates-order'
@@ -51,6 +54,7 @@ import { getEstimateUnitColor } from '@/utils/estimate/ui'
 import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
 
 defineProps<{
+    disabled?: boolean
     canEstimate?: boolean
 }>()
 
@@ -69,8 +73,8 @@ const tooltipText = computed(() => {
     }
 })
 
-async function onSelectEstimate(estimate: UserEstimate) {
-    const setEstimateError = await estimatesStore.setEstimate(estimate)
+async function onSelectEstimate(userEstimate: UserSetEstimate) {
+    const setEstimateError = await estimatesStore.setEstimate(userEstimate)
     setEstimateError && toast.error('Неизвестная ошибка')
 
     !setEstimateError && estimatesStore.setNextType(estimatesOrderStore.order)
@@ -92,7 +96,13 @@ async function onSelectEstimate(estimate: UserEstimate) {
 
 .estimate-type-selector {
     .v-btn {
-        transition-property: color, background-color;
+        border-inline-end-color: #e0e0e0 !important;
+    }
+
+    &:not(:has(.v-btn--disabled)) { /* stylelint-disable-line */
+        .v-btn {
+            transition-property: color, background-color;
+        }
     }
 }
 </style>

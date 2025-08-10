@@ -177,22 +177,16 @@ describe('calculateAvgPERT', () => {
     it('should return 0 when none of the estimates in the data array are ValueUnitEstimates', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: NonValueUnitEstimate.Chill,
-                },
+                [EstimateType.Min]: NonValueUnitEstimate.Chill,
             },
             {
-                estimates: {
-                    [EstimateType.Min]: NonValueUnitEstimate.Chill,
-                    [EstimateType.Probable]: NonValueUnitEstimate.IDontKnow,
-                    [EstimateType.Max]: NonValueUnitEstimate.Chill,
-                },
+                [EstimateType.Min]: NonValueUnitEstimate.Chill,
+                [EstimateType.Probable]: NonValueUnitEstimate.IDontKnow,
+                [EstimateType.Max]: NonValueUnitEstimate.Chill,
             },
             {
-                estimates: {
-                    [EstimateType.Probable]: NonValueUnitEstimate.Chill,
-                    [EstimateType.Max]: NonValueUnitEstimate.IDontKnow,
-                },
+                [EstimateType.Probable]: NonValueUnitEstimate.Chill,
+                [EstimateType.Max]: NonValueUnitEstimate.IDontKnow,
             },
         ]
 
@@ -204,18 +198,14 @@ describe('calculateAvgPERT', () => {
     it('should correctly calculate the average PERT value when all estimates have the same unit (with and not same targetUnit)', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 1, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 6, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 1, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 6, unit: EstimateUnit.Days },
             },
         ]
 
@@ -239,18 +229,14 @@ describe('calculateAvgPERT', () => {
     it('should correctly calculate the average PERT value when estimates have different units and need conversion', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 1, unit: EstimateUnit.Days }, // 1d = 8h
-                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 1, unit: EstimateUnit.Days }, // 1d = 8h
+                [EstimateType.Max]: { value: 5, unit: EstimateUnit.Hours },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 3, unit: EstimateUnit.Days }, // 3d = 24h
-                    [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Hours },
-                    [EstimateType.Max]: { value: 6, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 3, unit: EstimateUnit.Days }, // 3d = 24h
+                [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Hours },
+                [EstimateType.Max]: { value: 6, unit: EstimateUnit.Hours },
             },
         ]
 
@@ -266,21 +252,15 @@ describe('calculateAvgPERT', () => {
     it('should handle cases where some estimates are missing from the data array', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Max]: { value: 1, unit: EstimateUnit.Weeks },
-                },
+                [EstimateType.Max]: { value: 1, unit: EstimateUnit.Weeks },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 8, unit: EstimateUnit.Hours },
-                    [EstimateType.Max]: { value: 4, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 8, unit: EstimateUnit.Hours },
+                [EstimateType.Max]: { value: 4, unit: EstimateUnit.Days },
             },
         ]
 
@@ -297,18 +277,14 @@ describe('calculateAvgPERT', () => {
     it('should handle cases where some estimates are NonValueUnitEstimates in the data array', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: NonValueUnitEstimate.IDontKnow,
-                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: NonValueUnitEstimate.IDontKnow,
+                [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: NonValueUnitEstimate.IDontKnow,
-                    [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 6, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: NonValueUnitEstimate.IDontKnow,
+                [EstimateType.Probable]: { value: 4, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 6, unit: EstimateUnit.Days },
             },
         ]
 
@@ -324,36 +300,26 @@ describe('calculateAvgPERT', () => {
     it('should correct result for floating partial result and integer final result', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 1, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Hours },
-                    [EstimateType.Max]: { value: 2, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 1, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Hours },
+                [EstimateType.Max]: { value: 2, unit: EstimateUnit.Hours },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Hours },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Hours },
-                    [EstimateType.Max]: { value: 3, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Hours },
+                [EstimateType.Max]: { value: 3, unit: EstimateUnit.Hours },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 5, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 5, unit: EstimateUnit.Hours },
-                    [EstimateType.Max]: { value: 8, unit: EstimateUnit.Hours },
-                },
+                [EstimateType.Min]: { value: 5, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 5, unit: EstimateUnit.Hours },
+                [EstimateType.Max]: { value: 8, unit: EstimateUnit.Hours },
             },
         ]
 
@@ -365,43 +331,31 @@ describe('calculateAvgPERT', () => {
     it('should correct result for floating partial result and integer final result (another case)', () => {
         const data = [
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 1, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 2, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 1, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 2, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 3, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 3, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 13, unit: EstimateUnit.Hours },
-                    [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 13, unit: EstimateUnit.Hours },
+                [EstimateType.Probable]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
-                    [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 2, unit: EstimateUnit.Days },
+                [EstimateType.Probable]: { value: 3, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Min]: { value: 3, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Min]: { value: 3, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 5, unit: EstimateUnit.Days },
             },
             {
-                estimates: {
-                    [EstimateType.Probable]: { value: 5, unit: EstimateUnit.Days },
-                    [EstimateType.Max]: { value: 8, unit: EstimateUnit.Days },
-                },
+                [EstimateType.Probable]: { value: 5, unit: EstimateUnit.Days },
+                [EstimateType.Max]: { value: 8, unit: EstimateUnit.Days },
             },
         ]
 

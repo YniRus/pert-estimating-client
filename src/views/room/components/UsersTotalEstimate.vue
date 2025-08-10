@@ -50,7 +50,8 @@ const { estimateValues } = useRoomEstimateVariants()
 const isHidden = computed(() => !roomStore.data?.estimatesVisible)
 
 const avgEstimate = computed<ValueUnitEstimate>(() => {
-    const avgEstimate = calculateAvgPERT(users, minimalEstimateUnit)
+    const usersEstimates = users.map((user) => user.estimates.estimates)
+    const avgEstimate = calculateAvgPERT(usersEstimates, minimalEstimateUnit)
     const avgEstimateInBestUnit = convertEstimateToBestUnit(avgEstimate, getMinimalNonZeroValue(estimateValues.value))
 
     avgEstimateInBestUnit.value = +avgEstimateInBestUnit.value.toFixed(2)

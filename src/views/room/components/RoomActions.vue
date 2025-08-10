@@ -33,11 +33,22 @@
                 @click="deleteEstimates"
             />
 
-            <v-slide-y-reverse-transition leave-absolute>
-                <RoomLastEstimateTimer
-                    v-if="lastEstimateTimerStore.isEnabled"
-                    :disabled
-                />
+            <v-slide-y-reverse-transition leave-absolute appear>
+                <template v-if="!isEstimatesVisible">
+                    <v-btn
+                        v-if="withConfirmEstimates && estimatesConfirmStore.authUserHasUnconfirmedEstimates"
+                        text="Подтвердить"
+                        variant="outlined"
+                        prepend-icon="mdi-check"
+                        color="primary"
+                        @click="confirmEstimates"
+                    />
+
+                    <RoomLastEstimateTimer
+                        v-else-if="lastEstimateTimerStore.isEnabled"
+                        :disabled
+                    />
+                </template>
             </v-slide-y-reverse-transition>
 
             <v-btn
@@ -62,13 +73,19 @@ import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
 import RoomLastEstimateTimer from '@/components/estimate/timer/RoomLastEstimateTimer.vue'
 import { useLastEstimateTimerStore } from '@/store/last-estimate-timer'
 import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
+import { useEstimatesConfirmStore } from '@/store/estimates-confirm'
+import { useRoomConfig } from '@/store/composables/use-room-config'
+import { useRoomEstimatesConfirm } from '@/store/composables/use-room-estimates-confirm'
 
 const roomStore = useRoomStore()
-const { confirm } = useConfirm()
-
+const lastEstimateTimerStore = useLastEstimateTimerStore()
+const estimatesConfirmStore = useEstimatesConfirmStore()
+const { withConfirmEstimates } = useRoomConfig()
 const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
 const { onRoomDeleteEstimates } = useDeleteEstimatesWatcher()
-const lastEstimateTimerStore = useLastEstimateTimerStore()
+const { isRoomHasUnconfirmedEstimates } = useRoomEstimatesConfirm()
+
+const { confirm } = useConfirm()
 
 const disabled = computed(() => !hasUsersWhoCanEstimates.value)
 
@@ -85,6 +102,16 @@ const switchEstimatesVisibleBtnText = computed(() => {
 })
 
 async function switchEstimatesVisible() {
+    if (
+        withConfirmEstimates
+        && isRoomHasUnconfirmedEstimates.value
+        && !isEstimatesVisible.value
+    ) {
+        if (!await confirm({
+            text: 'Не все пользователи подтвердили свои оценки. Вы уверены что хотите раскрыть оценки?',
+        })) return
+    }
+
     const roomError = await roomStore.updateEstimatesVisible(!isEstimatesVisible.value)
 
     roomError && toast.error('Неизвестная ошибка')
@@ -103,6 +130,17 @@ async function deleteEstimates() {
     }
 
     onRoomDeleteEstimates()
+}
+
+async function confirmEstimates() {
+    if (!withConfirmEstimates.value) return
+
+    const error = await estimatesConfirmStore.setConfirmed(true)
+
+    if (error) {
+        toast.error('Неизвестная ошибка')
+        return
+    }
 }
 
 const actionsRef = useTemplateRef<HTMLDivElement>('actions')

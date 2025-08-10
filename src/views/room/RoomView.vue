@@ -39,7 +39,10 @@
             v-if="roomStore.data"
             class="ga-5"
         >
-            <EstimateVariantCards :can-estimate="canEstimate" />
+            <EstimateVariantCards
+                :can-estimate="canEstimate"
+                :disabled="withConfirmEstimates && isEstimatesVisible"
+            />
 
             <RoomActions />
 
@@ -62,7 +65,6 @@ import { FetchError, request } from '@/plugins/ofetch'
 import UsersEstimates from '@/views/room/components/UsersEstimates.vue'
 import { useAuthStore } from '@/store/auth'
 import { useRoomStore } from '@/store/room'
-import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
 import RoomActions from '@/views/room/components/RoomActions.vue'
 import { useConfirm } from '@/composables/use-confirm'
 import { useAnotherAuthWatcher } from '@/store/composables/use-another-auth-watcher'
@@ -71,6 +73,8 @@ import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 import UserSettings from '@/components/settings/user-settings/UserSettings.vue'
 import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
 import RoomInfo from '@/views/room/components/RoomInfo.vue'
+import { useRoomConfig } from '@/store/composables/use-room-config'
+import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
 
 await ws.init()
 
@@ -78,10 +82,11 @@ const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
-const { watchEstimatesOn, watchEstimatesOff } = useAuthUserEstimates()
+const { withConfirmEstimates } = useRoomConfig()
 const anotherAuthWatcher = useAnotherAuthWatcher()
 const deleteEstimatesWatcher = useDeleteEstimatesWatcher()
 const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
+const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
 const { confirm } = useConfirm()
 
 const props = defineProps<{
@@ -112,7 +117,6 @@ onMounted(async () => {
     if (!success) return
 
     roomStore.wsOn()
-    watchEstimatesOn()
     anotherAuthWatcher.watch()
     authTokenWatcher.watch()
     deleteEstimatesWatcher.watch()
@@ -121,7 +125,6 @@ onMounted(async () => {
 
 onUnmounted(() => {
     roomStore.wsOff()
-    watchEstimatesOff()
     anotherAuthWatcher.unwatch()
     authTokenWatcher.unwatch()
     deleteEstimatesWatcher.unwatch()
@@ -207,5 +210,11 @@ async function shareRoomAccessUrl() {
 const canEstimate = computed(() => {
     if (!authStore.data?.user) return false
     return authStore.isCanEstimateUser(authStore.data.user)
+})
+
+const isEstimatesVisible = computed(() => {
+    if (!hasUsersWhoCanEstimates.value) return false
+
+    return roomStore.data?.estimatesVisible
 })
 </script>
