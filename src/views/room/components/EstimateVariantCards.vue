@@ -7,6 +7,7 @@
         density="compact"
         border="border"
         class="estimate-type-selector"
+        :disabled="disabled"
         base-color="default"
         mandatory
         @update:model-value="estimatesStore.setUnit"
@@ -22,6 +23,7 @@
         </v-btn>
 
         <v-tooltip
+            v-if="!disabled"
             activator="parent"
             location="bottom"
         >
@@ -34,6 +36,7 @@
             v-for="variant of estimateVariants"
             :key="`variant-${variant}`"
             :variant="variant"
+            :disabled="disabled"
             :can-estimate="canEstimate"
             @select="onSelectEstimate"
         />
@@ -51,6 +54,7 @@ import { getEstimateUnitColor } from '@/utils/estimate/ui'
 import { useRoomEstimateVariants } from '@/store/composables/use-room-estimate-variants'
 
 defineProps<{
+    disabled?: boolean
     canEstimate?: boolean
 }>()
 
@@ -92,7 +96,13 @@ async function onSelectEstimate(userEstimate: UserSetEstimate) {
 
 .estimate-type-selector {
     .v-btn {
-        transition-property: color, background-color;
+        border-inline-end-color: #e0e0e0 !important;
+    }
+
+    &:not(:has(.v-btn--disabled)) { /* stylelint-disable-line */
+        .v-btn {
+            transition-property: color, background-color;
+        }
     }
 }
 </style>

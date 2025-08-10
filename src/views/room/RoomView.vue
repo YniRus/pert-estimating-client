@@ -39,7 +39,10 @@
             v-if="roomStore.data"
             class="ga-5"
         >
-            <EstimateVariantCards :can-estimate="canEstimate" />
+            <EstimateVariantCards
+                :can-estimate="canEstimate"
+                :disabled="withConfirmEstimates && isEstimatesVisible"
+            />
 
             <RoomActions />
 
@@ -70,6 +73,8 @@ import { useAuthTokenWatcher } from '@/store/composables/use-auth-token-watcher'
 import UserSettings from '@/components/settings/user-settings/UserSettings.vue'
 import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
 import RoomInfo from '@/views/room/components/RoomInfo.vue'
+import { useRoomConfig } from '@/store/composables/use-room-config'
+import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
 
 await ws.init()
 
@@ -77,9 +82,11 @@ const router = useRouter()
 const authStore = useAuthStore()
 const roomStore = useRoomStore()
 
+const { withConfirmEstimates } = useRoomConfig()
 const anotherAuthWatcher = useAnotherAuthWatcher()
 const deleteEstimatesWatcher = useDeleteEstimatesWatcher()
 const { isServerPingEnabled, pingOn, pingOff } = useServerPing()
+const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
 const { confirm } = useConfirm()
 
 const props = defineProps<{
@@ -203,5 +210,11 @@ async function shareRoomAccessUrl() {
 const canEstimate = computed(() => {
     if (!authStore.data?.user) return false
     return authStore.isCanEstimateUser(authStore.data.user)
+})
+
+const isEstimatesVisible = computed(() => {
+    if (!hasUsersWhoCanEstimates.value) return false
+
+    return roomStore.data?.estimatesVisible
 })
 </script>

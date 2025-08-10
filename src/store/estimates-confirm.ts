@@ -1,20 +1,14 @@
 import { defineStore } from 'pinia'
-import { computed } from 'vue'
 import ws from '@/plugins/ws'
 import { WSError } from '@/utils/ws-error'
-import { isEmptyEstimates } from '@/utils/estimate/guards'
 import { useAuthUserEstimates } from '@/store/composables/use-auth-user-estimates'
 
 export const useEstimatesConfirmStore = defineStore('estimates-confirm', () => {
     const {
-        authUserEstimates,
         authUserEstimatesConfirmed,
+        authUserHasUnconfirmedEstimates,
         setAuthUserEstimatesConfirmed,
     } = useAuthUserEstimates()
-
-    const hasUnconfirmedEstimates = computed(() => {
-        return !authUserEstimatesConfirmed.value && !isEmptyEstimates(authUserEstimates.value)
-    })
 
     function onSetAuthUserEstimates() {
         if (authUserEstimatesConfirmed.value) {
@@ -30,7 +24,7 @@ export const useEstimatesConfirmStore = defineStore('estimates-confirm', () => {
     }
 
     return {
-        hasUnconfirmedEstimates,
+        authUserHasUnconfirmedEstimates,
         setConfirmed,
         onSetAuthUserEstimates,
     }

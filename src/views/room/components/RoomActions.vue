@@ -36,7 +36,7 @@
             <v-slide-y-reverse-transition leave-absolute appear>
                 <template v-if="!isEstimatesVisible">
                     <v-btn
-                        v-if="withConfirmEstimates && estimatesConfirmStore.hasUnconfirmedEstimates"
+                        v-if="withConfirmEstimates && estimatesConfirmStore.authUserHasUnconfirmedEstimates"
                         text="Подтвердить"
                         variant="outlined"
                         prepend-icon="mdi-check"
@@ -75,6 +75,7 @@ import { useLastEstimateTimerStore } from '@/store/last-estimate-timer'
 import { useDeleteEstimatesWatcher } from '@/store/composables/use-delete-estimates-watcher'
 import { useEstimatesConfirmStore } from '@/store/estimates-confirm'
 import { useRoomConfig } from '@/store/composables/use-room-config'
+import { useRoomEstimatesConfirm } from '@/store/composables/use-room-estimates-confirm'
 
 const roomStore = useRoomStore()
 const lastEstimateTimerStore = useLastEstimateTimerStore()
@@ -82,6 +83,7 @@ const estimatesConfirmStore = useEstimatesConfirmStore()
 const { withConfirmEstimates } = useRoomConfig()
 const { hasUsersWhoCanEstimates } = useRoomGroupedUsers()
 const { onRoomDeleteEstimates } = useDeleteEstimatesWatcher()
+const { isRoomHasUnconfirmedEstimates } = useRoomEstimatesConfirm()
 
 const { confirm } = useConfirm()
 
@@ -100,6 +102,16 @@ const switchEstimatesVisibleBtnText = computed(() => {
 })
 
 async function switchEstimatesVisible() {
+    if (
+        withConfirmEstimates
+        && isRoomHasUnconfirmedEstimates.value
+        && !isEstimatesVisible.value
+    ) {
+        if (!await confirm({
+            text: 'Не все пользователи подтвердили свои оценки. Вы уверены что хотите раскрыть оценки?',
+        })) return
+    }
+
     const roomError = await roomStore.updateEstimatesVisible(!isEstimatesVisible.value)
 
     roomError && toast.error('Неизвестная ошибка')

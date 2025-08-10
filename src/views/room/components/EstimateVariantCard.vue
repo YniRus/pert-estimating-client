@@ -1,7 +1,7 @@
 <template>
     <v-card
         class="estimate-variant-card d-flex px-1 py-11"
-        :disabled="!canEstimate"
+        :disabled="disabled || !canEstimate"
         @click="onSelect(variant)"
     >
         <v-card-text class="align-self-center text-center pa-0">
@@ -32,6 +32,7 @@
             location="top"
             open-on-hover
             :offset="4"
+            :disabled="disabled"
             transition="slide-y-reverse-transition"
         >
             <template #activator="{ props }">
@@ -75,6 +76,7 @@ const estimatesStore = useEstimatesStore()
 
 const { variant } = defineProps<{
     variant: EstimateVariant
+    disabled?: boolean
     canEstimate?: boolean
 }>()
 

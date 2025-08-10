@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import type { Estimate, Estimates } from '@/definitions/estimates'
 import { EstimateType } from '@/definitions/estimates'
 import { useRoomConfig } from '@/store/composables/use-room-config'
+import { isUserHasUnconfirmedEstimates } from '@/utils/estimates-confirm'
 
 export function useAuthUserEstimates() {
     const authStore = useAuthStore()
@@ -39,10 +40,18 @@ export function useAuthUserEstimates() {
         roomStore.data.users[roomAuthUserIndex.value].estimates.confirmed = confirmed
     }
 
+    const authUserHasUnconfirmedEstimates = computed(() => {
+        if (!withConfirmEstimates.value) return false
+        if (!roomStore.data || !authStore.data || roomAuthUserIndex.value === -1) return false
+
+        return isUserHasUnconfirmedEstimates(roomStore.data.users[roomAuthUserIndex.value])
+    })
+
     return {
         authUserEstimates,
         setAuthUserEstimate,
         authUserEstimatesConfirmed,
         setAuthUserEstimatesConfirmed,
+        authUserHasUnconfirmedEstimates,
     }
 }
