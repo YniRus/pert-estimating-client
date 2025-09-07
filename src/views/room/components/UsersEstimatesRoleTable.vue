@@ -54,6 +54,7 @@
                         :estimate="getEstimate(key, user.estimates.estimates)"
                         :closest-estimate="getClosestEstimate(key, user.estimates.estimates)"
                         :is-can-be-target="isAuthUser(user)"
+                        :is-can-clear="!(withConfirmEstimates && isEstimatesVisible)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(key)"
                         :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
                         @select="estimatesStore.setCurrentType(key)"

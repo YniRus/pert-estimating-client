@@ -63,7 +63,7 @@
 
         <v-fade-transition mode="in-out">
             <v-btn
-                v-if="isCanBeTarget && isTarget && !!estimate"
+                v-if="isCanClear && isCanBeTarget && isTarget && !!estimate"
                 class="clear-estimate-button"
                 color="error"
                 density="compact"
@@ -90,6 +90,7 @@ const props = defineProps<{
     isTarget?: boolean
     isHidden?: boolean
     isCanCopy?: boolean
+    isCanClear?: boolean
 }>()
 
 const emit = defineEmits<{
