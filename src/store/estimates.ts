@@ -17,7 +17,7 @@ import { useUpdateEstimatesCallback } from '@/store/composables/use-update-estim
 
 export const useEstimatesStore = defineStore('estimates', () => {
     const estimatesOrderStore = useEstimatesOrderStore()
-    const { setAuthUserEstimate } = useAuthUserEstimates()
+    const { setAuthUserEstimate, clearAuthUserEstimate } = useAuthUserEstimates()
     const { onSetAuthUserEstimates } = useUpdateEstimatesCallback()
 
     const type = ref(getDefaultType())
@@ -69,6 +69,16 @@ export const useEstimatesStore = defineStore('estimates', () => {
         triggerLastEstimateTimer()
     }
 
+    async function clearEstimate(type: EstimateType) {
+        clearAuthUserEstimate(type)
+        onSetAuthUserEstimates()
+
+        const response = await ws.emitWithAck('mutation:estimate', type, null)
+        if (response instanceof WSError) return response
+
+        triggerLastEstimateTimer()
+    }
+
     function $reset() {
         type.value = getDefaultType()
         unit.value = EstimateUnit.Hours
@@ -83,5 +93,6 @@ export const useEstimatesStore = defineStore('estimates', () => {
         unit,
         setUnit,
         setEstimate,
+        clearEstimate,
     }
 })
