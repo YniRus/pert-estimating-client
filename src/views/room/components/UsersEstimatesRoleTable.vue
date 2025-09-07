@@ -51,12 +51,13 @@
                     <EstimateItem
                         v-else-if="isEstimateTypeColumn(key)"
                         class="estimate-table-column"
-                        :estimate="user.estimates.estimates?.[key]"
+                        :estimate="getEstimate(key, user.estimates.estimates)"
                         :closest-estimate="getClosestEstimate(key, user.estimates.estimates)"
                         :is-can-be-target="isAuthUser(user)"
                         :is-target="isAuthUser(user) && isTargetEstimateItem(key)"
                         :is-hidden="!isAuthUser(user) && !isEstimatesVisible"
-                        @select="setCurrentEstimateType(key)"
+                        @select="estimatesStore.setCurrentType(key)"
+                        @clear="estimatesStore.clearEstimate(key)"
                     />
 
                     <div v-else-if="key === 'pert'">
@@ -121,6 +122,10 @@ const users = computed(() => {
 
 const isEstimatesVisible = computed(() => roomStore.data?.estimatesVisible)
 
+function getEstimate(type: EstimateType, estimates?: Estimates) {
+    return estimates?.[type]
+}
+
 function getClosestEstimate(type: EstimateType, estimates?: Estimates) {
     if (estimates?.[type]) return
     return getBestValueUnitEstimateOfType(type, estimates)
@@ -132,10 +137,6 @@ function isTargetEstimateItem(type: EstimateType) {
 
 function isEstimateTypeColumn(column: keyof typeof columns): column is EstimateType {
     return Object.values(EstimateType).includes(column as EstimateType)
-}
-
-function setCurrentEstimateType(type: EstimateType) {
-    estimatesStore.setCurrentType(type)
 }
 </script>
 

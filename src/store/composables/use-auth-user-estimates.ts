@@ -27,6 +27,12 @@ export function useAuthUserEstimates() {
         roomStore.data.users[roomAuthUserIndex.value].estimates.estimates[type] = estimate
     }
 
+    function clearAuthUserEstimate(type: EstimateType) {
+        if (!roomStore.data || !authStore.data || roomAuthUserIndex.value === -1) return
+
+        delete roomStore.data.users[roomAuthUserIndex.value].estimates.estimates[type]
+    }
+
     const authUserEstimatesConfirmed = computed(() => {
         if (!withConfirmEstimates.value) return false
         if (!roomStore.data || !authStore.data || roomAuthUserIndex.value === -1) return false
@@ -50,6 +56,7 @@ export function useAuthUserEstimates() {
     return {
         authUserEstimates,
         setAuthUserEstimate,
+        clearAuthUserEstimate,
         authUserEstimatesConfirmed,
         setAuthUserEstimatesConfirmed,
         authUserHasUnconfirmedEstimates,

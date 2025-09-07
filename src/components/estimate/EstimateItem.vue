@@ -1,63 +1,78 @@
 <template>
-    <div
-        class="estimate-item d-flex align-center pa-2 rounded"
-        :class="{
-            'target': isTarget,
-            'can-be-target': isCanBeTarget,
-        }"
-        @click="isCanBeTarget && emit('select')"
-    >
-        <template v-if="estimate">
-            <v-icon
-                v-if="isHidden ?? isHiddenEstimate(estimate)"
-                icon="mdi-eye-off-outline"
-                class="text-grey"
-            />
-
-            <v-icon
-                v-else-if="isNonValueUnitEstimate(estimate)"
-                :icon="getNonValueUnitEstimateIcon(estimate)"
-                :size="getNonValueUnitEstimateIconSize(estimate)"
-            />
-
-            <template v-else-if="isValueUnitEstimate(estimate)">
-                <div
-                    class="value-unit-estimate-item"
-                    :class="{ 'cursor-pointer': !isHidden && isCanCopy }"
-                    @click="copyToClipboard"
-                >
-                    <span class="mr-1">
-                        {{ estimate.value }}
-                    </span>
-
-                    <EstimateUnit :unit="estimate.unit" />
-
-                    <v-tooltip
-                        v-if="!isHidden && isCanCopy"
-                        activator="parent"
-                        location="top"
-                        :open-delay="300"
-                        :text="copyToClipboardTooltipText"
-                    />
-                </div>
-            </template>
-        </template>
-
+    <div class="estimate-item-wrapper">
         <div
-            v-else-if="closestEstimate"
-            class="closest-estimate"
+            class="estimate-item d-flex align-center pa-2 rounded"
+            :class="{
+                'target': isTarget,
+                'can-be-target': isCanBeTarget,
+            }"
+            @click="isCanBeTarget && emit('select')"
         >
-            <span class="mr-1">
-                {{ closestEstimate.value }}
-            </span>
+            <template v-if="estimate">
+                <v-icon
+                    v-if="isHidden ?? isHiddenEstimate(estimate)"
+                    icon="mdi-eye-off-outline"
+                    class="text-grey"
+                />
 
-            <EstimateUnit :unit="closestEstimate.unit" />
+                <v-icon
+                    v-else-if="isNonValueUnitEstimate(estimate)"
+                    :icon="getNonValueUnitEstimateIcon(estimate)"
+                    :size="getNonValueUnitEstimateIconSize(estimate)"
+                />
+
+                <template v-else-if="isValueUnitEstimate(estimate)">
+                    <div
+                        class="value-unit-estimate-item"
+                        :class="{ 'cursor-pointer': !isHidden && isCanCopy }"
+                        @click="copyToClipboard"
+                    >
+                        <span class="mr-1">
+                            {{ estimate.value }}
+                        </span>
+
+                        <EstimateUnit :unit="estimate.unit" />
+
+                        <v-tooltip
+                            v-if="!isHidden && isCanCopy"
+                            activator="parent"
+                            location="top"
+                            :open-delay="300"
+                            :text="copyToClipboardTooltipText"
+                        />
+                    </div>
+                </template>
+            </template>
+
+            <div
+                v-else-if="closestEstimate"
+                class="closest-estimate"
+            >
+                <span class="mr-1">
+                    {{ closestEstimate.value }}
+                </span>
+
+                <EstimateUnit :unit="closestEstimate.unit" />
+            </div>
+
+            <span
+                v-else
+                class="empty-estimate"
+            >—</span>
         </div>
 
-        <span
-            v-else
-            class="empty-estimate"
-        >—</span>
+        <v-fade-transition mode="in-out">
+            <v-btn
+                v-if="isCanBeTarget && isTarget && !!estimate"
+                class="clear-estimate-button"
+                color="error"
+                density="compact"
+                icon="mdi-close"
+                size="small"
+                variant="elevated"
+                @click="emit('clear')"
+            />
+        </v-fade-transition>
     </div>
 </template>
 
@@ -79,6 +94,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     select: []
+    clear: []
 }>()
 
 function getNonValueUnitEstimateIconSize(estimate: NonValueUnitEstimate) {
@@ -112,42 +128,63 @@ async function copyToClipboard() {
 </script>
 
 <style scoped lang="scss">
-.estimate-item {
-    $bg-color: rgb(15 15 15);
+.estimate-item-wrapper {
+    position: relative;
 
-    height: 36px;
-    transition-timing-function: ease-in-out;
-    transition-duration: 0.2s;
-    transition-property: background-color, box-shadow;
+    .estimate-item {
+        $bg-color: rgb(15 15 15);
 
-    .closest-estimate {
-        opacity: 0.2;
-        filter: grayscale(100%);
-    }
+        height: 36px;
+        transition-timing-function: ease-in-out;
+        transition-duration: 0.2s;
+        transition-property: background-color, box-shadow;
 
-    .empty-estimate {
-        opacity: 0.2;
-    }
+        .closest-estimate {
+            opacity: 0.2;
+            filter: grayscale(100%);
+        }
 
-    &.can-be-target {
-        cursor: pointer;
+        .empty-estimate {
+            opacity: 0.2;
+        }
 
-        &:hover {
-            background-color: rgb(var(--v-theme-primary), 0.1);
-            box-shadow: 0 0 2px 0 rgb($bg-color, 0.1) inset;
+        &.can-be-target {
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgb(var(--v-theme-primary), 0.1);
+                box-shadow: 0 0 2px 0 rgb($bg-color, 0.1) inset;
+            }
+        }
+
+        &.target,
+        &.target:hover {
+            background-color: rgb(var(--v-theme-primary), 0.2);
+            box-shadow: 0 0 4px 0 rgb($bg-color, 0.2) inset;
+        }
+
+        &.can-be-target:active,
+        &.target:active {
+            background-color: rgb(var(--v-theme-primary), 0.3);
+            box-shadow: 0 0 6px 0 rgb($bg-color, 0.3) inset;
         }
     }
 
-    &.target,
-    &.target:hover {
-        background-color: rgb(var(--v-theme-primary), 0.2);
-        box-shadow: 0 0 4px 0 rgb($bg-color, 0.2) inset;
+    .clear-estimate-button {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(30%, -30%);
+
+        opacity: 0;
+
+        transition: opacity 0.2s ease-in-out;
     }
 
-    &.can-be-target:active,
-    &.target:active {
-        background-color: rgb(var(--v-theme-primary), 0.3);
-        box-shadow: 0 0 6px 0 rgb($bg-color, 0.3) inset;
+    &:hover {
+        .clear-estimate-button {
+            opacity: 1;
+        }
     }
 }
 </style>
