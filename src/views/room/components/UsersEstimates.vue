@@ -7,7 +7,7 @@
                 rounded="lg"
             >
                 <v-card-text class="pa-0 py-4">
-                    <div class="d-flex flex-row align-center px-4">
+                    <div class="d-flex flex-row flex-wrap align-center px-4 ga-2">
                         <p class="text-h4">
                             {{ getGroupTitle(group) }}
                         </p>
@@ -16,7 +16,10 @@
                             {{ getGroupUsersEstimatesCountText(users) }}
                         </p>
 
-                        <UsersTotalEstimate class="ml-auto" :users />
+                        <div class="d-flex flex-wrap align-center ga-2 ml-auto">
+                            <UsersEstimatesAgreement v-if="roomStore.data?.estimatesVisible" :users />
+                            <UsersTotalEstimate :users />
+                        </div>
                     </div>
 
                     <UsersEstimatesRoleTable :users="users" />
@@ -38,6 +41,8 @@
 import { type User, UserRole } from '@/definitions/user'
 import UsersEstimatesRoleTable from '@/views/room/components/UsersEstimatesRoleTable.vue'
 import UsersTotalEstimate from '@/views/room/components/UsersTotalEstimate.vue'
+import UsersEstimatesAgreement from '@/views/room/components/UsersEstimatesAgreement.vue'
+import { useRoomStore } from '@/store/room'
 import { getRoleGroupTitle } from '@/utils/role'
 import { isEmptyEstimates } from '@/utils/estimate/guards'
 import { useRoomGroupedUsers } from '@/store/composables/use-room-grouped-users'
@@ -47,6 +52,7 @@ const UNASSIGNED = 'unassigned'
 type Group = UserRole | typeof UNASSIGNED
 
 const { roomGroupedUsersWhoCanEstimates, hasUsersWhoCanEstimates } = useRoomGroupedUsers()
+const roomStore = useRoomStore()
 
 function getGroupTitle(group: Group) {
     if (group === UNASSIGNED) return getRoleGroupTitle('')
